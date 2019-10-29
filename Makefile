@@ -21,8 +21,8 @@ config:
 packages: brew-packages cask-apps
 
 brew-packages:
-	brew bundle --file=./install/Brewfile
+	brew bundle --file=./brew/Brewfile
 	/usr/local/opt/fzf/install --all
 
 cask-apps:
-	brew bundle --file=./install/Caskfile
+	brew bundle --file=./brew/Caskfile
