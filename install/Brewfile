@@ -1,0 +1,13 @@
+tap "homebrew/bundle"
+tap "homebrew/core"
+
+brew "zplug"
+brew "neovim"
+brew "dockutil"
+brew "wget"
+brew "htop"
+brew "fzf"
+brew "bat"
+brew "shellcheck"
+brew "node"
+brew "diff-so-fancy"
