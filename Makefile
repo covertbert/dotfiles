@@ -1,4 +1,4 @@
-.PHONY: test vim
+.PHONY: sudo packages git vim config defaults
 
 all: sudo packages git vim config defaults
 
