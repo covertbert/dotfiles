@@ -28,7 +28,8 @@ export PATH="$HOME/.local/bin:$HOME/go/bin:/usr/local/sbin:$PATH"
 export EDITOR=/usr/local/bin/nvim
 export VISUAL=/usr/local/bin/nvim
 
-# fzf keybindings
+# fzf
+export FZF_DEFAULT_COMMAND='fd --type f'
 bindkey "^[[A" history-beginning-search-backward
 bindkey "^[[B" history-beginning-search-forward
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
@@ -57,7 +58,6 @@ zplug "zsh-users/zsh-autosuggestions"
 zplug "zsh-users/zsh-history-substring-search"
 
 zplug "plugins/git",   from:oh-my-zsh
-zplug "plugins/common-aliases",   from:oh-my-zsh
 
 zplug denysdovhan/spaceship-prompt, use:spaceship.zsh, from:github, as:theme
 

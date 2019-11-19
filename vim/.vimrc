@@ -14,7 +14,8 @@
   Plug 'Shougo/vimproc.vim', {'do' : 'make'}
   Plug 'Quramy/tsuquyomi'
   Plug 'cohama/lexima.vim'
-  Plug 'ctrlpvim/ctrlp.vim'
+  Plug 'leafgarland/typescript-vim'
+  Plug 'peitalin/vim-jsx-typescript'
   
   if has('fzf')
   Plug '/usr/local/opt/fzf'
@@ -40,6 +41,8 @@
   set number
   " auto-save when losing focus
   :au FocusLost * :wa
+  " space as leader
+  map <Space> <Leader>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Colors and Fonts
@@ -52,5 +55,6 @@
   " Deoplete
   let g:deoplete#enable_at_startup = 1
 
-  " CtrlP
-  let g:ctrlp_custom_ignore = 'node_modules\|DS_Store\|git'
+  " FZF
+  nnoremap <leader>e :Files<cr>
+  nnoremap <leader>f :execute 'Ag ' . input('Ag/')<cr>

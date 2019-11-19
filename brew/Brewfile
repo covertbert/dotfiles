@@ -9,5 +9,7 @@ brew "htop"
 brew "fzf"
 brew "bat"
 brew "shellcheck"
-brew "node", args: ["force-bottle"]
+brew "node"
 brew "diff-so-fancy"
+brew "the_silver_searcher"
+brew "fd"
