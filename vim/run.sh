@@ -4,24 +4,24 @@ VIMPLUG_PATH="$HOME/.local/share/nvim/site/autoload/plug.vim"
 NVIM_PATH="$HOME/.config/nvim"
 
 if [ -f "$VIMPLUG_PATH" ]; then
-    echo "VimPlug is already installed"
+    printf "\\n\\nVimPlug is already installed.\\n\\n"
 else
-    echo "Installing VimPlug"
+    printf "\\n\\nInstalling VimPlug.\\n\\n"
     curl -fLo ~/.local/share/nvim/site/autoload/plug.vim --create-dirs \
     https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 fi
 
 if command -v python3 &>/dev/null; then
-    echo "Python 3 is already installed"
+    printf "Python 3 is already installed.\\n\\n"
 else
-    echo "Python 3 is not installed"
-    echo "Installing pynvim"
+    printf "Python 3 is not installed.\\n\\n"
+    printf "Installing pynvim.\\n\\n"
     pip3 install --user pynvim
 fi
 
-echo "Copying nvim init"
+printf "Copying nvim init.\\n\\n"
 mkdir -p "$NVIM_PATH"
 cp ./vim/init.vim "$NVIM_PATH"
 
-echo "Copying vimrc"
+printf "Copying vimrc.\\n\\n"
 cp ./vim/.vimrc ~/
