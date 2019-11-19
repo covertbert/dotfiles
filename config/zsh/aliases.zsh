@@ -1,4 +1,3 @@
-alias cat='bat'
 alias vim='nvim'
 alias ~='cd ~'
 alias pys='python -m SimpleHTTPServer'

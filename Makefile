@@ -9,9 +9,6 @@ sudo:
 git:
 	brew install git git-extras
 
-vim: 
-	sh ./vim/run.sh
-
 defaults:
 	sh ./defaults/run.sh
 
