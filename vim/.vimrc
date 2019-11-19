@@ -47,6 +47,11 @@
   set updatetime=100
   " set vim shell
   set shell=zsh
+  " 2 space tabs
+  set expandtab
+  set tabstop=2
+  set softtabstop=2
+  set shiftwidth=2
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Colors and Fonts
