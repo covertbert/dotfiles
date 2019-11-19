@@ -16,6 +16,7 @@
   Plug 'cohama/lexima.vim'
   Plug 'leafgarland/typescript-vim'
   Plug 'peitalin/vim-jsx-typescript'
+  Plug 'mbbill/undotree'
   
   if has('fzf')
     Plug '/usr/local/opt/fzf'
@@ -66,6 +67,9 @@
 
   " NerdTree
   nmap <F6> :NERDTreeToggle<CR>
+
+  "Undo Tree
+  nnoremap <F5> :UndotreeToggle<CR>
 
   " FZF
   nnoremap <leader>e :Files<cr>
