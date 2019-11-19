@@ -64,6 +64,9 @@
   " Deoplete
   let g:deoplete#enable_at_startup = 1
 
+  " NerdTree
+  nmap <F6> :NERDTreeToggle<CR>
+
   " FZF
   nnoremap <leader>e :Files<cr>
   nnoremap <leader>f :execute 'Ag ' . input('Ag/')<cr>
