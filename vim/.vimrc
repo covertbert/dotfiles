@@ -15,6 +15,14 @@
   Plug 'Quramy/tsuquyomi'
   Plug 'cohama/lexima.vim'
   Plug 'ctrlpvim/ctrlp.vim'
+  
+  if has('fzf')
+  Plug '/usr/local/opt/fzf'
+  else
+  Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+  endif
+  Plug 'junegunn/fzf.vim'
+  
   if has('nvim')
     Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
   else
