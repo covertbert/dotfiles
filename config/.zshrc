@@ -29,7 +29,7 @@ export EDITOR=/usr/local/bin/nvim
 export VISUAL=/usr/local/bin/nvim
 
 # fzf
-export FZF_DEFAULT_COMMAND='fd --type f'
+export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git'
 bindkey "^[[A" history-beginning-search-backward
 bindkey "^[[B" history-beginning-search-forward
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh

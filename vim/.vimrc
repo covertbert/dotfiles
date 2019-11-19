@@ -43,6 +43,10 @@
   :au FocusLost * :wa
   " space as leader
   map <Space> <Leader>
+  " reduce vim update time
+  set updatetime=100
+  " set vim shell
+  set shell=zsh
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Colors and Fonts
