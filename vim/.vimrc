@@ -1,37 +1,46 @@
-call plug#begin('~/.vim/plugged')
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Vim-Plug Configuration
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+  call plug#begin('~/.vim/plugged')
 
-" Sensible config
-Plug 'tpope/vim-sensible'
-" Status bar
-Plug 'vim-airline/vim-airline'
-" Nord theme
-Plug 'arcticicestudio/nord-vim'
-" Project tree
-Plug 'scrooloose/nerdtree'
-" Prettier code formatter
-Plug 'prettier/vim-prettier', { 'do': 'yarn install' }
-" Linting engine
-Plug 'dense-analysis/ale'
-" Git diff in gutter
-Plug 'airblade/vim-gitgutter'
-" TS support
-Plug 'Shougo/vimproc.vim', {'do' : 'make'}
-Plug 'Quramy/tsuquyomi'
-" Auto close brackets
-Plug 'cohama/lexima.vim'
+  Plug 'tpope/vim-sensible'
+  Plug 'vim-airline/vim-airline'
+  Plug 'arcticicestudio/nord-vim'
+  Plug 'scrooloose/nerdtree'
+  Plug 'Xuyuanp/nerdtree-git-plugin'
+  Plug 'prettier/vim-prettier', { 'do': 'yarn install' }
+  Plug 'dense-analysis/ale'
+  Plug 'airblade/vim-gitgutter'
+  Plug 'Shougo/vimproc.vim', {'do' : 'make'}
+  Plug 'Quramy/tsuquyomi'
+  Plug 'cohama/lexima.vim'
+  Plug 'ctrlpvim/ctrlp.vim'
+  if has('nvim')
+    Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+  else
+    Plug 'Shougo/deoplete.nvim'
+    Plug 'roxma/nvim-yarp'
+    Plug 'roxma/vim-hug-neovim-rpc'
+  endif
 
-" Intellisense
-if has('nvim')
-  Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-else
-  Plug 'Shougo/deoplete.nvim'
-  Plug 'roxma/nvim-yarp'
-  Plug 'roxma/vim-hug-neovim-rpc'
-endif
-let g:deoplete#enable_at_startup = 1
+  call plug#end()
 
-call plug#end()
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" General Settings
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+  set number
+  :au FocusLost * :wa
 
-" Settings
-colorscheme nord
-set number
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Colors and Fonts
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+  colorscheme nord
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Plugin Options
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+  " Deoplete
+  let g:deoplete#enable_at_startup = 1
+
+  " CtrlP
+  let g:ctrlp_custom_ignore = 'node_modules\|DS_Store\|git'
