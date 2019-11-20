@@ -3,6 +3,8 @@ alias ~='cd ~'
 alias pys='python -m SimpleHTTPServer'
 alias code='open -a Visual\ Studio\ Code.app'
 
+alias z='source ~/.zshrc'
+
 alias l='ls -lFh'     #size,show type,human readable
 alias la='ls -lAFh'   #long list,show almost all,show type,human readable
 alias ll='ls -l'      #long list
@@ -17,10 +19,16 @@ zstyle -e ':completion:*:(ssh|scp|sftp|rsh|rsync):hosts' hosts 'reply=(${=${${(f
 
 
 alias g='git'
+alias ga='git add'
 alias gaa='git add --all'
+alias gb='git branch'
+alias gbd='git branch -d'
+alias gcl='git clone --recurse-submodules'
 alias gcmsg='git commit -m'
 alias gp='git push'
 alias gl='git pull'
-alias gcl='git clone --recurse-submodules'
 alias gss='git status -s'
+alias gco='git checkout'
+alias glog='git log --oneline --decorate --graph'
+alias gloga='git log --oneline --decorate --graph --all'
 
