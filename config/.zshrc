@@ -22,7 +22,7 @@ setopt AUTO_CD
 setopt CHASE_LINKS
 
 # Path
-export PATH="$HOME/.local/bin:$HOME/go/bin:/usr/local/sbin:$PATH"
+export PATH="$HOME/.local/bin:/usr/local/sbin:$PATH"
 
 # Editor
 export EDITOR=/usr/local/bin/nvim
@@ -57,7 +57,6 @@ if ! zgen saved; then
   zgen load zsh-users/zsh-syntax-highlighting
   zgen load zsh-users/zsh-history-substring-search
   zgen load zsh-users/zsh-autosuggestions
-  zgen load zsh-users/zsh-history-substring-search
   zgen load 
 
   zgen load denysdovhan/spaceship-prompt spaceship
