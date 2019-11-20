@@ -15,3 +15,12 @@ alias t='tail -f'
 # Make zsh know about hosts already accessed by SSH
 zstyle -e ':completion:*:(ssh|scp|sftp|rsh|rsync):hosts' hosts 'reply=(${=${${(f)"$(cat {/etc/ssh_,~/.ssh/known_}hosts(|2)(N) /dev/null)"}%%[# ]*}//,/ })'
 
+
+alias g='git'
+alias gaa='git add --all'
+alias gcmsg='git commit -m'
+alias gp='git push'
+alias gl='git pull'
+alias gcl='git clone --recurse-submodules'
+alias gss='git status -s'
+

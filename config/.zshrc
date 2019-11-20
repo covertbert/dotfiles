@@ -49,27 +49,24 @@ if [ -f "$HOME/.zshrc.local" ]; then
 fi
 
 # Plugins
-export ZPLUG_HOME=/usr/local/opt/zplug
-source $ZPLUG_HOME/init.zsh
+# Plugins
+source "${HOME}/.zgen/zgen.zsh"
 
-zplug "zsh-users/zsh-syntax-highlighting", defer:2
-zplug "zsh-users/zsh-history-substring-search"
-zplug "zsh-users/zsh-autosuggestions"
-zplug "zsh-users/zsh-history-substring-search"
+if ! zgen saved; then
 
-zplug "plugins/git",   from:oh-my-zsh
+  zgen load zsh-users/zsh-syntax-highlighting
+  zgen load zsh-users/zsh-history-substring-search
+  zgen load zsh-users/zsh-autosuggestions
+  zgen load zsh-users/zsh-history-substring-search
+  zgen load 
 
-zplug denysdovhan/spaceship-prompt, use:spaceship.zsh, from:github, as:theme
+  zgen load denysdovhan/spaceship-prompt spaceship
+
+  zgen save
+fi
+
 
 # Spaceship config
 SPACESHIP_TIME_SHOW=true
 SPACESHIP_PACKAGE_SHOW=false
 
-if ! zplug check --verbose; then
-    printf "Install? [y/N]: "
-    if read -q; then
-        echo; zplug install
-    fi
-fi
-
-zplug load
