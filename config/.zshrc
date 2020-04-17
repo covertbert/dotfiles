@@ -49,19 +49,22 @@ if [ -f "$HOME/.zshrc.local" ]; then
 fi
 
 # Plugins
-# Plugins
+if [ ! -f "${HOME}/.zgen" ]; then
+    git clone https://github.com/tarjoilija/zgen.git "${HOME}/.zgen"
+fi
+
 source "${HOME}/.zgen/zgen.zsh"
 
 if ! zgen saved; then
-
-  zgen load zsh-users/zsh-syntax-highlighting
-  zgen load zsh-users/zsh-history-substring-search
-  zgen load zsh-users/zsh-autosuggestions
-  zgen load 
-
-  zgen load denysdovhan/spaceship-prompt spaceship
-
-  zgen save
+    
+    zgen load zsh-users/zsh-syntax-highlighting
+    zgen load zsh-users/zsh-history-substring-search
+    zgen load zsh-users/zsh-autosuggestions
+    zgen load
+    
+    zgen load denysdovhan/spaceship-prompt spaceship
+    
+    zgen save
 fi
 
 
