@@ -13,3 +13,7 @@ compose () {
     docker-compose build
     docker-compose up --remove-orphans
 }
+
+rimraf () {
+    find . -name 'node_modules' -type d -prune -exec rm -rf '{}' +
+}

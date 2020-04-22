@@ -49,10 +49,6 @@ if [ -f "$HOME/.zshrc.local" ]; then
 fi
 
 # Plugins
-if [ ! -f "${HOME}/.zgen" ]; then
-    git clone https://github.com/tarjoilija/zgen.git "${HOME}/.zgen"
-fi
-
 source "${HOME}/.zgen/zgen.zsh"
 
 if ! zgen saved; then

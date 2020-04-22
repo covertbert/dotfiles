@@ -1,5 +1,7 @@
 #!/bin/sh
 
+git clone https://github.com/tarjoilija/zgen.git "${HOME}/.zgen"
+
 cp -rv ./config/.gitconfig ~
 cp -rv ./config/.zshrc ~/.zshrc
 cp -rv ./config/zsh ~/.config/
