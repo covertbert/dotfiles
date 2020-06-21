@@ -33,4 +33,5 @@ alias gss='git status -s'
 alias gco='git checkout'
 alias glog='git log --oneline --decorate --graph'
 alias gloga='git log --oneline --decorate --graph --all'
+alias gpristine='git reset --hard && git clean -dffx'
 
