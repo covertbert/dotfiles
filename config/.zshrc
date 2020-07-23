@@ -52,19 +52,17 @@ fi
 source "${HOME}/.zgen/zgen.zsh"
 
 if ! zgen saved; then
-    
+
     zgen load zsh-users/zsh-syntax-highlighting
     zgen load zsh-users/zsh-history-substring-search
     zgen load zsh-users/zsh-autosuggestions
     zgen load
-    
+
     zgen load denysdovhan/spaceship-prompt spaceship
-    
+
     zgen save
 fi
-
 
 # Spaceship config
 SPACESHIP_TIME_SHOW=true
 SPACESHIP_PACKAGE_SHOW=false
-

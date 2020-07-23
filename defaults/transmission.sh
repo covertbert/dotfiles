@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 defaults write org.m0k.transmission UseIncompleteDownloadFolder -bool true
 defaults write org.m0k.transmission IncompleteDownloadFolder -string "${HOME}/Downloads"

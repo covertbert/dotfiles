@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 sh ./defaults/system.sh
 sh ./defaults/chrome.sh

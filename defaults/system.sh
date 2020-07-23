@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 osascript -e 'tell application "System Preferences" to quit'
 
@@ -6,7 +6,11 @@ osascript -e 'tell application "System Preferences" to quit'
 sudo -v
 
 # Keep-alive: update existing `sudo` time stamp until this script has finished
-while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
+while true; do
+	sudo -n true
+	sleep 60
+	kill -0 "$$" || exit
+done 2>/dev/null &
 
 ###############################################################################
 # General UI/UX                                                               #
@@ -16,7 +20,6 @@ while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
 defaults write NSGlobalDomain AppleLanguages -array "en"
 defaults write NSGlobalDomain AppleMeasurementUnits -string "Centimeters"
 defaults write NSGlobalDomain AppleMetricUnits -bool true
-
 
 # Set standby delay to 24 hours (default is 1 hour)
 sudo pmset -a standbydelay 86400
@@ -66,7 +69,7 @@ defaults write com.apple.CrashReporter DialogType -string "none"
 sudo systemsetup -setrestartfreeze on
 
 # Disable Notification Center and remove the menu bar icon
-launchctl unload -w /System/Library/LaunchAgents/com.apple.notificationcenterui.plist 2> /dev/null
+launchctl unload -w /System/Library/LaunchAgents/com.apple.notificationcenterui.plist 2>/dev/null
 
 ###############################################################################
 # Keyboard & Input                                                            #
@@ -191,7 +194,7 @@ defaults write com.apple.finder NewWindowTargetPath -string "file://${HOME}/"
 # Dock                                                                        #
 ###############################################################################
 
-# Disable automatically rearrange Spaces based on recent use 
+# Disable automatically rearrange Spaces based on recent use
 defaults write com.apple.dock mru-spaces -bool false
 
 # Show indicator lights for open applications in the Dock
@@ -248,13 +251,13 @@ defaults write com.apple.spotlight orderedItems -array \
 	'{"enabled" = 0;"name" = "SOURCE";}'
 
 # Load new settings before rebuilding the index
-killall mds > /dev/null 2>&1
+killall mds >/dev/null 2>&1
 
 # Make sure indexing is enabled for the main volume
-sudo mdutil -i on / > /dev/null
+sudo mdutil -i on / >/dev/null
 
 # Rebuild the index from scratch
-sudo mdutil -E / > /dev/null
+sudo mdutil -E / >/dev/null
 
 ###############################################################################
 # Activity Monitor                                                            #
@@ -297,5 +300,5 @@ defaults write com.apple.commerce AutoUpdate -bool true
 ###############################################################################
 
 for app in "Address Book" "Calendar" "Contacts" "Dock" "Finder" "Mail" "Safari" "SystemUIServer" "iCal"; do
-  killall "${app}" &> /dev/null
+	killall "${app}" &>/dev/null
 done
