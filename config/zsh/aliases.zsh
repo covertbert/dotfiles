@@ -5,9 +5,8 @@ alias code='open -a Visual\ Studio\ Code.app'
 
 alias z='source ~/.zshrc'
 
-alias l='exa -lFh'   #size,show type,human readable
-alias la='exa -lAFh' #long list,show almost all,show type,human readable
-alias ll='exa -l'    #long list
+alias ls='exa'
+alias l='exa -laFh' #size,show type,human readable
 
 alias grep='grep --color'
 alias sgrep='grep -R -n -H -C 5 --exclude-dir={.git,.svn,CVS} '
