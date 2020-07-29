@@ -62,4 +62,5 @@ if ! zgen saved; then
     zgen save
 fi
 
+# Initialise Starship
 eval "$(starship init zsh)"

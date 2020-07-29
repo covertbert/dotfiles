@@ -3,6 +3,7 @@ tap "homebrew/core"
 
 brew "zplug"
 brew "starship"
+brew "exa"
 brew "neovim"
 brew "dockutil"
 brew "wget"
