@@ -1,6 +1,9 @@
 #!/bin/bash
+zgenDirectory="${HOME}/.zgen"
 
-git clone https://github.com/tarjoilija/zgen.git "${HOME}/.zgen"
+if [[ ! -d $zgenDirectory ]]; then
+    git clone https://github.com/tarjoilija/zgen.git "$zgenDirectory"
+fi
 
 cp -rv ./config/.gitconfig ~
 cp -rv ./config/.zshrc ~/.zshrc

@@ -2,6 +2,7 @@ tap "homebrew/bundle"
 tap "homebrew/core"
 
 brew "zplug"
+brew "starship"
 brew "neovim"
 brew "dockutil"
 brew "wget"
