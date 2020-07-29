@@ -5,7 +5,10 @@ if [[ ! -d $zgenDirectory ]]; then
     git clone https://github.com/tarjoilija/zgen.git "$zgenDirectory"
 fi
 
-cp -rv ./config/.gitconfig ~
+if [[ ! -e ~/.gitconfig ]]; then
+    cp -rv ./config/.gitconfig ~
+fi
+
 cp -rv ./config/.zshrc ~/.zshrc
 cp -rv ./config/zsh ~/.config/
 
