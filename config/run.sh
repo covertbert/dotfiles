@@ -9,6 +9,7 @@ if [[ ! -e ~/.gitconfig ]]; then
     cp -rv ./config/.gitconfig ~
 fi
 
+cp -rv ./config/starship.toml ~/.config/starship.toml
 cp -rv ./config/.zshrc ~/.zshrc
 cp -rv ./config/zsh ~/.config/
 
