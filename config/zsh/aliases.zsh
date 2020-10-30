@@ -11,6 +11,9 @@ alias l='exa -laFh' #size,show type,human readable
 alias grep='grep --color'
 alias sgrep='grep -R -n -H -C 5 --exclude-dir={.git,.svn,CVS} '
 
+alias sed='gsed'
+alias grep='ggrep'
+
 alias t='tail -f'
 
 # Make zsh know about hosts already accessed by SSH
