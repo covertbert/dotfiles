@@ -64,3 +64,7 @@ fi
 
 # Initialise Starship
 eval "$(starship init zsh)"
+
+# OnePassword Completions
+eval "$(op completion zsh)"
+compdef _op op
