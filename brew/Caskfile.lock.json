@@ -2,33 +2,33 @@
   "entries": {
     "tap": {
       "homebrew/cask": {
-        "revision": "76ce0d26515098d2454ca6ce0170a4cbb860dafa"
+        "revision": "a10aeda5cadc8e995099c57db187f7c839e8fc4c"
       },
       "homebrew/cask-drivers": {
-        "revision": "1de98079420da7321ed0d085edf65808d38acbb8"
+        "revision": "93dc6f419a8fea3803fd3957827b2c901a8565c6"
       },
       "homebrew/cask-fonts": {
-        "revision": "25d915075752d5350f917b5438b13e24ed7c9043"
+        "revision": "77e6259591da7689a654a0276c574c730c9e44eb"
       },
       "homebrew/cask-versions": {
-        "revision": "2fa636fd17231b205990b54d8189d784eb172353"
+        "revision": "e57b4dec45fcdea64ae80f9de6a89643725b6045"
       }
     },
     "cask": {
       "visual-studio-code": {
-        "version": "1.46.1",
+        "version": "1.27.2,f46c4c469d6e6d8c46f268d1553c5dc4b475840f",
         "options": {
           "full_name": "visual-studio-code"
         }
       },
       "iterm2": {
-        "version": "3.3.11",
+        "version": "3.2.0",
         "options": {
           "full_name": "iterm2"
         }
       },
       "appcleaner": {
-        "version": "3.5",
+        "version": "3.4",
         "options": {
           "full_name": "appcleaner"
         }
@@ -37,6 +37,12 @@
         "version": "5.2",
         "options": {
           "full_name": "font-fira-code"
+        }
+      },
+      "1password-cli": {
+        "version": "1.8.0",
+        "options": {
+          "full_name": "1password-cli"
         }
       }
     }
@@ -50,6 +56,14 @@
         "CLT": "11.5.0.0.1.1588476445",
         "Xcode": "11.5",
         "macOS": "10.15.3"
+      },
+      "big_sur": {
+        "HOMEBREW_VERSION": "2.5.10",
+        "HOMEBREW_PREFIX": "/usr/local",
+        "Homebrew/homebrew-core": "542ff01c92e32b04301c2c5aa1ca335b8c438da0",
+        "CLT": "11.0.33.8",
+        "Xcode": "12.0.1",
+        "macOS": "11.0.1"
       }
     }
   }
