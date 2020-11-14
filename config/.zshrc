@@ -5,6 +5,10 @@ zstyle ':completion:*' list-colors ''
 unsetopt LIST_BEEP
 setopt MENU_COMPLETE
 
+# Key bindings
+bindkey '[C' forward-word
+bindkey '[D' backward-word
+
 # History
 HISTFILE=~/.zsh_history
 HISTSIZE=50000
