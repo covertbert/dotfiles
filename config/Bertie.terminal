@@ -8,7 +8,7 @@
 	<data>
 	YnBsaXN0MDDUAQIDBAUGBwpYJHZlcnNpb25ZJGFyY2hpdmVyVCR0b3BYJG9iamVjdHMS
 	AAGGoF8QD05TS2V5ZWRBcmNoaXZlctEICVRyb290gAGkCwwVFlUkbnVsbNQNDg8QERIT
-	FFZOU1NpemVYTlNmRmxhZ3NWTlNOYW1lViRjbGFzcyNAKgAAAAAAABAQgAKAA18QEEZp
+	FFZOU1NpemVYTlNmRmxhZ3NWTlNOYW1lViRjbGFzcyNALAAAAAAAABAQgAKAA18QEEZp
 	cmFDb2RlLVJlZ3VsYXLSFxgZGlokY2xhc3NuYW1lWCRjbGFzc2VzVk5TRm9udKIZG1hO
 	U09iamVjdAgRGiQpMjdJTFFTWF5nbnd+hY6QkpSnrLfAx8oAAAAAAAABAQAAAAAAAAAc
 	AAAAAAAAAAAAAAAAAAAA0w==
@@ -19,6 +19,8 @@
 	<real>1.004032258064516</real>
 	<key>ProfileCurrentVersion</key>
 	<real>2.0699999999999998</real>
+	<key>UseBrightBold</key>
+	<false/>
 	<key>keyMapBoundKeys</key>
 	<dict>
 		<key>#F739</key>
@@ -93,6 +95,8 @@
 		<string>[1;5C</string>
 		<key>^F728</key>
 		<string>[3;5~</string>
+		<key>~007F</key>
+		<string></string>
 		<key>~F702</key>
 		<string>b</string>
 		<key>~F703</key>
@@ -135,6 +139,6 @@
 	<key>type</key>
 	<string>Window Settings</string>
 	<key>useOptionAsMetaKey</key>
-	<false/>
+	<true/>
 </dict>
 </plist>
