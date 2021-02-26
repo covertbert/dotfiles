@@ -13,5 +13,4 @@ cp -rv ./config/starship.toml ~/.config/starship.toml
 cp -rv ./config/.zshrc ~/.zshrc
 cp -rv ./config/zsh ~/.config/
 
-mkdir -p ~/.iterm2
-cp -rv ./config/com.googlecode.iterm2.plist ~/.iterm2
+cp -rv ./config/.hyper.js ~/.hyper.js
