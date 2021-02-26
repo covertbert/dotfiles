@@ -2,21 +2,21 @@
   "entries": {
     "tap": {
       "homebrew/cask": {
-        "revision": "a10aeda5cadc8e995099c57db187f7c839e8fc4c"
+        "revision": "e7c7390c877fa40c44c7c11732dab6656625840d"
       },
       "homebrew/cask-drivers": {
-        "revision": "93dc6f419a8fea3803fd3957827b2c901a8565c6"
+        "revision": "eb0af0d7a04a96258e9a05f60aa41f46d1a4aa87"
       },
       "homebrew/cask-fonts": {
-        "revision": "77e6259591da7689a654a0276c574c730c9e44eb"
+        "revision": "8b870420e3fd0eda49556528196fb4f842780ecc"
       },
       "homebrew/cask-versions": {
-        "revision": "e57b4dec45fcdea64ae80f9de6a89643725b6045"
+        "revision": "8870633b5881c8561fd2e530b7bfceb8dc047d70"
       }
     },
     "cask": {
       "visual-studio-code": {
-        "version": "1.27.2,f46c4c469d6e6d8c46f268d1553c5dc4b475840f",
+        "version": "1.53.2",
         "options": {
           "full_name": "visual-studio-code"
         }
@@ -28,7 +28,7 @@
         }
       },
       "appcleaner": {
-        "version": "3.4",
+        "version": "3.6.0,4070",
         "options": {
           "full_name": "appcleaner"
         }
@@ -58,12 +58,12 @@
         "macOS": "10.15.3"
       },
       "big_sur": {
-        "HOMEBREW_VERSION": "2.5.10",
+        "HOMEBREW_VERSION": "3.0.2",
         "HOMEBREW_PREFIX": "/usr/local",
-        "Homebrew/homebrew-core": "542ff01c92e32b04301c2c5aa1ca335b8c438da0",
-        "CLT": "11.0.33.8",
-        "Xcode": "12.0.1",
-        "macOS": "11.0.1"
+        "Homebrew/homebrew-core": "f5d13c001802d6839f3decb5bf4a7d18d9585d75",
+        "CLT": "",
+        "Xcode": "12.4",
+        "macOS": "11.2.1"
       }
     }
   }

@@ -4,6 +4,4 @@ tap "homebrew/cask-fonts"
 tap "homebrew/cask-versions"
 
 cask "visual-studio-code"
-cask "iterm2"
 cask "appcleaner"
-cask "font-fira-code"
