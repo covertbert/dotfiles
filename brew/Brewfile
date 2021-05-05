@@ -2,6 +2,7 @@ tap "homebrew/bundle"
 tap "homebrew/core"
 
 brew "node"
+brew "git-delta"
 brew "zplug"
 brew "starship"
 brew "exa"

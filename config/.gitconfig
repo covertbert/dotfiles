@@ -1,6 +1,8 @@
 [user]
 name = Bertie Blackman
 email = blackmanrgh@gmail.com
+[core]
+pager = delta
 [gpg]
 program = /usr/local/bin/gpg
 [commit]
