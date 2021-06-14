@@ -1,19 +1,15 @@
-# Run Docker Compose file in local directory
-compose() {
-    function on_exit() {
-        docker-compose stop
-        docker-compose kill
-        docker-compose rm -vf
-    }
-
-    trap on_exit EXIT
-
-    docker-compose kill
-    docker-compose rm -vf
-    docker-compose build
-    docker-compose up --remove-orphans
-}
-
 rimraf() {
     find . -name 'node_modules' -type d -prune -exec rm -rf '{}' +
+}
+
+setSecret() {
+    secretName=$1
+
+    if [[ -z $secretName ]]; then
+        echo "Missing secret name"
+    else
+        currentSeceret=$(op get item "$secretName" --fields credential)
+        export "$secretName"="$currentSeceret"
+        echo "Set variable with key $secretName"
+    fi
 }
