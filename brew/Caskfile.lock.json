@@ -2,21 +2,21 @@
   "entries": {
     "tap": {
       "homebrew/cask": {
-        "revision": "e7c7390c877fa40c44c7c11732dab6656625840d"
+        "revision": "bcacd223e0c8e5b58406beec78bb34875794a252"
       },
       "homebrew/cask-drivers": {
-        "revision": "eb0af0d7a04a96258e9a05f60aa41f46d1a4aa87"
+        "revision": "cd501cfd7101ee75c8fef12e6f035c3febe17d80"
       },
       "homebrew/cask-fonts": {
-        "revision": "8b870420e3fd0eda49556528196fb4f842780ecc"
+        "revision": "56b5f04cc3904df158fa632c3776943d3e8177c2"
       },
       "homebrew/cask-versions": {
-        "revision": "8870633b5881c8561fd2e530b7bfceb8dc047d70"
+        "revision": "accf57df2de4aa5c47d1403044fcd6ae50523d62"
       }
     },
     "cask": {
       "visual-studio-code": {
-        "version": "1.53.2",
+        "version": "1.57.0",
         "options": {
           "full_name": "visual-studio-code"
         }
@@ -44,6 +44,12 @@
         "options": {
           "full_name": "1password-cli"
         }
+      },
+      "font-jetbrains-mono-nerd-font": {
+        "version": "2.1.0",
+        "options": {
+          "full_name": "font-jetbrains-mono-nerd-font"
+        }
       }
     }
   },
@@ -58,12 +64,12 @@
         "macOS": "10.15.3"
       },
       "big_sur": {
-        "HOMEBREW_VERSION": "3.0.2",
+        "HOMEBREW_VERSION": "3.1.12",
         "HOMEBREW_PREFIX": "/usr/local",
-        "Homebrew/homebrew-core": "f5d13c001802d6839f3decb5bf4a7d18d9585d75",
-        "CLT": "",
-        "Xcode": "12.4",
-        "macOS": "11.2.1"
+        "Homebrew/homebrew-core": "7673c50d35d4f941ff4c1c5278a8848c4dfa9da1",
+        "CLT": "12.5.0.22.9",
+        "Xcode": "12.5",
+        "macOS": "11.4"
       }
     }
   }
