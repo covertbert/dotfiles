@@ -5,16 +5,17 @@ alias code='open -a Visual\ Studio\ Code.app'
 
 alias z='source ~/.zshrc'
 
-alias ls='logo-ls'
-alias l='logo-ls -la'
-alias lr='logo-ls -R'
-alias lg='logo-ls -D'
+alias ls='exa'
+alias l='exa -la'
+alias lr='exa -R'
+alias lg='exa -D'
 
 alias grep='grep --color'
 alias sgrep='grep -R -n -H -C 5 --exclude-dir={.git,.svn,CVS} '
 
 alias sed='gsed'
-alias grep='ggrep'
+alias grep='ripgrep'
+alias fd='find'
 
 alias t='tail -f'
 
