@@ -225,7 +225,7 @@ defaults write com.Apple.Dock show-recents -bool false
 defaults write com.apple.Dock tilesize -integer 48
 
 # Remove all apps from dock so it only displays open applications
-dockutil --no-restart --remove all
+# dockutil --no-restart --remove all
 
 ###############################################################################
 # Spotlight                                                                   #

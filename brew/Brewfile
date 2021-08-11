@@ -1,6 +1,8 @@
 tap "homebrew/bundle"
 tap "homebrew/core"
 
+brew "gh"
+brew "diff-so-fancy"
 brew "node"
 brew "git-delta"
 brew "zplug"

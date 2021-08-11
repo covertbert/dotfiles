@@ -3,7 +3,7 @@ tap "homebrew/cask-drivers"
 tap "homebrew/cask-fonts"
 tap "homebrew/cask-versions"
 
-cask "visual-studio-code"
 cask "appcleaner"
 cask "font-jetbrains-mono-nerd-font"
 cask "font-fira-code"
+cask "1password-cli"
