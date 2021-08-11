@@ -1,4 +1,4 @@
-.PHONY: sudo packages git vim config defaults
+.PHONY: sudo brew git config defaults packages
 
 all: sudo brew git config defaults packages
 
