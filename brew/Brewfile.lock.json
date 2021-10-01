@@ -5,7 +5,7 @@
         "revision": "4d6d46483b827cc1f24fadbf57b0b98fdb269e43"
       },
       "homebrew/core": {
-        "revision": "85aa2182a6e9c6b3612a554b868d170df9dc9296"
+        "revision": "d343f7a20a9289ff7781c17a9d8c21805cd56d05"
       }
     },
     "brew": {
@@ -599,6 +599,40 @@
             }
           }
         }
+      },
+      "n": {
+        "version": "7.5.0",
+        "bottle": {
+          "rebuild": 0,
+          "root_url": "https://ghcr.io/v2/homebrew/core",
+          "files": {
+            "arm64_big_sur": {
+              "cellar": ":any_skip_relocation",
+              "url": "https://ghcr.io/v2/homebrew/core/n/blobs/sha256:92c3adc465225cedba159c9c7218cf441ef47ba373bea23c2d4aba60426e51f8",
+              "sha256": "92c3adc465225cedba159c9c7218cf441ef47ba373bea23c2d4aba60426e51f8"
+            },
+            "big_sur": {
+              "cellar": ":any_skip_relocation",
+              "url": "https://ghcr.io/v2/homebrew/core/n/blobs/sha256:b981f163cebf4eb714b40491fa218d46cb824cfd50fe5fdffd091a38bdf32977",
+              "sha256": "b981f163cebf4eb714b40491fa218d46cb824cfd50fe5fdffd091a38bdf32977"
+            },
+            "catalina": {
+              "cellar": ":any_skip_relocation",
+              "url": "https://ghcr.io/v2/homebrew/core/n/blobs/sha256:b981f163cebf4eb714b40491fa218d46cb824cfd50fe5fdffd091a38bdf32977",
+              "sha256": "b981f163cebf4eb714b40491fa218d46cb824cfd50fe5fdffd091a38bdf32977"
+            },
+            "mojave": {
+              "cellar": ":any_skip_relocation",
+              "url": "https://ghcr.io/v2/homebrew/core/n/blobs/sha256:b981f163cebf4eb714b40491fa218d46cb824cfd50fe5fdffd091a38bdf32977",
+              "sha256": "b981f163cebf4eb714b40491fa218d46cb824cfd50fe5fdffd091a38bdf32977"
+            },
+            "x86_64_linux": {
+              "cellar": ":any_skip_relocation",
+              "url": "https://ghcr.io/v2/homebrew/core/n/blobs/sha256:92c3adc465225cedba159c9c7218cf441ef47ba373bea23c2d4aba60426e51f8",
+              "sha256": "92c3adc465225cedba159c9c7218cf441ef47ba373bea23c2d4aba60426e51f8"
+            }
+          }
+        }
       }
     }
   },
@@ -615,7 +649,7 @@
       "big_sur": {
         "HOMEBREW_VERSION": "3.2.14",
         "HOMEBREW_PREFIX": "/opt/homebrew",
-        "Homebrew/homebrew-core": "85aa2182a6e9c6b3612a554b868d170df9dc9296",
+        "Homebrew/homebrew-core": "d343f7a20a9289ff7781c17a9d8c21805cd56d05",
         "CLT": "13.0.0.0.1.1630607135",
         "Xcode": "13.0",
         "macOS": "11.6"
