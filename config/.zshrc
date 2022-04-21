@@ -44,9 +44,6 @@ source ~/.config/zsh/aliases.zsh
 # Functions
 source ~/.config/zsh/functions.zsh
 
-# iTerm 2
-source ~/.config/zsh/iterm2.zsh
-
 # Local zsh config
 if [ -f "$HOME/.zshrc.local" ]; then
     source "$HOME/.zshrc.local"
