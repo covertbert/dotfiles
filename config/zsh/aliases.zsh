@@ -14,7 +14,6 @@ alias grep='grep --color'
 alias sgrep='grep -R -n -H -C 5 --exclude-dir={.git,.svn,CVS} '
 
 alias sed='gsed'
-alias grep='ripgrep'
 alias fd='find'
 
 alias t='tail -f'
