@@ -2,16 +2,16 @@
   "entries": {
     "tap": {
       "homebrew/cask": {
-        "revision": "c9868e3aa9edde4766e76d2e8b29c29d4dcc0906"
+        "revision": "8784f1a42f3ed70836268355d3742b4ba04c1f51"
       },
       "homebrew/cask-drivers": {
-        "revision": "1ba8b5141087d673274a4673b2f99be719262893"
+        "revision": "e9ba53b1d275a70e986ce329c9ea063cd7ce185e"
       },
       "homebrew/cask-fonts": {
-        "revision": "76611dab2298c30b245b7e80db6c32b786e69fc8"
+        "revision": "e0fb046916121f06c8b85a4f16c0c29c420ca54d"
       },
       "homebrew/cask-versions": {
-        "revision": "039d637f547ae462e83096de2c793dd100cd6c5b"
+        "revision": "b170a4e42922da9bab8f97b06fbaeee9a8d82c78"
       }
     },
     "cask": {
@@ -28,25 +28,25 @@
         }
       },
       "appcleaner": {
-        "version": "3.6.0,4070",
+        "version": "3.6.7,4301",
         "options": {
           "full_name": "appcleaner"
         }
       },
       "font-fira-code": {
-        "version": "5.2",
+        "version": "6.2",
         "options": {
           "full_name": "font-fira-code"
         }
       },
       "1password-cli": {
-        "version": "1.11.2",
+        "version": "2.13.1",
         "options": {
           "full_name": "1password-cli"
         }
       },
       "font-jetbrains-mono-nerd-font": {
-        "version": "2.1.0",
+        "version": "2.3.3",
         "options": {
           "full_name": "font-jetbrains-mono-nerd-font"
         }
@@ -70,6 +70,14 @@
         "CLT": "12.5.1.0.1.1623191612",
         "Xcode": "12.5",
         "macOS": "11.4"
+      },
+      "ventura": {
+        "HOMEBREW_VERSION": "3.6.21",
+        "HOMEBREW_PREFIX": "/opt/homebrew",
+        "Homebrew/homebrew-core": "cee41859923d0fc8398a9ee5a1dba59923023aba",
+        "CLT": "14.2.0.0.1.1668646533",
+        "Xcode": "14.2",
+        "macOS": "13.2"
       }
     }
   }
