@@ -12,7 +12,7 @@ bindkey '[D' backward-word
 # History
 HISTFILE=~/.zsh_history
 HISTSIZE=50000
-SAVEHIST=10000
+		SAVEHIST=10000
 
 setopt EXTENDED_HISTORY
 setopt HIST_EXPIRE_DUPS_FIRST
