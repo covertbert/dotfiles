@@ -1,3 +1,4 @@
 .prettierignore
 *.zsh
 *.sh
+.zshrc

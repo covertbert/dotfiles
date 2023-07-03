@@ -29,8 +29,8 @@ setopt CHASE_LINKS
 export PATH="$HOME/.local/bin:/usr/local/sbin:$PATH"
 
 # Editor
-export EDITOR=/usr/local/bin/nvim
-export VISUAL=/usr/local/bin/nvim
+export EDITOR=/opt/homebrew/bin/nvim
+export VISUAL=/opt/homebrew/bin/nvim
 
 # fzf
 export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git'
@@ -46,21 +46,21 @@ source ~/.config/zsh/functions.zsh
 
 # Local zsh config
 if [ -f "$HOME/.zshrc.local" ]; then
-    source "$HOME/.zshrc.local"
+	source "$HOME/.zshrc.local"
 fi
 
 # Plugins
 source "${HOME}/.zgen/zgen.zsh"
 
 if ! zgen saved; then
-    echo "Creating a zgen save"
+	echo "Creating a zgen save"
 
-    zgen load zsh-users/zsh-syntax-highlighting
-    zgen load zsh-users/zsh-history-substring-search
-    zgen load zsh-users/zsh-autosuggestions
-    zgen load
+	zgen load zsh-users/zsh-syntax-highlighting
+	zgen load zsh-users/zsh-history-substring-search
+	zgen load zsh-users/zsh-autosuggestions
+	zgen load
 
-    zgen save
+	zgen save
 fi
 
 # Initialise Starship
