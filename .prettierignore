@@ -4,3 +4,4 @@
 *.sh
 *.gitconfig
 .zshrc
+.DS_Store
