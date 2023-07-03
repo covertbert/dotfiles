@@ -1,4 +1,5 @@
 .prettierignore
 *.zsh
 *.sh
+*.gitconfig
 .zshrc

@@ -1,5 +1,6 @@
 [include]
-path = .git-config-user
+path = user.gitconfig
+path = themes.gitconfig
 
 [init]
 defaultBranch = main
@@ -11,8 +12,8 @@ pager = delta
 diffFilter = delta --color-only
 
 [delta]
-navigate = true    # use n and N to move between diff sections
-light = false
+navigate = true # use n and N to move between diff sections
+features = calochortus-lyallii
 
 [merge]
 conflictstyle = diff3
