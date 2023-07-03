@@ -11,7 +11,7 @@ pre-commit:
       run: npx prettier --write {staged_files}
       stage_fixed: true
     shell-fmt:
-      glob: ".gitconfig"
+      glob: ".gitignore"
       run: shfmt -w {staged_files}
       stage_fixed: true
 

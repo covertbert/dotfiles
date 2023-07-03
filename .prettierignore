@@ -1,4 +1,5 @@
 .prettierignore
+.gitignore
 *.zsh
 *.sh
 *.gitconfig
