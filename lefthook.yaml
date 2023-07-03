@@ -8,11 +8,10 @@ pre-commit:
   commands:
     prettier:
       glob: "*"
-      exclude: ".*.(tf|hcl)"
       run: npx prettier --write {staged_files}
       stage_fixed: true
     shell-fmt:
-      glob: "*.{sh,bash,zsh,toml},.gitignore,.zshrc,*.gitconfig"
+      glob: ".gitconfig|.gitignore|.zshrc|.*.(sh|toml|gitconfig)"
       run: shfmt -w {staged_files}
       stage_fixed: true
 
@@ -21,9 +20,4 @@ pre-push:
   commands:
     prettier:
       glob: "*"
-      exclude: ".*.(tf|hcl)"
       run: npx prettier --check {push_files}
-    shell-fmt:
-      glob: "*.{sh,bash,zsh,toml},.gitignore,.zshrc,*.gitconfig"
-      run: shfmt -d {push_files}
-      stage_fixed: true
