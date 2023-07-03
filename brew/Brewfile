@@ -2,7 +2,7 @@ tap "homebrew/bundle"
 tap "homebrew/core"
 
 brew "gh"
-brew "diff-so-fancy"
+brew "git-delta"
 brew "git-delta"
 brew "zplug"
 brew "starship"
