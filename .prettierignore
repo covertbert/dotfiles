@@ -5,3 +5,5 @@
 *.gitconfig
 .zshrc
 .DS_Store
+Brewfile
+Caskfile
