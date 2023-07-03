@@ -1,6 +1,7 @@
 [include]
 path = user.gitconfig
 path = themes.gitconfig
+path = asdasd.gitconfig
 
 [init]
 defaultBranch = main
