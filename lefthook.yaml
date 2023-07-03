@@ -1,0 +1,21 @@
+# EXAMPLE USAGE:
+#
+#   Refer for explanation to following link:
+#   https://github.com/evilmartians/lefthook/blob/master/docs/configuration.md
+#
+pre-commit:
+  parallel: true
+  commands:
+    prettier:
+      glob: "*"
+      exclude: ".*.(tf|hcl)"
+      run: npx prettier --write {staged_files}
+      stage_fixed: true
+
+pre-push:
+  parallel: true
+  commands:
+    prettier:
+      glob: "*"
+      exclude: ".*.(tf|hcl)"
+      run: npx prettier --check {push_files}
