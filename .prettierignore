@@ -1,1 +1,3 @@
 .prettierignore
+*.zsh
+*.sh

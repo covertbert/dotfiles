@@ -11,6 +11,10 @@ pre-commit:
       exclude: ".*.(tf|hcl)"
       run: npx prettier --write {staged_files}
       stage_fixed: true
+    shell-fmt:
+      glob: "*.{sh,bash,zsh}"
+      run: shfmt -w {staged_files}
+      stage_fixed: true
 
 pre-push:
   parallel: true
@@ -19,3 +23,7 @@ pre-push:
       glob: "*"
       exclude: ".*.(tf|hcl)"
       run: npx prettier --check {push_files}
+    shell-fmt:
+      glob: "*.{sh,bash,zsh}"
+      run: shfmt -d {push_files}
+      stage_fixed: true
