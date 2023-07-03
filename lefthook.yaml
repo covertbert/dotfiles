@@ -21,3 +21,7 @@ pre-push:
     prettier:
       glob: "*"
       run: npx prettier --check {push_files}
+    shell-fmt:
+      glob: "{.gitconfig,.gitignore,.zshrc,*.sh,*.toml,*.zsh,*.gitconfig}"
+      run: shfmt -l {push_files}
+      stage_fixed: true
