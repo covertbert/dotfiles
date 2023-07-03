@@ -24,4 +24,3 @@ pre-push:
     shell-fmt:
       glob: "{.gitconfig,.gitignore,.zshrc,*.sh,*.toml,*.zsh,*.gitconfig}"
       run: shfmt -l {push_files}
-      stage_fixed: true
