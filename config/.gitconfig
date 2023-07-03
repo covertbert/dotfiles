@@ -1,7 +1,6 @@
 [include]
 path = user.gitconfig
 path = themes.gitconfig
-path = test.gitconfig
 
 [init]
 defaultBranch = main
