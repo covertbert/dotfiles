@@ -6,12 +6,12 @@ if [[ ! -d $zgenDirectory ]]; then
 fi
 
 # Copies main gitconfig
-cp -rv ./config/.gitconfig ~/.gitconfig
+cp -rv ./config/git/.gitconfig ~/.gitconfig
 # Copies git delta themes
-cp -rv ./config/themes.gitconfig ~/themes.gitconfig
+cp -rv ./config/git/themes.gitconfig ~/themes.gitconfig
 # Copies [user] section of git config if it does not exist.
 if [[ ! -e ~/user.gitconfig ]]; then
-	cp -rv ./config/user.gitconfig ~
+	cp -rv ./config/git/user.gitconfig ~
 fi
 
 cp -rv ./config/starship.toml ~/.config/starship.toml
