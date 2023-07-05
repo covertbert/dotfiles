@@ -1,15 +1,28 @@
 tap "homebrew/bundle"
 tap "homebrew/core"
 
+# GitHub CLI
 brew "gh"
+# Better git diffs
 brew "git-delta"
+# ZSH plugin manager
 brew "zplug"
+# ZSH theme
 brew "starship"
+# Better ls command
 brew "exa"
+# Managing dock utilities
 brew "dockutil"
+# http client
 brew "wget"
+# Nice fuzzy bash history search with ctrl + r
 brew "fzf"
+# Shell checking and formatting
 brew "shellcheck"
 brew "shfmt"
-brew "fd"
+# Better cat
 brew "bat"
+# GNU utilities so up-to-date etc
+brew "coreutils"
+# Network and disk utility
+brew "bottom"

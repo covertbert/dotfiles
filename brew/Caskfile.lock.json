@@ -2,16 +2,16 @@
   "entries": {
     "tap": {
       "homebrew/cask": {
-        "revision": "8784f1a42f3ed70836268355d3742b4ba04c1f51"
+        "revision": "ce33115a8105f70f1309f6f81f10ec0943c68984"
       },
       "homebrew/cask-drivers": {
-        "revision": "e9ba53b1d275a70e986ce329c9ea063cd7ce185e"
+        "revision": "70340b616bf57bfff6f36d779a17eba3fd205667"
       },
       "homebrew/cask-fonts": {
-        "revision": "e0fb046916121f06c8b85a4f16c0c29c420ca54d"
+        "revision": "9a59103b6d10035e320b98480396ed583596fec5"
       },
       "homebrew/cask-versions": {
-        "revision": "b170a4e42922da9bab8f97b06fbaeee9a8d82c78"
+        "revision": "2ac1191fd5f9101cf0c0ed96ef0338a3db607194"
       }
     },
     "cask": {
@@ -28,7 +28,7 @@
         }
       },
       "appcleaner": {
-        "version": "3.6.7,4301",
+        "version": "3.6.7",
         "options": {
           "full_name": "appcleaner"
         }
@@ -46,7 +46,7 @@
         }
       },
       "font-jetbrains-mono-nerd-font": {
-        "version": "2.3.3",
+        "version": "3.0.2",
         "options": {
           "full_name": "font-jetbrains-mono-nerd-font"
         }
@@ -72,12 +72,12 @@
         "macOS": "11.4"
       },
       "ventura": {
-        "HOMEBREW_VERSION": "3.6.21",
+        "HOMEBREW_VERSION": "4.0.27",
         "HOMEBREW_PREFIX": "/opt/homebrew",
-        "Homebrew/homebrew-core": "cee41859923d0fc8398a9ee5a1dba59923023aba",
-        "CLT": "14.2.0.0.1.1668646533",
-        "Xcode": "14.2",
-        "macOS": "13.2"
+        "Homebrew/homebrew-core": "api",
+        "CLT": "14.3.1.0.1.1683849156",
+        "Xcode": "14.3.1",
+        "macOS": "13.4"
       }
     }
   }
