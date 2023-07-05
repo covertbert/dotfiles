@@ -14,8 +14,8 @@ if [[ ! -e ~/user.gitconfig ]]; then
 	cp -rv ./config/git/user.gitconfig ~
 fi
 
-cp -rv ./config/starship.toml ~/.config/starship.toml
+cp -rv ./config/terminal/starship.toml ~/.config/starship.toml
 cp -rv ./config/zsh/.zshrc ~/.zshrc
 cp -rv ./config/zsh ~/.config/
 
-cp -rv ./config/.hyper.js ~/.hyper.js
+cp -rv ./config/terminal/.hyper.js ~/.hyper.js

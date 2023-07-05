@@ -3,6 +3,7 @@
 *.zsh
 *.sh
 *.gitconfig
+*.toml
 .zshrc
 .DS_Store
 Brewfile
