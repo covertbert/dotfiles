@@ -65,12 +65,6 @@ defaults write com.apple.systempreferences NSQuitAlwaysKeepsWindows -bool false
 # Disable the crash reporter
 defaults write com.apple.CrashReporter DialogType -string "none"
 
-# Restart automatically if the computer freezes
-sudo systemsetup -setrestartfreeze on
-
-# Disable Notification Center and remove the menu bar icon
-launchctl unload -w /System/Library/LaunchAgents/com.apple.notificationcenterui.plist 2>/dev/null
-
 ###############################################################################
 # Keyboard & Input                                                            #
 ###############################################################################
@@ -222,7 +216,7 @@ defaults write com.apple.dock wvous-br-corner -int 0
 defaults write com.Apple.Dock show-recents -bool false
 
 # Resize dock tiles
-defaults write com.apple.Dock tilesize -integer 48
+defaults write com.apple.Dock tilesize -integer 55
 
 # Remove all apps from dock so it only displays open applications
 # dockutil --no-restart --remove all
