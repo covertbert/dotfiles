@@ -8,7 +8,6 @@ To install all config:
 
 To install individual configs:
 
-- Homebrew itself: `brew.sh`
-- Dotfile config: `config.sh`
 - MacOS defaults: `defaults.sh`
-- Brew & Caskk packages: `packages.sh`
+- Dotfile config: `config.sh`
+- Homebrew & packages: `brew.sh`
