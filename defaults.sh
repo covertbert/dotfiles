@@ -1,3 +1,5 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
-sh ./defaults/run.sh
+sh ./defaults/system.sh
+sh ./defaults/chrome.sh
+sh ./defaults/transmission.sh
