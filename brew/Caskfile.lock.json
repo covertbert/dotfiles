@@ -5,13 +5,13 @@
         "revision": "ce33115a8105f70f1309f6f81f10ec0943c68984"
       },
       "homebrew/cask-drivers": {
-        "revision": "70340b616bf57bfff6f36d779a17eba3fd205667"
+        "revision": "ac22a119959def773812dd42edfb8bc21f64d913"
       },
       "homebrew/cask-fonts": {
-        "revision": "9a59103b6d10035e320b98480396ed583596fec5"
+        "revision": "2164f2233a7ab92e983278c175a19fe79300cad5"
       },
       "homebrew/cask-versions": {
-        "revision": "2ac1191fd5f9101cf0c0ed96ef0338a3db607194"
+        "revision": "84540c9fc47cdccc3da2b18e805710f89329a7c7"
       }
     },
     "cask": {
@@ -28,7 +28,7 @@
         }
       },
       "appcleaner": {
-        "version": "3.6.7",
+        "version": "3.6.8",
         "options": {
           "full_name": "appcleaner"
         }
@@ -72,7 +72,7 @@
         "macOS": "11.4"
       },
       "ventura": {
-        "HOMEBREW_VERSION": "4.0.27",
+        "HOMEBREW_VERSION": "4.0.28",
         "HOMEBREW_PREFIX": "/opt/homebrew",
         "Homebrew/homebrew-core": "api",
         "CLT": "14.3.1.0.1.1683849156",

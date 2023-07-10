@@ -3,4 +3,3 @@
 ./defaults.sh
 ./config.sh
 ./brew.sh
-./packages.sh
