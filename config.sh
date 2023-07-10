@@ -1,6 +1,11 @@
 #!/bin/bash
 zgenDirectory="${HOME}/.zgen"
 
+if command -v nvm &>/dev/null; then
+	echo "NVM not installed. Installing now..."
+	wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
+fi
+
 if [[ ! -d $zgenDirectory ]]; then
 	git clone https://github.com/tarjoilija/zgen.git "$zgenDirectory"
 fi
