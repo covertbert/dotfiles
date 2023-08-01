@@ -12,11 +12,11 @@ module.exports = {
     scrollback: "10000",
 
     // default font size in pixels for all tabs
-    fontSize: 15,
+    fontSize: 16,
 
     // font family with optional fallbacks
     fontFamily:
-      'JetBrainsMono Nerd Font, Consolas, "Lucida Console", monospace',
+      'ComicShannsMono Nerd Font, Consolas, "Lucida Console", monospace',
 
     // default font weight: 'normal' or 'bold'
     fontWeight: "normal",
