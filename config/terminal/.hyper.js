@@ -16,7 +16,7 @@ module.exports = {
 
     // font family with optional fallbacks
     fontFamily:
-      'ComicShannsMono Nerd Font, Consolas, "Lucida Console", monospace',
+      'JetBrainsMono Nerd Font, Consolas, "Lucida Console", monospace',
 
     // default font weight: 'normal' or 'bold'
     fontWeight: "normal",
