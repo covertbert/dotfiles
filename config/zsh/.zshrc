@@ -27,6 +27,7 @@ setopt CHASE_LINKS
 
 # Path
 export PATH="$HOME/.local/bin:/usr/local/sbin:$PATH"
+export PATH="/opt/homebrew/opt/mysql-client/bin:$PATH"
 
 # Editor
 export EDITOR=/opt/homebrew/bin/nvim
