@@ -94,7 +94,7 @@ copy_file "${CONFIG_DIR}/terminal/.hyper.js" "${HOME}/.hyper.js"
 # Pi config
 mkdir -p "$PI_AGENT_DIR"
 
-for file in settings.json keybindings.json models.json AGENTS.md SYSTEM.md APPEND_SYSTEM.md; do
+for file in settings.json keybindings.json models.json plannotator.json AGENTS.md SYSTEM.md APPEND_SYSTEM.md; do
 	copy_file_if_exists "${CONFIG_DIR}/pi/${file}" "${PI_AGENT_DIR}/${file}"
 done
 

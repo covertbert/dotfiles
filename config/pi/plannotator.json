@@ -1,0 +1,12 @@
+{
+  "phases": {
+    "planning": {
+      "model": { "provider": "openai", "id": "gpt-5.5" },
+      "thinking": "high"
+    },
+    "executing": {
+      "model": { "provider": "anthropic", "id": "claude-sonnet-4-5" },
+      "thinking": "low"
+    }
+  }
+}
