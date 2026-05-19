@@ -9,5 +9,6 @@
     "anthropic/claude-opus-4-7",
     "openai-codex/gpt-5.5",
     "openai-codex/gpt-5.4-mini"
-  ]
+  ],
+  "packages": ["npm:@plannotator/pi-extension"]
 }
