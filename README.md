@@ -2,6 +2,10 @@
 
 This is my dotfile configuration. It includes ZSH config, Brew/Cask scripts and MacOS system defaults.
 
+> Shell configs aligned  
+> Home directory at peace  
+> One script rules them all
+
 To install all config:
 
 `./bootstrap.sh`
