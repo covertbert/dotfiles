@@ -1,0 +1,10 @@
+#!/usr/bin/env sh
+
+# Pi invokes shellPath with "-c <command>". Run zsh interactively so ~/.zshrc
+# is loaded before the command is parsed, which makes aliases available.
+if [ "$1" = "-c" ]; then
+	shift
+	exec /bin/zsh -ic "$1"
+fi
+
+exec /bin/zsh -i "$@"
