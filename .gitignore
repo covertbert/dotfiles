@@ -2,3 +2,11 @@
 .DS_Store
 .vscode
 dslkjf
+
+# Pi private/local state
+config/pi/sessions/
+config/pi/auth/
+config/pi/git/
+config/pi/npm/
+config/pi/**/*.local.json
+config/pi/**/.env

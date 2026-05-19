@@ -12,6 +12,10 @@ To install individual configs:
 - Dotfile config: `config.sh`
 - Homebrew & packages: `brew.sh`
 
+To backfill current Pi config into this repo:
+
+- Pi config: `pi-backfill.sh`
+
 ## contributing
 
 Git hooks via [Lefthook](https://github.com/evilmartians/lefthook).
