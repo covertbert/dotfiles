@@ -1,8 +1,8 @@
 {
   "lastChangelogVersion": "0.75.3",
-  "defaultProvider": "openai-codex",
-  "defaultModel": "gpt-5.5",
-  "defaultThinkingLevel": "medium",
+  "defaultProvider": "anthropic",
+  "defaultModel": "claude-haiku-4-5",
+  "defaultThinkingLevel": "minimal",
   "shellPath": "/Users/bertieblackman/.pi/agent/zsh-shell",
   "enabledModels": [
     "anthropic/claude-haiku-4-5",
@@ -11,5 +11,5 @@
     "openai-codex/gpt-5.5",
     "openai-codex/gpt-5.4-mini"
   ],
-  "packages": ["npm:@plannotator/pi-extension"]
+  "packages": ["npm:@plannotator/pi-extension", "npm:pi-caveman"]
 }
