@@ -76,5 +76,6 @@ compdef _op op
 # are first used, or when cd'ing into a directory with an .nvmrc.
 autoload -U add-zsh-hook
 add-zsh-hook chpwd loadNvmrc
+loadNvmrc
 
 source /opt/homebrew/opt/chruby/share/chruby/chruby.sh

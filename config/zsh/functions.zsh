@@ -15,6 +15,19 @@ setSecret() {
 }
 
 export NVM_DIR="${NVM_DIR:-$HOME/.nvm}"
+export NVM_DEFAULT_VERSION="${NVM_DEFAULT_VERSION:-24}"
+
+# Make globally installed commands from the default Node version (e.g. `pi`)
+# available before nvm is lazy-loaded.
+__add_nvm_default_bin_to_path() {
+	local node_bin
+
+	for node_bin in "$NVM_DIR"/versions/node/v"$NVM_DEFAULT_VERSION".*/bin(Nn); do
+		path=("$node_bin" ${path:#$node_bin})
+	done
+}
+
+__add_nvm_default_bin_to_path
 
 __find_nvmrc_upwards() {
 	local dir="${1:-$PWD}"
@@ -45,10 +58,21 @@ __load_nvm() {
 		source "$NVM_DIR/nvm.sh"
 		[ -s "$NVM_DIR/bash_completion" ] && source "$NVM_DIR/bash_completion"
 		export __NVM_LOADED=1
+		__ensure_nvm_default
 		return 0
 	fi
 
 	return 1
+}
+
+__ensure_nvm_default() {
+	local default_version
+	default_version="$(nvm version default 2>/dev/null)"
+
+	if [ "$default_version" = "N/A" ] || [[ "$default_version" != v${NVM_DEFAULT_VERSION}* ]]; then
+		nvm install "$NVM_DEFAULT_VERSION" >/dev/null
+		nvm alias default "$NVM_DEFAULT_VERSION" >/dev/null
+	fi
 }
 
 nvm() {
@@ -88,8 +112,10 @@ loadNvmrc() {
 		elif [ "$nvmrc_node_version" != "$(nvm version)" ]; then
 			nvm use
 		fi
-	elif [ -n "$__NVM_LOADED" ] && [ -n "$(__find_nvmrc_upwards "$OLDPWD")" ] && [ "$(nvm version)" != "$(nvm version default)" ]; then
-		echo "Reverting to nvm default version"
+	elif [ -n "$__NVM_LOADED" ] && [ "$(nvm version)" != "$(nvm version default)" ]; then
+		if [ -n "$(__find_nvmrc_upwards "$OLDPWD")" ]; then
+			echo "Reverting to nvm default version"
+		fi
 		nvm use default
 	fi
 }
