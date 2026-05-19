@@ -72,13 +72,9 @@ eval "$(op completion zsh)"
 compdef _op op
 
 # NVM
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"                   # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion" # This loads nvm bash_completion
-
-# place this after nvm initialization!
+# NVM itself is lazy-loaded by ~/.config/zsh/functions.zsh when nvm/node/npm/etc.
+# are first used, or when cd'ing into a directory with an .nvmrc.
 autoload -U add-zsh-hook
 add-zsh-hook chpwd loadNvmrc
-loadNvmrc
 
 source /opt/homebrew/opt/chruby/share/chruby/chruby.sh
