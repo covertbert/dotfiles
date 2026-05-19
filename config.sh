@@ -1,39 +1,103 @@
-#!/bin/bash
-zgenDirectory="${HOME}/.zgen"
+#!/usr/bin/env bash
 
-if command -v nvm &>/dev/null; then
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+CONFIG_DIR="${SCRIPT_DIR}/config"
+PI_AGENT_DIR="${PI_CODING_AGENT_DIR:-$HOME/.pi/agent}"
+NVM_DIR="${NVM_DIR:-$HOME/.nvm}"
+
+copy_file() {
+	local source="$1"
+	local destination="$2"
+
+	if [[ ! -f "$source" ]]; then
+		echo "Missing file: ${source}" >&2
+		return 1
+	fi
+
+	mkdir -p "$(dirname "$destination")"
+	cp -v "$source" "$destination"
+}
+
+copy_file_if_missing() {
+	local source="$1"
+	local destination="$2"
+
+	if [[ ! -e "$destination" ]]; then
+		copy_file "$source" "$destination"
+	fi
+}
+
+copy_file_if_exists() {
+	local source="$1"
+	local destination="$2"
+
+	if [[ -f "$source" ]]; then
+		copy_file "$source" "$destination"
+	fi
+}
+
+copy_dir() {
+	local source="$1"
+	local destination_parent="$2"
+
+	if [[ ! -d "$source" ]]; then
+		echo "Missing directory: ${source}" >&2
+		return 1
+	fi
+
+	mkdir -p "$destination_parent"
+	cp -Rv "$source" "$destination_parent/"
+}
+
+copy_dir_if_exists() {
+	local source="$1"
+	local destination_parent="$2"
+
+	if [[ -d "$source" ]]; then
+		copy_dir "$source" "$destination_parent"
+	fi
+}
+
+install_nvm_if_missing() {
+	if command -v nvm &>/dev/null || [[ -s "${NVM_DIR}/nvm.sh" ]]; then
+		return 0
+	fi
+
 	echo "NVM not installed. Installing now..."
-	wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
-fi
+	curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
+}
 
-if [[ ! -d $zgenDirectory ]]; then
-	git clone https://github.com/tarjoilija/zgen.git "$zgenDirectory"
-fi
+install_zgen_if_missing() {
+	local zgen_directory="${HOME}/.zgen"
 
-# Copies main gitconfig
-cp -rv ./config/git/.gitconfig ~/.gitconfig
-# Copies git delta themes
-cp -rv ./config/git/themes.gitconfig ~/themes.gitconfig
-# Copies [user] section of git config if it does not exist.
-if [[ ! -e ~/user.gitconfig ]]; then
-	cp -rv ./config/git/user.gitconfig ~
-fi
+	if [[ ! -d "$zgen_directory" ]]; then
+		git clone https://github.com/tarjoilija/zgen.git "$zgen_directory"
+	fi
+}
 
-cp -rv ./config/terminal/starship.toml ~/.config/starship.toml
-cp -rv ./config/zsh/.zshrc ~/.zshrc
-cp -rv ./config/zsh ~/.config/
+install_nvm_if_missing
+install_zgen_if_missing
 
-# Copies Pi config
-mkdir -p ~/.pi/agent
-[[ -e ./config/pi/settings.json ]] && cp -rv ./config/pi/settings.json ~/.pi/agent/settings.json
-[[ -e ./config/pi/keybindings.json ]] && cp -rv ./config/pi/keybindings.json ~/.pi/agent/keybindings.json
-[[ -e ./config/pi/models.json ]] && cp -rv ./config/pi/models.json ~/.pi/agent/models.json
-[[ -e ./config/pi/AGENTS.md ]] && cp -rv ./config/pi/AGENTS.md ~/.pi/agent/AGENTS.md
-[[ -e ./config/pi/SYSTEM.md ]] && cp -rv ./config/pi/SYSTEM.md ~/.pi/agent/SYSTEM.md
-[[ -e ./config/pi/APPEND_SYSTEM.md ]] && cp -rv ./config/pi/APPEND_SYSTEM.md ~/.pi/agent/APPEND_SYSTEM.md
-[[ -d ./config/pi/prompts ]] && cp -rv ./config/pi/prompts ~/.pi/agent/
-[[ -d ./config/pi/skills ]] && cp -rv ./config/pi/skills ~/.pi/agent/
-[[ -d ./config/pi/extensions ]] && cp -rv ./config/pi/extensions ~/.pi/agent/
-[[ -d ./config/pi/themes ]] && cp -rv ./config/pi/themes ~/.pi/agent/
+# Git config
+copy_file "${CONFIG_DIR}/git/.gitconfig" "${HOME}/.gitconfig"
+copy_file "${CONFIG_DIR}/git/themes.gitconfig" "${HOME}/themes.gitconfig"
+copy_file_if_missing "${CONFIG_DIR}/git/user.gitconfig" "${HOME}/user.gitconfig"
 
-cp -rv ./config/terminal/.hyper.js ~/.hyper.js
+# Terminal and shell config
+copy_file "${CONFIG_DIR}/terminal/starship.toml" "${HOME}/.config/starship.toml"
+copy_file "${CONFIG_DIR}/zsh/.zshrc" "${HOME}/.zshrc"
+copy_dir "${CONFIG_DIR}/zsh" "${HOME}/.config"
+copy_file "${CONFIG_DIR}/terminal/.hyper.js" "${HOME}/.hyper.js"
+
+# Pi config
+mkdir -p "$PI_AGENT_DIR"
+
+for file in settings.json keybindings.json models.json AGENTS.md SYSTEM.md APPEND_SYSTEM.md; do
+	copy_file_if_exists "${CONFIG_DIR}/pi/${file}" "${PI_AGENT_DIR}/${file}"
+done
+
+for directory in prompts skills extensions themes; do
+	copy_dir_if_exists "${CONFIG_DIR}/pi/${directory}" "$PI_AGENT_DIR"
+done

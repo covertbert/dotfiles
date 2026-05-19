@@ -11,6 +11,12 @@ pre-commit:
       glob: "{.gitconfig,.gitignore,.zshrc,*.sh,*.toml,*.zsh,*.gitconfig}"
       run: shfmt -w {staged_files}
       stage_fixed: true
+    shellcheck:
+      glob: "**/*.sh"
+      run: shellcheck {staged_files}
+    bash-syntax:
+      glob: "**/*.sh"
+      run: bash -c 'for file do bash -n "$file"; done' -- {staged_files}
 
 pre-push:
   parallel: true
@@ -21,3 +27,9 @@ pre-push:
     shell-fmt:
       glob: "{.gitconfig,.gitignore,.zshrc,*.sh,*.toml,*.zsh,*.gitconfig}"
       run: shfmt -l {push_files}
+    shellcheck:
+      glob: "**/*.sh"
+      run: shellcheck {push_files}
+    bash-syntax:
+      glob: "**/*.sh"
+      run: bash -c 'for file do bash -n "$file"; done' -- {push_files}

@@ -245,7 +245,7 @@ defaults write com.apple.spotlight orderedItems -array \
 	'{"enabled" = 0;"name" = "SOURCE";}'
 
 # Load new settings before rebuilding the index
-killall mds >/dev/null 2>&1
+killall mds >/dev/null 2>&1 || true
 
 # Make sure indexing is enabled for the main volume
 sudo mdutil -i on / >/dev/null
@@ -294,5 +294,5 @@ defaults write com.apple.commerce AutoUpdate -bool true
 ###############################################################################
 
 for app in "Address Book" "Calendar" "Contacts" "Dock" "Finder" "Mail" "Safari" "SystemUIServer" "iCal"; do
-	killall "${app}" &>/dev/null
+	killall "${app}" &>/dev/null || true
 done

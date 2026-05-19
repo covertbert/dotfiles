@@ -22,3 +22,9 @@ Git hooks via [Lefthook](https://github.com/evilmartians/lefthook).
 
 - `brew install lefthook` - For the binary
 - `lefthook install` - To install the hook scripts
+
+Validate shell changes without running the full bootstrap:
+
+```sh
+find . -name '*.sh' -not -path './.git/*' -print0 | xargs -0 shellcheck && find . -name '*.sh' -not -path './.git/*' -print0 | xargs -0 shfmt -d && find . -name '*.sh' -not -path './.git/*' -print0 | xargs -0 -I {} bash -n {}
+```
