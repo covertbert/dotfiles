@@ -18,7 +18,8 @@
     "npm:@plannotator/pi-extension",
     "npm:pi-caveman",
     "npm:pi-mcp-adapter",
-    "npm:@feniix/pi-notion"
+    "npm:@feniix/pi-notion",
+    "npm:pi-subagents"
   ],
   "hideThinkingBlock": true
 }

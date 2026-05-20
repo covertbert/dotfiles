@@ -98,7 +98,7 @@ for file in settings.json keybindings.json models.json plannotator.json AGENTS.m
 	copy_file_if_exists "${CONFIG_DIR}/pi/${file}" "${PI_AGENT_DIR}/${file}"
 done
 
-for directory in prompts skills extensions themes; do
+for directory in prompts skills extensions themes agents; do
 	copy_dir_if_exists "${CONFIG_DIR}/pi/${directory}" "$PI_AGENT_DIR"
 done
 

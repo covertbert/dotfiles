@@ -1,9 +1,28 @@
 ---
 name: git-workflow
-description: Use when committing code, creating or updating a pull/merge request, pushing a branch, writing commit messages, or preparing change submissions. Covers conventional commits and MR creation with glab.
+description: Use when committing code, creating a branch, creating or updating a pull/merge request, pushing a branch, writing commit messages, or preparing change submissions. Covers conventional commits and MR creation with glab.
 ---
 
 # Git Workflow
+
+## Mandatory preflight — use Haiku subagent first
+
+**Before running any git command for branch creation, commits, push, or MR**, delegate to the `git-workflow-haiku` subagent. This is not optional.
+
+| User intent             | Haiku task                                                                                                    |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------- |
+| Create / name a branch  | "Inspect current git state and propose a branch name and checkout command."                                   |
+| Commit (stage + commit) | "Inspect git status and staged diff. List files to stage and propose a Conventional Commit message."          |
+| Push branch             | "Inspect git status and unpushed commits. Assess push risk and provide the push command."                     |
+| Open or update MR       | "Inspect branch commits and diff. Draft a plain-Markdown MR description with intent and scope sections only." |
+
+Use the output as-is or adjust before running. Parent agent (you) makes the final decision and runs all git/glab commands.
+
+Example delegation:
+
+```
+Use git-workflow-haiku to inspect current git state and propose a branch name.
+```
 
 ## Commit messages
 

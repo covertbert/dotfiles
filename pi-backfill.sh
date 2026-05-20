@@ -40,7 +40,7 @@ for file in settings.json keybindings.json models.json AGENTS.md SYSTEM.md APPEN
 done
 
 # Safe, portable Pi customization directories
-for directory in prompts skills extensions themes; do
+for directory in prompts skills extensions themes agents; do
 	copy_dir "$directory"
 done
 
