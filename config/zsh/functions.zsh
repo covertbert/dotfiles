@@ -50,14 +50,17 @@ __find_nvmrc_upwards() {
 }
 
 __load_nvm() {
-	[ -n "$__NVM_LOADED" ] && return 0
+	if [ "$__NVM_LOADED" = "1" ] && whence -w nvm >/dev/null 2>&1; then
+		return 0
+	fi
 
-	unset -f nvm node npm npx yarn pnpm corepack 2>/dev/null
+	unset __NVM_LOADED
+	unfunction nvm node npm npx yarn pnpm corepack 2>/dev/null
 
 	if [ -s "$NVM_DIR/nvm.sh" ]; then
 		source "$NVM_DIR/nvm.sh"
 		[ -s "$NVM_DIR/bash_completion" ] && source "$NVM_DIR/bash_completion"
-		export __NVM_LOADED=1
+		__NVM_LOADED=1
 		__ensure_nvm_default
 		return 0
 	fi
@@ -75,27 +78,9 @@ __ensure_nvm_default() {
 	fi
 }
 
-nvm() {
-	__load_nvm && nvm "$@"
-}
-
-__lazy_nvm_command() {
-	local command_name="$1"
-	shift
-
-	if __load_nvm; then
-		loadNvmrc
-	fi
-
-	command "$command_name" "$@"
-}
-
-node() { __lazy_nvm_command node "$@"; }
-npm() { __lazy_nvm_command npm "$@"; }
-npx() { __lazy_nvm_command npx "$@"; }
-yarn() { __lazy_nvm_command yarn "$@"; }
-pnpm() { __lazy_nvm_command pnpm "$@"; }
-corepack() { __lazy_nvm_command corepack "$@"; }
+# Load nvm once during shell startup. Lazy wrapper recursion can leave `nvm`
+# pointing at itself and break unrelated aliases such as `gss`.
+__load_nvm >/dev/null
 
 loadNvmrc() {
 	local nvmrc_path
