@@ -1,8 +1,8 @@
 {
-  "lastChangelogVersion": "0.75.3",
-  "defaultProvider": "openai-codex",
-  "defaultModel": "gpt-5.5",
-  "defaultThinkingLevel": "medium",
+  "lastChangelogVersion": "0.75.4",
+  "defaultProvider": "anthropic",
+  "defaultModel": "claude-sonnet-4-6",
+  "defaultThinkingLevel": "high",
   "shellPath": "/Users/bertieblackman/.pi/agent/zsh-shell",
   "enabledModels": [
     "anthropic/claude-haiku-4-5",
@@ -17,7 +17,8 @@
   "packages": [
     "npm:@plannotator/pi-extension",
     "npm:pi-caveman",
-    "npm:pi-mcp-adapter"
+    "npm:pi-mcp-adapter",
+    "npm:@feniix/pi-notion"
   ],
   "hideThinkingBlock": true
 }
