@@ -10,6 +10,7 @@ My personal macOS dotfiles. Covers ZSH config, Git config, macOS system defaults
 - **Homebrew** — CLI tools and casks via `brew/Brewfile` and `brew/Caskfile`
 - **Terminal** — Hyper config and Starship theme
 - **Pi agent** — coding agent settings, keybindings, models, prompts, and AGENTS instructions
+- **MCP** — shared MCP server config, currently Chrome DevTools
 
 ## Prerequisites
 
@@ -32,7 +33,7 @@ cd ~/dotfiles
 `bootstrap.sh` runs these scripts in order:
 
 1. `defaults.sh` — applies macOS system defaults
-2. `config.sh` — copies dotfiles and installs NVM + zgen if missing
+2. `config.sh` — copies dotfiles, Pi config, MCP config, and installs NVM + zgen if missing
 3. `brew.sh` — installs Homebrew if missing, then runs `brew bundle`
 
 ## Individual scripts
@@ -41,7 +42,8 @@ Run any script independently:
 
 ```sh
 ./defaults.sh   # macOS system defaults only
-./config.sh     # Copy dotfiles and install ZSH/NVM dependencies only
+./config.sh     # Copy dotfiles, Pi config, MCP config, and install ZSH/NVM dependencies only
+./mcp.sh        # Copy shared MCP config only
 ./brew.sh       # Homebrew install and bundle only
 ```
 
@@ -59,6 +61,7 @@ git pull && ./bootstrap.sh
 .
 ├── bootstrap.sh          # Full install: runs defaults → config → brew
 ├── config.sh             # Copies config files, installs NVM + zgen
+├── mcp.sh                # Copies shared MCP config
 ├── brew.sh               # Installs Homebrew and runs bundle
 ├── defaults.sh           # Applies macOS defaults (delegates to defaults/)
 ├── pi-backfill.sh        # Copies Pi agent config back into this repo
@@ -67,6 +70,7 @@ git pull && ./bootstrap.sh
 │   └── Caskfile          # GUI apps and fonts
 ├── config/
 │   ├── git/              # .gitconfig, themes.gitconfig, user.gitconfig template
+│   ├── mcp/              # Shared MCP config
 │   ├── terminal/         # starship.toml, .hyper.js
 │   ├── zsh/              # .zshrc, aliases.zsh, functions.zsh
 │   └── pi/               # Pi agent settings, models, AGENTS.md, prompts, etc.
@@ -125,6 +129,14 @@ See `brew/Brewfile` for CLI tools and `brew/Caskfile` for GUI apps and fonts.
 - `prompts/`, `skills/`, `extensions/`, `themes/` — customisations
 
 `config.sh` copies these into `~/.pi/agent/`. Private/local state (`auth.json`, `sessions/`, `npm/`, `git/`) is excluded and ignored by `.gitignore`.
+
+## MCP config
+
+`config/mcp/mcp.json` is source of truth for shared MCP servers and is copied to `~/.config/mcp/mcp.json` by `mcp.sh` or `config.sh`.
+
+Current servers:
+
+- `chrome-devtools` via `npx -y chrome-devtools-mcp@latest`
 
 ### Backfill Pi config into this repo
 

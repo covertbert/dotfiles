@@ -101,3 +101,5 @@ done
 for directory in prompts skills extensions themes; do
 	copy_dir_if_exists "${CONFIG_DIR}/pi/${directory}" "$PI_AGENT_DIR"
 done
+
+"${SCRIPT_DIR}/mcp.sh"
