@@ -1,7 +1,7 @@
 {
   "lastChangelogVersion": "0.75.3",
-  "defaultProvider": "openai-codex",
-  "defaultModel": "gpt-5.5",
+  "defaultProvider": "openrouter",
+  "defaultModel": "qwen/qwen3-coder-30b-a3b-instruct",
   "defaultThinkingLevel": "high",
   "shellPath": "/Users/bertieblackman/.pi/agent/zsh-shell",
   "enabledModels": [
