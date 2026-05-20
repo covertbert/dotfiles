@@ -2,14 +2,17 @@
   "lastChangelogVersion": "0.75.3",
   "defaultProvider": "openai-codex",
   "defaultModel": "gpt-5.5",
-  "defaultThinkingLevel": "xhigh",
+  "defaultThinkingLevel": "medium",
   "shellPath": "/Users/bertieblackman/.pi/agent/zsh-shell",
   "enabledModels": [
     "anthropic/claude-haiku-4-5",
     "anthropic/claude-sonnet-4-6",
     "anthropic/claude-opus-4-7",
     "openai-codex/gpt-5.5",
-    "openai-codex/gpt-5.4-mini"
+    "openai-codex/gpt-5.4-mini",
+    "openrouter/qwen/qwen3-coder",
+    "openrouter/deepseek/deepseek-chat-v3.1",
+    "openrouter/qwen/qwen3-coder-30b-a3b-instruct"
   ],
   "packages": ["npm:@plannotator/pi-extension", "npm:pi-caveman"]
 }

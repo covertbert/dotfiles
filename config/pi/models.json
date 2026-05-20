@@ -1,11 +1,43 @@
 {
   "providers": {
     "anthropic": {
-      "baseUrl": "http://127.0.0.1:3457",
       "apiKey": "x",
+      "baseUrl": "http://127.0.0.1:3457",
       "headers": {
         "x-meridian-agent": "pi"
       }
+    },
+    "openrouter": {
+      "api": "openai-completions",
+      "apiKey": "OPENROUTER_API_KEY",
+      "authHeader": true,
+      "baseUrl": "https://openrouter.ai/api/v1",
+      "compat": {
+        "maxTokensField": "max_tokens",
+        "supportsDeveloperRole": false,
+        "supportsReasoningEffort": false
+      },
+      "models": [
+        {
+          "contextWindow": 262144,
+          "id": "qwen/qwen3-coder",
+          "maxTokens": 8192,
+          "name": "Qwen Coder - Best"
+        },
+        {
+          "contextWindow": 164000,
+          "id": "deepseek/deepseek-chat-v3.1",
+          "maxTokens": 8192,
+          "name": "DeepSeek V3.1 - Balanced"
+        },
+        {
+          "contextWindow": 160000,
+          "id": "qwen/qwen3-coder-30b-a3b-instruct",
+          "maxTokens": 8192,
+          "name": "Qwen Coder 30B - Cheap"
+        }
+      ],
+      "name": "OpenRouter"
     }
   }
 }
