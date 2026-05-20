@@ -12,6 +12,11 @@ Default pattern:
 COMMAND 2>&1 | head -c 4000
 ```
 
+## Task Tracking
+
+- Do not use `TaskCreate`, `TaskUpdate`, `TaskList`, `TodoWrite`, or similar task tools. Pi does not provide them unless a project extension registers them.
+- Track execution progress in `PLAN.md` and final responses using `[DONE:n]` markers.
+
 ## Git, commit & Merge Request rules
 
 - Always use Conventional Commits for every commit.
