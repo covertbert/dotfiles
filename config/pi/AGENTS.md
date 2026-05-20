@@ -40,26 +40,3 @@ COMMAND 2>&1 | head -c 4000
 ## NPM/Node repos
 
 - Always use nvm + nvmrc for node/npm versions
-
-## Execution Handoff
-
-When I ask for an "execution handoff" please do the following:
-
-Turn the final plan into a compact execution handoff for a cheaper Codex model.
-
-Include:
-
-- goal
-- relevant files or areas to inspect
-- exact implementation steps
-- constraints / things not to change
-- acceptance criteria
-- test commands to run
-- likely risks
-
-Remove:
-
-- exploratory reasoning
-- rejected options
-- unnecessary background
-- uncertainty unless it affects implementation

@@ -2,7 +2,7 @@
   "lastChangelogVersion": "0.75.3",
   "defaultProvider": "openai-codex",
   "defaultModel": "gpt-5.5",
-  "defaultThinkingLevel": "medium",
+  "defaultThinkingLevel": "high",
   "shellPath": "/Users/bertieblackman/.pi/agent/zsh-shell",
   "enabledModels": [
     "anthropic/claude-haiku-4-5",
@@ -14,5 +14,6 @@
     "openrouter/deepseek/deepseek-chat-v3.1",
     "openrouter/qwen/qwen3-coder-30b-a3b-instruct"
   ],
-  "packages": ["npm:@plannotator/pi-extension", "npm:pi-caveman"]
+  "packages": ["npm:@plannotator/pi-extension", "npm:pi-caveman"],
+  "hideThinkingBlock": true
 }
