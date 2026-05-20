@@ -137,6 +137,9 @@ See `brew/Brewfile` for CLI tools and `brew/Caskfile` for GUI apps and fonts.
 Current servers:
 
 - `chrome-devtools` via `npx -y chrome-devtools-mcp@latest`
+- `notion` via `npx -y @notionhq/notion-mcp-server`
+
+Notion auth uses `NOTION_TOKEN` from environment. Use a Notion internal integration secret (PAT-style token) and grant the integration access to the pages/databases it should see.
 
 ### Backfill Pi config into this repo
 
