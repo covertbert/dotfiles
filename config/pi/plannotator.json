@@ -7,7 +7,7 @@
     },
     "executing": {
       "model": { "provider": "anthropic", "id": "claude-sonnet-4-6" },
-      "thinking": "high",
+      "thinking": "low",
       "systemPrompt": null
     }
   }
