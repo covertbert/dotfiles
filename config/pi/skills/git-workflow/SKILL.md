@@ -5,11 +5,11 @@ description: Use when committing code, creating a branch, creating or updating a
 
 # Git Workflow
 
-## Mandatory preflight — use Haiku subagent first
+## Mandatory preflight — use GPT-5.4 mini subagent first
 
-**Before running any git command for branch creation, commits, push, or MR**, delegate to the `git-workflow-haiku` subagent. This is not optional.
+**Before running any git command for branch creation, commits, push, or MR**, delegate to the `git-workflow` subagent (configured as GPT-5.4 mini with minimal thinking). This is not optional.
 
-| User intent             | Haiku task                                                                                                    |
+| User intent             | GPT-5.4 mini task                                                                                             |
 | ----------------------- | ------------------------------------------------------------------------------------------------------------- |
 | Create / name a branch  | "Inspect current git state and propose a branch name and checkout command."                                   |
 | Commit (stage + commit) | "Inspect git status and staged diff. List files to stage and propose a Conventional Commit message."          |
@@ -21,7 +21,7 @@ Use the output as-is or adjust before running. Parent agent (you) makes the fina
 Example delegation:
 
 ```
-Use git-workflow-haiku to inspect current git state and propose a branch name.
+Use git-workflow to inspect current git state and propose a branch name.
 ```
 
 ## Commit messages
