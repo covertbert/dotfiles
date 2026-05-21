@@ -2,7 +2,18 @@
 
 set -euo pipefail
 
-DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+SCRIPT_SOURCE="${BASH_SOURCE[0]}"
+while [[ -L "$SCRIPT_SOURCE" ]]; do
+	SCRIPT_DIR="$(cd -P "$(dirname "$SCRIPT_SOURCE")" && pwd)"
+	LINK_TARGET="$(readlink "$SCRIPT_SOURCE")"
+	if [[ "$LINK_TARGET" == /* ]]; then
+		SCRIPT_SOURCE="$LINK_TARGET"
+	else
+		SCRIPT_SOURCE="${SCRIPT_DIR}/${LINK_TARGET}"
+	fi
+done
+
+DOTFILES_DIR="$(cd -P "$(dirname "$SCRIPT_SOURCE")/.." && pwd)"
 PI_AGENT_DIR="${PI_CODING_AGENT_DIR:-$HOME/.pi/agent}"
 MCP_CONFIG_FILE="${MCP_CONFIG_FILE:-$HOME/.config/mcp/mcp.json}"
 NVM_DIR="${NVM_DIR:-$HOME/.nvm}"
