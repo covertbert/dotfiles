@@ -167,12 +167,25 @@ copy_to_repo() {
 	fi
 }
 
-# ── confirm helper ─────────────────────────────────────────────────────────────
+# ── prompt helpers ─────────────────────────────────────────────────────────────
+read_user_input() {
+	local __result_var="$1"
+	local reply=""
+
+	if [[ -r /dev/tty ]]; then
+		IFS= read -r reply </dev/tty || return 1
+	else
+		IFS= read -r reply || return 1
+	fi
+
+	printf -v "$__result_var" '%s' "$reply"
+}
+
 confirm() {
 	local prompt="$1"
-	local reply
-	echo -en "${YELLOW}${prompt}${RESET} [y/N] "
-	read -r reply
+	local reply=""
+	echo -en "${YELLOW}${prompt}${RESET} [y/N] " >/dev/tty
+	read_user_input reply || return 1
 	[[ "$reply" =~ ^[Yy]$ ]]
 }
 
@@ -283,8 +296,12 @@ cmd_sync() {
 			# Interactive per-item prompt
 			local choice=""
 			while true; do
-				echo -en "  ${YELLOW}Direction?${RESET} [${BOLD}r${RESET}]epo→system  [${BOLD}s${RESET}]ystem→repo  [${BOLD}k${RESET}]eep/skip: "
-				read -r choice
+				echo -en "  ${YELLOW}Direction?${RESET} [${BOLD}r${RESET}]epo→system  [${BOLD}s${RESET}]ystem→repo  [${BOLD}k${RESET}]eep/skip: " >/dev/tty
+				read_user_input choice || {
+					echo ""
+					err "Could not read input. Aborting."
+					return 1
+				}
 				case "$choice" in
 				r | R)
 					to_system_rp+=("$rp")
