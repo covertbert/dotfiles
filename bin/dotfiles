@@ -368,8 +368,20 @@ cmd_brew() {
 		}
 	fi
 
-	brew bundle --file="$brewfile"
-	brew bundle --file="$caskfile"
+	info "Running Brewfile..."
+	if ! brew bundle --file="$brewfile"; then
+		err "Brewfile install failed (see output above)."
+		return 1
+	fi
+	ok "Brewfile done."
+
+	echo ""
+	info "Running Caskfile..."
+	if ! brew bundle --file="$caskfile"; then
+		err "Caskfile install failed (see output above)."
+		return 1
+	fi
+	ok "Caskfile done."
 
 	if [[ -x "$(brew --prefix)/opt/fzf/install" ]]; then
 		"$(brew --prefix)"/opt/fzf/install --all

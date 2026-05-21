@@ -6,7 +6,7 @@ My personal macOS dotfiles. Covers ZSH config, Git config, macOS system defaults
 
 - **ZSH** — shell config, aliases, functions, plugins (via zgen), Starship prompt, fzf, lazy NVM, 1Password completions
 - **Git** — `.gitconfig` with delta diffs, GPG signing, and theme config
-- **macOS defaults** — UI/UX, keyboard, Finder, Dock, Spotlight, screen, and app-specific defaults (Chrome, Transmission)
+- **macOS defaults** — keyboard, Finder, Dock, screenshots, and low-risk UI defaults; plus app-specific defaults for Chrome and Transmission
 - **Homebrew** — CLI tools and casks via `brew/Brewfile` and `brew/Caskfile`
 - **Terminal** — Hyper config and Starship theme
 - **Pi agent** — coding agent settings, keybindings, models, prompts, and AGENTS instructions
@@ -120,7 +120,7 @@ git pull && ./bootstrap.sh
 │   ├── zsh/                  # .zshrc, aliases.zsh, functions.zsh
 │   └── pi/                   # Pi agent settings, models, AGENTS.md, prompts, etc.
 └── defaults/
-    ├── system.sh             # Broad macOS UI, keyboard, Finder, Dock, Spotlight defaults
+    ├── system.sh             # Conservative macOS defaults: keyboard, Finder, Dock, screenshots
     ├── chrome.sh             # Chrome-specific defaults
     └── transmission.sh       # Transmission-specific defaults
 ```
@@ -148,21 +148,26 @@ ZSH config is split across:
 
 ## macOS defaults
 
-> **Warning:** `dotfiles defaults` requests `sudo` and applies broad system-level changes including killing Dock, Finder, and other affected apps. Review `defaults/system.sh` before running on a machine where you want to keep existing preferences.
+> **Warning:** `dotfiles defaults` requests `sudo` and restarts Dock, Finder, and SystemUIServer. Review `defaults/system.sh` before running on a machine where you want to keep existing preferences.
 
-Notable changes applied by `defaults/system.sh`:
+Changes applied by `defaults/system.sh`:
 
-- Dock: auto-hide, no bouncing icons, no recent apps, hidden-app icons translucent
-- Finder: show hidden files, show extensions, path bar, list view by default
-- Keyboard: fast repeat rate, disable smart quotes/dashes/autocorrect
-- Screenshots: PNG format, no shadow, saved to Desktop
-- Software updates: automatic checks and background downloads enabled
+- **Keyboard:** fast repeat rate, no smart quotes/dashes/autocorrect, full keyboard access
+- **Finder:** show hidden files, show extensions, path bar, list view, home as default window
+- **Dock:** auto-hide, translucent hidden apps, no bounce, no recent apps
+- **Screenshots:** PNG, no shadow, saved to Desktop
+- **Software updates:** automatic check and background download enabled
+- **General:** no iCloud default save, no crash reporter dialog, no LSQuarantine dialog
+
+`defaults/chrome.sh` disables swipe navigation in Chrome. `defaults/transmission.sh` sets sensible Transmission download defaults.
 
 ## Homebrew
 
-See `brew/Brewfile` for CLI tools and `brew/Caskfile` for GUI apps and fonts.
+**Formulae** (`brew/Brewfile`): `gh`, `git-delta`, `starship`, `wget`, `fzf`, `shellcheck`, `shfmt`, `bat`, `coreutils`.
 
-`dotfiles brew` checks what's missing, shows a preview, then runs `brew bundle` for both files and installs fzf shell integration.
+**Casks** (`brew/Caskfile`): `appcleaner`, `font-jetbrains-mono-nerd-font`.
+
+`dotfiles brew` checks what's missing, shows a preview, runs `brew bundle` for both files in sequence (exits clearly on first failure), and installs fzf shell integration.
 
 ## Pi agent config
 
