@@ -85,7 +85,10 @@ show_diff() {
 		elif [[ ! -f "$sp" ]]; then
 			warn "  system file missing (new on deploy)"
 		else
-			diff --color=always -u "$repo" "$sp" 2>/dev/null | tail -n +3 | sed 's/^/  /' || true
+			diff --color=always -u "$repo" "$sp" 2>/dev/null |
+				tail -n +3 |
+				grep -v 'No newline at end of file' |
+				sed 's/^/  /' || true
 		fi
 	fi
 	echo ""
