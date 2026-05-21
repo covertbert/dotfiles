@@ -334,20 +334,6 @@ find . -name '*.sh' -not -path './.git/*' -print0 | xargs -0 -I {} bash -n {}
 
 ---
 
-## 🦖 Deprecated wrappers
-
-These scripts still work but just call the modern `dotfiles` command:
-
-| Script           | Replacement                 |
-| ---------------- | --------------------------- |
-| `config.sh`      | `dotfiles sync --to system` |
-| `brew.sh`        | `dotfiles brew`             |
-| `defaults.sh`    | `dotfiles defaults`         |
-| `mcp.sh`         | `dotfiles sync --to system` |
-| `pi-backfill.sh` | `dotfiles backfill`         |
-
----
-
 ## 🗂️ Repository layout
 
 ```
@@ -357,11 +343,6 @@ These scripts still work but just call the modern `dotfiles` command:
 ├── lib/
 │   └── manifest.sh           # Managed paths (repo ↔ system mapping)
 ├── bootstrap.sh              # Full install: install → installers → sync → defaults → brew
-├── config.sh                 # Deprecated → dotfiles deploy
-├── mcp.sh                    # Deprecated → dotfiles deploy
-├── brew.sh                   # Deprecated → dotfiles brew
-├── defaults.sh               # Deprecated → dotfiles defaults
-├── pi-backfill.sh            # Deprecated → dotfiles backfill
 ├── brew/
 │   ├── Brewfile              # CLI packages
 │   └── Caskfile              # GUI apps and fonts
