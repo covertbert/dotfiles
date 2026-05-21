@@ -9,3 +9,4 @@
 Brewfile
 Caskfile
 config/pi/zsh-shell
+bin/dotfiles

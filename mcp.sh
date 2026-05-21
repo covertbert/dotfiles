@@ -1,21 +1,10 @@
 #!/usr/bin/env bash
+# Deprecated: use 'dotfiles sync --to system' (mcp is included in manifest)
 
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-MCP_CONFIG_FILE="${MCP_CONFIG_FILE:-$HOME/.config/mcp/mcp.json}"
 
-copy_file() {
-	local source="$1"
-	local destination="$2"
-
-	if [[ ! -f "$source" ]]; then
-		echo "Missing file: ${source}" >&2
-		return 1
-	fi
-
-	mkdir -p "$(dirname "$destination")"
-	cp -v "$source" "$destination"
-}
-
-copy_file "${SCRIPT_DIR}/config/mcp/mcp.json" "$MCP_CONFIG_FILE"
+echo "mcp.sh is deprecated. Use: dotfiles sync --to system" >&2
+echo ""
+"${SCRIPT_DIR}/bin/dotfiles" sync --to system --yes

@@ -4,13 +4,20 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-run_step() {
-	local script="$1"
+echo "==> Installing dotfiles command..."
+"${SCRIPT_DIR}/bin/dotfiles" install
 
-	echo "==> Running ${script}"
-	"${SCRIPT_DIR}/${script}"
-}
+echo "==> Installing NVM and zgen..."
+"${SCRIPT_DIR}/bin/dotfiles" installers --yes
 
-run_step "defaults.sh"
-run_step "config.sh"
-run_step "brew.sh"
+echo "==> Deploying config files..."
+"${SCRIPT_DIR}/bin/dotfiles" sync --to system --yes
+
+echo "==> Applying macOS defaults..."
+"${SCRIPT_DIR}/bin/dotfiles" defaults --yes
+
+echo "==> Installing Homebrew packages..."
+"${SCRIPT_DIR}/bin/dotfiles" brew --yes
+
+echo ""
+echo "Bootstrap complete. Run 'dotfiles status' to verify."

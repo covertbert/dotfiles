@@ -28,28 +28,69 @@ cd ~/dotfiles
 ./bootstrap.sh
 ```
 
-> **Warning:** `bootstrap.sh` will overwrite most managed config files in your home directory without prompting. The only exception is `~/user.gitconfig`, which is created only if it does not already exist. Back up any custom config before running.
+> **Warning:** `bootstrap.sh` will overwrite most managed config files in your home directory without prompting. Back up any custom config before running.
 
-`bootstrap.sh` runs these scripts in order:
+`bootstrap.sh` runs in order:
 
-1. `defaults.sh` — applies macOS system defaults
-2. `config.sh` — copies dotfiles, Pi config, MCP config, and installs NVM + zgen if missing
-3. `brew.sh` — installs Homebrew if missing, then runs `brew bundle`
+1. `dotfiles install` — creates `~/.local/bin/dotfiles` symlink
+2. `dotfiles installers` — installs NVM and zgen if missing
+3. `dotfiles sync --to system` — deploys all managed config files
+4. `dotfiles defaults` — applies macOS system defaults
+5. `dotfiles brew` — installs Homebrew and runs bundle
 
-## Individual scripts
+## The `dotfiles` command
 
-Run any script independently:
+After bootstrap, `dotfiles` is available from any directory via `~/.local/bin/dotfiles`.
 
-```sh
-./defaults.sh   # macOS system defaults only
-./config.sh     # Copy dotfiles, Pi config, MCP config, and install ZSH/NVM dependencies only
-./mcp.sh        # Copy shared MCP config only
-./brew.sh       # Homebrew install and bundle only
+```
+dotfiles status              Show which managed files differ between repo and system
+dotfiles diff                Detailed diff for every changed file
+dotfiles sync                Interactive: prompt per changed item for direction
+dotfiles sync --to system    Deploy all from repo to system
+dotfiles sync --to repo      Backfill all from system to repo
+dotfiles brew                Preview and run Homebrew bundle
+dotfiles defaults            Preview and apply macOS system defaults
+dotfiles check               Run shellcheck/shfmt/bash -n on all shell files
+dotfiles install             (Re)create ~/.local/bin/dotfiles symlink
+dotfiles installers          Install NVM and zgen if missing
 ```
 
-## Update workflow
+Aliases: `deploy` = `sync --to system`, `backfill` = `sync --to repo`.
 
-Pull the latest changes and re-run bootstrap:
+Add `--yes` to skip confirmation prompts on `sync --to`, `brew`, and `defaults`.
+
+### Typical workflows
+
+**See what's out of sync:**
+
+```sh
+dotfiles status
+dotfiles diff
+```
+
+**Deploy repo changes to machine:**
+
+```sh
+dotfiles deploy
+# or interactively, choosing direction per file:
+dotfiles sync
+```
+
+**Copy machine changes back to repo:**
+
+```sh
+dotfiles backfill
+```
+
+**After editing Pi agent config in the app:**
+
+```sh
+dotfiles sync --to repo   # backfill only
+# or interactively:
+dotfiles sync
+```
+
+**Full re-bootstrap after pulling updates:**
 
 ```sh
 git pull && ./bootstrap.sh
@@ -59,25 +100,29 @@ git pull && ./bootstrap.sh
 
 ```
 .
-├── bootstrap.sh          # Full install: runs defaults → config → brew
-├── config.sh             # Copies config files, installs NVM + zgen
-├── mcp.sh                # Copies shared MCP config
-├── brew.sh               # Installs Homebrew and runs bundle
-├── defaults.sh           # Applies macOS defaults (delegates to defaults/)
-├── pi-backfill.sh        # Copies Pi agent config back into this repo
+├── bin/
+│   └── dotfiles              # Primary CLI (all sync/diff/deploy commands)
+├── lib/
+│   └── manifest.sh           # Manifest of managed paths (repo ↔ system)
+├── bootstrap.sh              # Full install: install → installers → sync → defaults → brew
+├── config.sh                 # Deprecated: use 'dotfiles deploy'
+├── mcp.sh                    # Deprecated: use 'dotfiles deploy'
+├── brew.sh                   # Deprecated: use 'dotfiles brew'
+├── defaults.sh               # Deprecated: use 'dotfiles defaults'
+├── pi-backfill.sh            # Deprecated: use 'dotfiles backfill'
 ├── brew/
-│   ├── Brewfile          # CLI packages
-│   └── Caskfile          # GUI apps and fonts
+│   ├── Brewfile              # CLI packages
+│   └── Caskfile              # GUI apps and fonts
 ├── config/
-│   ├── git/              # .gitconfig, themes.gitconfig, user.gitconfig template
-│   ├── mcp/              # Shared MCP config
-│   ├── terminal/         # starship.toml, .hyper.js
-│   ├── zsh/              # .zshrc, aliases.zsh, functions.zsh
-│   └── pi/               # Pi agent settings, models, AGENTS.md, prompts, etc.
+│   ├── git/                  # .gitconfig, themes.gitconfig, user.gitconfig template
+│   ├── mcp/                  # Shared MCP config
+│   ├── terminal/             # starship.toml, .hyper.js
+│   ├── zsh/                  # .zshrc, aliases.zsh, functions.zsh
+│   └── pi/                   # Pi agent settings, models, AGENTS.md, prompts, etc.
 └── defaults/
-    ├── system.sh         # Broad macOS UI, keyboard, Finder, Dock, Spotlight defaults
-    ├── chrome.sh         # Chrome-specific defaults
-    └── transmission.sh   # Transmission-specific defaults
+    ├── system.sh             # Broad macOS UI, keyboard, Finder, Dock, Spotlight defaults
+    ├── chrome.sh             # Chrome-specific defaults
+    └── transmission.sh       # Transmission-specific defaults
 ```
 
 ## Shell config
@@ -88,7 +133,7 @@ ZSH config is split across:
 - `config/zsh/aliases.zsh` — aliases (including git shortcuts, `vim` → `nvim`, `cat` → `bat`)
 - `config/zsh/functions.zsh` — shell functions and lazy NVM loading with Node 24 as default
 
-`config.sh` copies `config/zsh/` to `~/.config/zsh/` and `config/zsh/.zshrc` to `~/.zshrc`.
+`dotfiles sync --to system` copies `config/zsh/` to `~/.config/zsh/` and `config/zsh/.zshrc` to `~/.zshrc`.
 
 ## Git config
 
@@ -103,7 +148,7 @@ ZSH config is split across:
 
 ## macOS defaults
 
-> **Warning:** `defaults.sh` (and `defaults/system.sh`) requests `sudo` and applies broad system-level changes including killing Dock, Finder, and other affected apps. Review `defaults/system.sh` before running on a machine where you want to keep existing preferences.
+> **Warning:** `dotfiles defaults` requests `sudo` and applies broad system-level changes including killing Dock, Finder, and other affected apps. Review `defaults/system.sh` before running on a machine where you want to keep existing preferences.
 
 Notable changes applied by `defaults/system.sh`:
 
@@ -117,7 +162,7 @@ Notable changes applied by `defaults/system.sh`:
 
 See `brew/Brewfile` for CLI tools and `brew/Caskfile` for GUI apps and fonts.
 
-`brew.sh` installs Homebrew if not present, runs both bundle files, and installs fzf shell integration.
+`dotfiles brew` checks what's missing, shows a preview, then runs `brew bundle` for both files and installs fzf shell integration.
 
 ## Pi agent config
 
@@ -128,11 +173,11 @@ See `brew/Brewfile` for CLI tools and `brew/Caskfile` for GUI apps and fonts.
 - `plannotator.json` — Plannotator extension config
 - `prompts/`, `skills/`, `extensions/`, `themes/` — customisations
 
-`config.sh` copies these into `~/.pi/agent/`. Private/local state (`auth.json`, `sessions/`, `npm/`, `git/`) is excluded and ignored by `.gitignore`.
+`dotfiles sync` copies these into `~/.pi/agent/`. Private/local state (`auth.json`, `sessions/`, `npm/`, `git/`) is excluded and ignored by `.gitignore`.
 
 ## MCP config
 
-`config/mcp/mcp.json` is source of truth for shared MCP servers and is copied to `~/.config/mcp/mcp.json` by `mcp.sh` or `config.sh`.
+`config/mcp/mcp.json` is source of truth for shared MCP servers and is synced to `~/.config/mcp/mcp.json`.
 
 Current servers:
 
@@ -140,16 +185,6 @@ Current servers:
 - `notion` via `npx -y @notionhq/notion-mcp-server`
 
 Notion auth uses `NOTION_TOKEN` from environment. Use a Notion internal integration secret (PAT-style token) and grant the integration access to the pages/databases it should see.
-
-### Backfill Pi config into this repo
-
-After changing Pi config in the agent, run:
-
-```sh
-./pi-backfill.sh
-```
-
-This copies the safe portable files back from `~/.pi/agent/` into `config/pi/`. Auth and session state are intentionally not copied.
 
 ## Contributing and validation
 
@@ -160,9 +195,15 @@ brew install lefthook
 lefthook install
 ```
 
-Hooks run on commit and push: Prettier formatting, shfmt formatting, shellcheck linting, and bash syntax checks for shell files. Note that `.prettierignore` excludes shell/config files from Prettier — shell checks are handled by shfmt and shellcheck via Lefthook instead.
+Hooks run on commit and push: Prettier formatting, shfmt formatting, shellcheck linting, and bash syntax checks for shell files.
 
-To validate shell changes manually without running bootstrap:
+To validate shell changes manually:
+
+```sh
+dotfiles check
+```
+
+Or directly:
 
 ```sh
 find . -name '*.sh' -not -path './.git/*' -print0 | xargs -0 shellcheck && \

@@ -1,0 +1,587 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+PI_AGENT_DIR="${PI_CODING_AGENT_DIR:-$HOME/.pi/agent}"
+MCP_CONFIG_FILE="${MCP_CONFIG_FILE:-$HOME/.config/mcp/mcp.json}"
+NVM_DIR="${NVM_DIR:-$HOME/.nvm}"
+
+# shellcheck source=../lib/manifest.sh
+source "${DOTFILES_DIR}/lib/manifest.sh"
+
+# ── colours ──────────────────────────────────────────────────────────────────
+if [[ -t 1 ]]; then
+	RED='\033[0;31m'
+	GREEN='\033[0;32m'
+	YELLOW='\033[0;33m'
+	BLUE='\033[0;34m'
+	BOLD='\033[1m'
+	DIM='\033[2m'
+	RESET='\033[0m'
+else
+	RED='' GREEN='' YELLOW='' BLUE='' BOLD='' DIM='' RESET=''
+fi
+
+info() { echo -e "${BLUE}==>${RESET} ${BOLD}$*${RESET}"; }
+ok() { echo -e "${GREEN} ✓${RESET} $*"; }
+warn() { echo -e "${YELLOW} !${RESET} $*"; }
+err() { echo -e "${RED} ✗${RESET} $*" >&2; }
+dim() { echo -e "${DIM}$*${RESET}"; }
+heading() { echo -e "\n${BOLD}${BLUE}$*${RESET}"; }
+
+# ── helpers ───────────────────────────────────────────────────────────────────
+repo_path() { echo "${DOTFILES_DIR}/$1"; }
+
+items_differ() {
+	local rp="$1" sp="$2" type="$3"
+	local repo
+	repo="$(repo_path "$rp")"
+
+	if [[ "$type" == "dir" ]]; then
+		[[ ! -d "$repo" ]] && return 1
+		[[ ! -d "$sp" ]] && return 0
+		diff -rq --exclude='*.sw*' --exclude='.DS_Store' "$repo" "$sp" &>/dev/null && return 1 || return 0
+	else
+		[[ ! -f "$repo" ]] && return 1
+		[[ ! -f "$sp" ]] && return 0
+		diff -q "$repo" "$sp" &>/dev/null && return 1 || return 0
+	fi
+}
+
+show_diff() {
+	local rp="$1" sp="$2" type="$3"
+	local repo
+	repo="$(repo_path "$rp")"
+
+	echo ""
+	dim "  repo:   ${repo}"
+	dim "  system: ${sp}"
+	echo ""
+
+	if [[ "$type" == "dir" ]]; then
+		if [[ ! -d "$repo" ]]; then
+			warn "  repo dir missing: ${repo}"
+		elif [[ ! -d "$sp" ]]; then
+			warn "  system dir missing (new on deploy): ${sp}"
+		else
+			diff -rq --exclude='*.sw*' --exclude='.DS_Store' "$repo" "$sp" 2>/dev/null |
+				sed 's/^/  /' || true
+		fi
+	else
+		if [[ ! -f "$repo" ]]; then
+			warn "  repo file missing: ${repo}"
+		elif [[ ! -f "$sp" ]]; then
+			warn "  system file missing (new on deploy)"
+		else
+			diff --color=always -u "$repo" "$sp" 2>/dev/null | tail -n +3 | sed 's/^/  /' || true
+		fi
+	fi
+	echo ""
+}
+
+item_status() {
+	local rp="$1" sp="$2" type="$3"
+	local repo
+	repo="$(repo_path "$rp")"
+
+	if [[ "$type" == "dir" ]]; then
+		[[ ! -d "$repo" ]] && echo "missing-repo" && return
+		[[ ! -d "$sp" ]] && echo "missing-system" && return
+	else
+		[[ ! -f "$repo" ]] && echo "missing-repo" && return
+		[[ ! -f "$sp" ]] && echo "missing-system" && return
+	fi
+
+	if items_differ "$rp" "$sp" "$type"; then
+		echo "differ"
+	else
+		echo "in-sync"
+	fi
+}
+
+# ── copy helpers ───────────────────────────────────────────────────────────────
+copy_to_system() {
+	local rp="$1" sp="$2" type="$3"
+	local repo
+	repo="$(repo_path "$rp")"
+
+	if [[ "$type" == "dir" ]]; then
+		if [[ ! -d "$repo" ]]; then
+			warn "Skipping missing repo dir: ${repo}"
+			return
+		fi
+		mkdir -p "$(dirname "$sp")"
+		rm -rf -- "${sp:?}"
+		cp -R "$repo" "$sp"
+		ok "Deployed dir: ${sp}"
+	else
+		if [[ ! -f "$repo" ]]; then
+			warn "Skipping missing repo file: ${repo}"
+			return
+		fi
+		mkdir -p "$(dirname "$sp")"
+		cp "$repo" "$sp"
+		ok "Deployed: ${sp}"
+	fi
+}
+
+copy_to_repo() {
+	local rp="$1" sp="$2" type="$3"
+	local repo
+	repo="$(repo_path "$rp")"
+
+	if [[ "$type" == "dir" ]]; then
+		if [[ ! -d "$sp" ]]; then
+			warn "Skipping missing system dir: ${sp}"
+			return
+		fi
+		# Safety guard: destination must be inside dotfiles dir
+		if [[ "$repo" != "${DOTFILES_DIR}/"* ]]; then
+			err "Refusing unsafe repo path: ${repo}"
+			return 1
+		fi
+		mkdir -p "$(dirname "$repo")"
+		rm -rf -- "${repo:?}"
+		cp -R "$sp" "$repo"
+		ok "Backfilled dir: ${repo}"
+	else
+		if [[ ! -f "$sp" ]]; then
+			warn "Skipping missing system file: ${sp}"
+			return
+		fi
+		mkdir -p "$(dirname "$repo")"
+		cp "$sp" "$repo"
+		ok "Backfilled: ${repo}"
+	fi
+}
+
+# ── confirm helper ─────────────────────────────────────────────────────────────
+confirm() {
+	local prompt="$1"
+	local reply
+	echo -en "${YELLOW}${prompt}${RESET} [y/N] "
+	read -r reply
+	[[ "$reply" =~ ^[Yy]$ ]]
+}
+
+# ── commands ───────────────────────────────────────────────────────────────────
+
+cmd_status() {
+	heading "Dotfiles status"
+
+	local all_synced=true
+
+	while IFS='|' read -r group type rp sp; do
+		local status
+		status="$(item_status "$rp" "$sp" "$type")"
+		case "$status" in
+		in-sync)
+			ok "${group}: ${rp}"
+			;;
+		differ)
+			echo -e "${YELLOW} ~${RESET} ${group}: ${rp}  ${DIM}(differs)${RESET}"
+			all_synced=false
+			;;
+		missing-repo)
+			echo -e "${DIM} -${RESET} ${group}: ${rp}  ${DIM}(not in repo)${RESET}"
+			;;
+		missing-system)
+			echo -e "${RED} +${RESET} ${group}: ${rp}  ${DIM}(not on system)${RESET}"
+			all_synced=false
+			;;
+		esac
+	done < <(
+		dotfiles_manifest "$PI_AGENT_DIR" "$MCP_CONFIG_FILE" "$HOME"
+		dotfiles_manifest_optional "$PI_AGENT_DIR"
+	)
+
+	echo ""
+	if $all_synced; then
+		ok "All managed files in sync."
+	else
+		warn "Some files differ. Run: dotfiles diff  or  dotfiles sync"
+	fi
+}
+
+cmd_diff() {
+	heading "Dotfiles diff"
+	local found_any=false
+
+	while IFS='|' read -r group type rp sp; do
+		local status
+		status="$(item_status "$rp" "$sp" "$type")"
+		if [[ "$status" == "in-sync" || "$status" == "missing-repo" ]]; then
+			continue
+		fi
+		found_any=true
+		echo -e "\n${BOLD}${group}/${rp}${RESET}  ${DIM}[${status}]${RESET}"
+		show_diff "$rp" "$sp" "$type"
+	done < <(
+		dotfiles_manifest "$PI_AGENT_DIR" "$MCP_CONFIG_FILE" "$HOME"
+		dotfiles_manifest_optional "$PI_AGENT_DIR"
+	)
+
+	if ! $found_any; then
+		ok "Nothing to diff — all managed files in sync."
+	fi
+}
+
+cmd_sync() {
+	local direction="${1:-}" # "", "system", or "repo"
+	local yes_flag="${2:-}"  # "--yes" or ""
+
+	heading "Dotfiles sync"
+
+	local -a to_system_rp=()
+	local -a to_system_sp=()
+	local -a to_system_type=()
+	local -a to_repo_rp=()
+	local -a to_repo_sp=()
+	local -a to_repo_type=()
+
+	while IFS='|' read -r group type rp sp; do
+		local status
+		status="$(item_status "$rp" "$sp" "$type")"
+
+		if [[ "$status" == "in-sync" ]]; then
+			ok "${group}: ${rp}"
+			continue
+		fi
+
+		if [[ "$status" == "missing-repo" ]]; then
+			dim "  skip (not in repo): ${rp}"
+			continue
+		fi
+
+		echo -e "\n${BOLD}${group}/${rp}${RESET}  ${DIM}[${status}]${RESET}"
+		show_diff "$rp" "$sp" "$type"
+
+		if [[ -n "$direction" ]]; then
+			# Non-interactive: queue based on direction
+			if [[ "$direction" == "system" ]]; then
+				to_system_rp+=("$rp")
+				to_system_sp+=("$sp")
+				to_system_type+=("$type")
+			else
+				to_repo_rp+=("$rp")
+				to_repo_sp+=("$sp")
+				to_repo_type+=("$type")
+			fi
+		else
+			# Interactive per-item prompt
+			local choice=""
+			while true; do
+				echo -en "  ${YELLOW}Direction?${RESET} [${BOLD}r${RESET}]epo→system  [${BOLD}s${RESET}]ystem→repo  [${BOLD}k${RESET}]eep/skip: "
+				read -r choice
+				case "$choice" in
+				r | R)
+					to_system_rp+=("$rp")
+					to_system_sp+=("$sp")
+					to_system_type+=("$type")
+					break
+					;;
+				s | S)
+					to_repo_rp+=("$rp")
+					to_repo_sp+=("$sp")
+					to_repo_type+=("$type")
+					break
+					;;
+				k | K | "")
+					echo "  Skipped."
+					break
+					;;
+				*) echo "  Enter r, s, or k." ;;
+				esac
+			done
+		fi
+	done < <(
+		dotfiles_manifest "$PI_AGENT_DIR" "$MCP_CONFIG_FILE" "$HOME"
+		dotfiles_manifest_optional "$PI_AGENT_DIR"
+	)
+
+	# Summary and confirmation for non-interactive modes
+	local total=$((${#to_system_rp[@]} + ${#to_repo_rp[@]}))
+	if ((total == 0)); then
+		echo ""
+		ok "Nothing to sync."
+		return
+	fi
+
+	if [[ -n "$direction" && "$yes_flag" != "--yes" ]]; then
+		echo ""
+		if ((${#to_system_rp[@]} > 0)); then
+			info "${#to_system_rp[@]} file(s)/dir(s) → system"
+		fi
+		if ((${#to_repo_rp[@]} > 0)); then
+			info "${#to_repo_rp[@]} file(s)/dir(s) → repo"
+		fi
+		confirm "Proceed?" || {
+			echo "Aborted."
+			return 1
+		}
+	fi
+
+	# Execute queued writes
+	for i in "${!to_system_rp[@]}"; do
+		copy_to_system "${to_system_rp[$i]}" "${to_system_sp[$i]}" "${to_system_type[$i]}"
+	done
+	for i in "${!to_repo_rp[@]}"; do
+		copy_to_repo "${to_repo_rp[$i]}" "${to_repo_sp[$i]}" "${to_repo_type[$i]}"
+	done
+
+	echo ""
+	ok "Sync complete."
+}
+
+cmd_brew() {
+	local yes_flag="${1:-}"
+
+	heading "Homebrew"
+	echo ""
+
+	local brewfile="${DOTFILES_DIR}/brew/Brewfile"
+	local caskfile="${DOTFILES_DIR}/brew/Caskfile"
+
+	info "Checking Brewfile (${brewfile})..."
+	if brew bundle check --file="$brewfile" &>/dev/null; then
+		ok "Brewfile satisfied."
+	else
+		warn "Brewfile has missing packages:"
+		brew bundle check --file="$brewfile" --verbose 2>&1 | grep -v '^Using' | sed 's/^/  /' || true
+	fi
+
+	echo ""
+	info "Checking Caskfile (${caskfile})..."
+	if brew bundle check --file="$caskfile" &>/dev/null; then
+		ok "Caskfile satisfied."
+	else
+		warn "Caskfile has missing casks:"
+		brew bundle check --file="$caskfile" --verbose 2>&1 | grep -v '^Using' | sed 's/^/  /' || true
+	fi
+
+	echo ""
+	if [[ "$yes_flag" != "--yes" ]]; then
+		confirm "Run brew bundle for both files?" || {
+			echo "Aborted."
+			return 1
+		}
+	fi
+
+	brew bundle --file="$brewfile"
+	brew bundle --file="$caskfile"
+
+	if [[ -x "$(brew --prefix)/opt/fzf/install" ]]; then
+		"$(brew --prefix)"/opt/fzf/install --all
+	fi
+
+	ok "Homebrew done."
+}
+
+cmd_defaults() {
+	local yes_flag="${1:-}"
+
+	heading "macOS defaults"
+	echo ""
+
+	local defaults_dir="${DOTFILES_DIR}/defaults"
+	warn "This will apply broad macOS system preferences and restart Dock/Finder."
+	echo "  Scripts to run:"
+	for script in system.sh chrome.sh transmission.sh; do
+		dim "    ${defaults_dir}/${script}"
+	done
+
+	echo ""
+	if [[ "$yes_flag" != "--yes" ]]; then
+		confirm "Apply macOS defaults?" || {
+			echo "Aborted."
+			return 1
+		}
+	fi
+
+	for script in system.sh chrome.sh transmission.sh; do
+		info "Applying ${script}..."
+		bash "${defaults_dir}/${script}"
+	done
+
+	ok "Defaults applied."
+}
+
+cmd_check() {
+	heading "Shell validation"
+	local failed=false
+
+	while IFS= read -r -d '' f; do
+		if ! bash -n "$f" 2>/dev/null; then
+			err "Syntax error: ${f}"
+			failed=true
+		fi
+		if ! shfmt -d "$f" &>/dev/null; then
+			warn "shfmt: ${f}"
+			failed=true
+		fi
+		if ! shellcheck -S warning "$f" &>/dev/null; then
+			warn "shellcheck: ${f}"
+			failed=true
+		fi
+	done < <(find "$DOTFILES_DIR" -name '*.sh' -not -path '*/.git/*' -print0)
+
+	# Also check bin/dotfiles and lib/*.sh
+	for extra in "${BASH_SOURCE[0]}" "${DOTFILES_DIR}/lib/"*.sh; do
+		[[ -f "$extra" ]] || continue
+		if ! bash -n "$extra" 2>/dev/null; then
+			err "Syntax error: ${extra}"
+			failed=true
+		fi
+		if ! shellcheck -S warning "$extra" &>/dev/null; then
+			warn "shellcheck: ${extra}"
+			failed=true
+		fi
+	done
+
+	if $failed; then
+		err "Validation failed."
+		return 1
+	else
+		ok "All checks passed."
+	fi
+}
+
+cmd_install() {
+	heading "Install dotfiles command"
+
+	local target="${HOME}/.local/bin/dotfiles"
+	local this="${DOTFILES_DIR}/bin/dotfiles"
+
+	mkdir -p "${HOME}/.local/bin"
+
+	if [[ -L "$target" ]] && [[ "$(readlink "$target")" == "$this" ]]; then
+		ok "Already installed: ${target} -> ${this}"
+		return
+	fi
+
+	ln -sf "$this" "$target"
+	chmod +x "$this"
+	ok "Installed: ${target} -> ${this}"
+	dim "  Make sure \$HOME/.local/bin is on your PATH (it is in config/zsh/.zshrc)."
+}
+
+cmd_installers() {
+	local yes_flag="${1:-}"
+
+	heading "Install dependencies (NVM, zgen)"
+	echo ""
+
+	# NVM
+	if command -v nvm &>/dev/null || [[ -s "${NVM_DIR}/nvm.sh" ]]; then
+		ok "NVM already installed."
+	else
+		if [[ "$yes_flag" != "--yes" ]]; then
+			confirm "Install NVM?" || true
+		fi
+		echo "Installing NVM..."
+		curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
+	fi
+
+	# zgen
+	local zgen_dir="${HOME}/.zgen"
+	if [[ -d "$zgen_dir" ]]; then
+		ok "zgen already installed."
+	else
+		if [[ "$yes_flag" != "--yes" ]]; then
+			confirm "Install zgen?" || true
+		fi
+		git clone https://github.com/tarjoilija/zgen.git "$zgen_dir"
+		ok "zgen installed."
+	fi
+}
+
+# ── usage ──────────────────────────────────────────────────────────────────────
+usage() {
+	cat <<EOF
+${BOLD}dotfiles${RESET} — manage and sync your dotfiles
+
+${BOLD}USAGE${RESET}
+  dotfiles <command> [options]
+
+${BOLD}COMMANDS${RESET}
+  status              Show which managed files differ between repo and system
+  diff                Show detailed diffs for all changed files
+  sync                Interactive per-item sync (prompts repo→system or system→repo per diff)
+  sync --to system    Deploy all changes from repo to system
+  sync --to repo      Backfill all changes from system to repo
+  brew                Preview and run Homebrew bundle install
+  defaults            Preview and apply macOS system defaults
+  check               Run shellcheck/shfmt/bash -n on all shell files
+  install             Create ~/.local/bin/dotfiles symlink
+  installers          Install NVM and zgen if missing
+
+${BOLD}FLAGS${RESET}
+  --yes               Skip confirmation prompts (for sync --to and brew/defaults)
+
+${BOLD}ALIASES${RESET}
+  deploy              Alias for: sync --to system
+  backfill            Alias for: sync --to repo
+
+${BOLD}EXAMPLES${RESET}
+  dotfiles status
+  dotfiles diff
+  dotfiles sync
+  dotfiles sync --to system --yes
+  dotfiles sync --to repo
+  dotfiles brew
+  dotfiles defaults --yes
+  dotfiles deploy
+  dotfiles backfill
+EOF
+}
+
+# ── dispatch ───────────────────────────────────────────────────────────────────
+main() {
+	local cmd="${1:-help}"
+	shift || true
+
+	local direction=""
+	local yes_flag=""
+
+	# Parse remaining flags
+	local positional=()
+	while (($# > 0)); do
+		case "$1" in
+		--to)
+			direction="${2:-}"
+			shift 2
+			;;
+		--yes)
+			yes_flag="--yes"
+			shift
+			;;
+		*)
+			positional+=("$1")
+			shift
+			;;
+		esac
+	done
+
+	case "$cmd" in
+	status) cmd_status ;;
+	diff) cmd_diff ;;
+	sync) cmd_sync "$direction" "$yes_flag" ;;
+	deploy) cmd_sync "system" "$yes_flag" ;;
+	backfill) cmd_sync "repo" "$yes_flag" ;;
+	brew) cmd_brew "$yes_flag" ;;
+	defaults) cmd_defaults "$yes_flag" ;;
+	check) cmd_check ;;
+	install) cmd_install ;;
+	installers) cmd_installers "$yes_flag" ;;
+	help | --help | -h) usage ;;
+	*)
+		err "Unknown command: ${cmd}"
+		echo ""
+		usage
+		exit 1
+		;;
+	esac
+}
+
+main "$@"

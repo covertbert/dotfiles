@@ -1,17 +1,10 @@
 #!/usr/bin/env bash
+# Deprecated: use 'dotfiles defaults'
 
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-DEFAULTS_DIR="${SCRIPT_DIR}/defaults"
 
-run_defaults() {
-	local script="$1"
-
-	echo "==> Applying ${script} defaults"
-	bash "${DEFAULTS_DIR}/${script}"
-}
-
-run_defaults "system.sh"
-run_defaults "chrome.sh"
-run_defaults "transmission.sh"
+echo "defaults.sh is deprecated. Use: dotfiles defaults" >&2
+echo ""
+"${SCRIPT_DIR}/bin/dotfiles" defaults --yes
