@@ -104,3 +104,30 @@ loadNvmrc() {
 		nvm use default
 	fi
 }
+
+# Run pi using its installed Node version regardless of active .nvmrc.
+# pi is a global npm install under NVM_DEFAULT_VERSION; nvm use changes PATH
+# and hides that bin dir. This wrapper resolves the correct node + pi binary
+# explicitly so repo Node version is unaffected.
+pi() {
+	local pi_node_bin=""
+	local candidate
+
+	for candidate in "$NVM_DIR"/versions/node/v"$NVM_DEFAULT_VERSION".*/bin(Nn[-1]); do
+		pi_node_bin="$candidate"
+	done
+
+	if [[ -z "$pi_node_bin" || ! -x "$pi_node_bin/node" ]]; then
+		echo "pi: Node ${NVM_DEFAULT_VERSION} not found under \$NVM_DIR." >&2
+		echo "    Run: nvm install ${NVM_DEFAULT_VERSION}" >&2
+		return 127
+	fi
+
+	if [[ ! -x "$pi_node_bin/pi" ]]; then
+		echo "pi: not installed under Node ${NVM_DEFAULT_VERSION}." >&2
+		echo "    Run: nvm exec ${NVM_DEFAULT_VERSION} npm install -g --ignore-scripts @earendil-works/pi-coding-agent" >&2
+		return 127
+	fi
+
+	PATH="$pi_node_bin:$PATH" "$pi_node_bin/node" "$pi_node_bin/pi" "$@"
+}
