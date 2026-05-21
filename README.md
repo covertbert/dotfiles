@@ -180,6 +180,10 @@ Changes applied by `defaults/system.sh`:
 
 `dotfiles sync` copies these into `~/.pi/agent/`. Private/local state (`auth.json`, `sessions/`, `npm/`, `git/`) is excluded and ignored by `.gitignore`.
 
+### Plannotator progress tracking
+
+The executing phase uses a custom `systemPrompt` (set in `plannotator.json`) that tells Claude to update plan-file checkboxes (`- [ ]` → `- [x]`) rather than emitting `[DONE:n]` markers in response text. The plan file is the source of truth for execution progress. Plannotator's built-in widget may not update silently every step (it relies on `[DONE:n]` scanning upstream), but visible marker spam is suppressed.
+
 ## MCP config
 
 `config/mcp/mcp.json` is source of truth for shared MCP servers and is synced to `~/.config/mcp/mcp.json`.

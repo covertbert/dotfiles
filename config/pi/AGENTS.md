@@ -16,5 +16,4 @@ COMMAND 2>&1 | head -c 4000
 
 - These task tracking instructions apply only when using Claude models. Other models may use their normal task tracking behaviour.
 - Do not use `TaskCreate`, `TaskUpdate`, `TaskList`, `TodoWrite`, or similar task tools. Pi does not provide them unless a project extension registers them.
-- Track execution progress in `PLAN.md` and final responses using `[DONE:n]` markers.
 - Update `PLAN.md` or `plans/**` MD file checkboxes as work progresses, marking items complete when done.

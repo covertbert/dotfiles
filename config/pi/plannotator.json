@@ -8,7 +8,7 @@
     "executing": {
       "model": { "provider": "anthropic", "id": "claude-sonnet-4-6" },
       "thinking": "low",
-      "systemPrompt": null
+      "systemPrompt": "You are executing a plan. Track progress by updating checkboxes in the plan file (change `- [ ]` to `- [x]`) as each step completes. Do NOT output `[DONE:n]` markers or any other progress tokens in your response text — they are not rendered and pollute output."
     }
   }
 }
