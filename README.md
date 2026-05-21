@@ -269,7 +269,7 @@ Config split across three files in `config/zsh/`:
 | `agents/git-workflow.md` | Git workflow agent                                                                                    |
 | `skills/`                | Skill definitions: `git-workflow`, `node-npm`, `notion-doc-writing`, `php-symfony`                    |
 | `prompts/`               | Custom prompt templates                                                                               |
-| `extensions/`            | Installed Pi extensions                                                                               |
+| `extensions/`            | Local Pi extensions                                                                                   |
 | `themes/`                | UI themes                                                                                             |
 | `zsh-shell`              | Shell config for Pi's embedded shell                                                                  |
 
@@ -292,12 +292,6 @@ config/pi/npm/
 config/pi/**/*.local.json
 config/pi/**/.env
 ```
-
-### 📋 Plannotator progress tracking
-
-Plans live in `PLAN.md` or `plans/<name>.md`. The executing phase uses a custom `systemPrompt` (in `plannotator.json`) that tells Claude to update checkboxes (`- [ ]` → `- [x]`) rather than emitting `[DONE:n]` markers in response text. Plan file = source of truth for progress.
-
----
 
 ## 🔌 MCP config
 
