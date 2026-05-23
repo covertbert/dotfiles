@@ -10,6 +10,7 @@
     "anthropic/claude-opus-4-7",
     "openai-codex/gpt-5.5",
     "openai-codex/gpt-5.4-mini",
+    "openrouter/auto",
     "openrouter/qwen/qwen3-coder",
     "openrouter/deepseek/deepseek-chat-v3.1",
     "openrouter/qwen/qwen3-coder-30b-a3b-instruct"

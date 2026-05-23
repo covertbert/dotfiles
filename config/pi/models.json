@@ -19,6 +19,12 @@
       },
       "models": [
         {
+          "contextWindow": 2000000,
+          "id": "auto",
+          "maxTokens": 8192,
+          "name": "OpenRouter Auto"
+        },
+        {
           "contextWindow": 262144,
           "id": "qwen/qwen3-coder",
           "maxTokens": 8192,

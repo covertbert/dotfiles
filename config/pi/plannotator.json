@@ -5,7 +5,7 @@
       "thinking": "high"
     },
     "executing": {
-      "model": { "provider": "anthropic", "id": "claude-sonnet-4-6" },
+      "model": { "provider": "openrouter", "id": "auto" },
       "thinking": "low"
     }
   }
