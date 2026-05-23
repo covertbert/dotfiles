@@ -2,13 +2,11 @@
   "phases": {
     "planning": {
       "model": { "provider": "openai-codex", "id": "gpt-5.5" },
-      "thinking": "high",
-      "systemPrompt": null
+      "thinking": "high"
     },
     "executing": {
       "model": { "provider": "anthropic", "id": "claude-sonnet-4-6" },
-      "thinking": "low",
-      "systemPrompt": null
+      "thinking": "low"
     }
   }
 }
