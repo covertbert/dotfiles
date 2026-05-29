@@ -9,7 +9,7 @@
     },
     "openrouter": {
       "api": "openai-completions",
-      "apiKey": "OPENROUTER_API_KEY",
+      "apiKey": "$OPENROUTER_API_KEY",
       "authHeader": true,
       "baseUrl": "https://openrouter.ai/api/v1",
       "compat": {

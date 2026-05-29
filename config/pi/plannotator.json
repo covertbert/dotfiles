@@ -5,8 +5,8 @@
       "thinking": "high"
     },
     "executing": {
-      "model": { "provider": "openai-codex", "id": "gpt-5.5" },
-      "thinking": "low"
+      "model": { "provider": "openai-codex", "id": "gpt-5.4" },
+      "thinking": "high"
     }
   }
 }
