@@ -2,7 +2,7 @@
   "lastChangelogVersion": "0.77.0",
   "defaultProvider": "openai-codex",
   "defaultModel": "gpt-5.5",
-  "defaultThinkingLevel": "medium",
+  "defaultThinkingLevel": "high",
   "shellPath": "/Users/bertieblackman/.pi/agent/zsh-shell",
   "enabledModels": [
     "anthropic/claude-haiku-4-5",
@@ -22,7 +22,8 @@
     "npm:@feniix/pi-notion",
     "npm:pi-subagents",
     "npm:pi-powerline-footer",
-    "npm:@juicesharp/rpiv-ask-user-question"
+    "npm:@juicesharp/rpiv-ask-user-question",
+    "npm:pi-codex-limit"
   ],
   "hideThinkingBlock": true,
   "powerline": {

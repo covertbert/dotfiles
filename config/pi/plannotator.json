@@ -2,11 +2,11 @@
   "phases": {
     "planning": {
       "model": { "provider": "openai-codex", "id": "gpt-5.5" },
-      "thinking": "high"
+      "thinking": "xhigh"
     },
     "executing": {
       "model": { "provider": "openai-codex", "id": "gpt-5.4" },
-      "thinking": "high"
+      "thinking": "medium"
     }
   }
 }
