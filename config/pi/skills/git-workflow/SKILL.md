@@ -37,5 +37,5 @@ Use git-workflow to inspect current git state and propose a branch name.
 - MR descriptions must be plain Markdown with real line breaks.
 - Never include escaped newline sequences like `\n` in MR descriptions.
 - Never pass multi-line MR descriptions as a quoted string with escaped newline characters.
-- For any multi-line MR description, write body to a temp file and use `glab mr create --description-file`.
+- For any multi-line MR description, write body to a temp file and use `glab mr create --description`.
 - Never add a "Validation" heading and associated bullet points to MR description.
