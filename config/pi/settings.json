@@ -23,7 +23,7 @@
     "npm:pi-subagents",
     "npm:pi-powerline-footer",
     "npm:@juicesharp/rpiv-ask-user-question",
-    "npm:pi-codex-limit"
+    "npm:@mjfuertesf/pi-quota-status"
   ],
   "hideThinkingBlock": true,
   "powerline": {
