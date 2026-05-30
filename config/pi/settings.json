@@ -1,8 +1,8 @@
 {
-  "lastChangelogVersion": "0.77.0",
+  "lastChangelogVersion": "0.78.0",
   "defaultProvider": "openai-codex",
   "defaultModel": "gpt-5.5",
-  "defaultThinkingLevel": "high",
+  "defaultThinkingLevel": "medium",
   "shellPath": "/Users/bertieblackman/.pi/agent/zsh-shell",
   "enabledModels": [
     "anthropic/claude-haiku-4-5",
@@ -25,7 +25,7 @@
     "npm:@juicesharp/rpiv-ask-user-question",
     "npm:@mjfuertesf/pi-quota-status"
   ],
-  "hideThinkingBlock": true,
+  "hideThinkingBlock": false,
   "powerline": {
     "preset": "default",
     "fixedEditor": true,
@@ -39,5 +39,25 @@
   "workingVibe": "caveman",
   "workingVibeMode": "file",
   "workingVibeFallback": "Working",
-  "workingVibeMaxLength": 65
+  "workingVibeMaxLength": 65,
+  "subagents": {
+    "agentOverrides": {
+      "scout": {
+        "model": "openai-codex/gpt-5.4-mini",
+        "thinking": "low"
+      },
+      "delegate": {
+        "model": "openai-codex/gpt-5.4-mini",
+        "thinking": "minimal"
+      },
+      "researcher": {
+        "model": "openai-codex/gpt-5.4-mini",
+        "thinking": "medium"
+      },
+      "context-builder": {
+        "model": "openai-codex/gpt-5.4-mini",
+        "thinking": "medium"
+      }
+    }
+  }
 }
