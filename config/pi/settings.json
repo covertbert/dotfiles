@@ -1,8 +1,4 @@
 {
-  "lastChangelogVersion": "0.78.0",
-  "defaultProvider": "openai-codex",
-  "defaultModel": "gpt-5.5",
-  "defaultThinkingLevel": "medium",
   "shellPath": "/Users/bertieblackman/.pi/agent/zsh-shell",
   "enabledModels": [
     "anthropic/claude-haiku-4-5",

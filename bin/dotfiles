@@ -45,8 +45,30 @@ heading() { echo -e "\n${BOLD}${BLUE}$*${RESET}"; }
 # ── helpers ───────────────────────────────────────────────────────────────────
 repo_path() { echo "${DOTFILES_DIR}/$1"; }
 
+# Build a JSON array of keys from a CSV string (trimmed).
+json_keys_array() {
+	printf '%s' "$1" | jq -R 'split(",") | map(gsub("^\\s+|\\s+$"; "")) | map(select(length > 0))'
+}
+
+# Emit JSON with the ignored top-level keys removed.
+json_strip() {
+	local file="$1" csv="$2"
+	local keys
+	keys="$(json_keys_array "$csv")"
+	jq --argjson k "$keys" 'with_entries(select(.key as $x | $k | index($x) | not))' "$file"
+}
+
+# Emit JSON containing ONLY the ignored top-level keys (returns {} if file missing).
+json_pick() {
+	local file="$1" csv="$2"
+	[[ -f "$file" ]] || { echo "{}"; return; }
+	local keys
+	keys="$(json_keys_array "$csv")"
+	jq --argjson k "$keys" 'with_entries(select(.key as $x | $k | index($x)))' "$file"
+}
+
 items_differ() {
-	local rp="$1" sp="$2" type="$3"
+	local rp="$1" sp="$2" type="$3" ignore="${4:-}"
 	local repo
 	repo="$(repo_path "$rp")"
 
@@ -54,6 +76,11 @@ items_differ() {
 		[[ ! -d "$repo" ]] && return 1
 		[[ ! -d "$sp" ]] && return 0
 		diff -rq --exclude='*.sw*' --exclude='.DS_Store' "$repo" "$sp" &>/dev/null && return 1 || return 0
+	elif [[ "$type" == "json-merge" ]]; then
+		[[ ! -f "$repo" ]] && return 1
+		[[ ! -f "$sp" ]] && return 0
+		# Compare repo (canonical base) against system stripped of volatile keys.
+		diff -q <(jq -S . "$repo") <(json_strip "$sp" "$ignore" | jq -S .) &>/dev/null && return 1 || return 0
 	else
 		[[ ! -f "$repo" ]] && return 1
 		[[ ! -f "$sp" ]] && return 0
@@ -62,7 +89,7 @@ items_differ() {
 }
 
 show_diff() {
-	local rp="$1" sp="$2" type="$3"
+	local rp="$1" sp="$2" type="$3" ignore="${4:-}"
 	local repo
 	repo="$(repo_path "$rp")"
 
@@ -78,6 +105,18 @@ show_diff() {
 			warn "  system dir missing (new on deploy): ${sp}"
 		else
 			diff -rq --exclude='*.sw*' --exclude='.DS_Store' "$repo" "$sp" 2>/dev/null |
+				sed 's/^/  /' || true
+		fi
+	elif [[ "$type" == "json-merge" ]]; then
+		if [[ ! -f "$repo" ]]; then
+			warn "  repo file missing: ${repo}"
+		elif [[ ! -f "$sp" ]]; then
+			warn "  system file missing (new on deploy)"
+		else
+			dim "  (volatile keys ignored: ${ignore})"
+			diff --color=always -u <(jq -S . "$repo") <(json_strip "$sp" "$ignore" | jq -S .) 2>/dev/null |
+				tail -n +3 |
+				grep -v 'No newline at end of file' |
 				sed 's/^/  /' || true
 		fi
 	else
@@ -96,7 +135,7 @@ show_diff() {
 }
 
 item_status() {
-	local rp="$1" sp="$2" type="$3"
+	local rp="$1" sp="$2" type="$3" ignore="${4:-}"
 	local repo
 	repo="$(repo_path "$rp")"
 
@@ -108,7 +147,7 @@ item_status() {
 		[[ ! -f "$sp" ]] && echo "missing-system" && return
 	fi
 
-	if items_differ "$rp" "$sp" "$type"; then
+	if items_differ "$rp" "$sp" "$type" "$ignore"; then
 		echo "differ"
 	else
 		echo "in-sync"
@@ -117,7 +156,7 @@ item_status() {
 
 # ── copy helpers ───────────────────────────────────────────────────────────────
 copy_to_system() {
-	local rp="$1" sp="$2" type="$3"
+	local rp="$1" sp="$2" type="$3" ignore="${4:-}"
 	local repo
 	repo="$(repo_path "$rp")"
 
@@ -130,6 +169,18 @@ copy_to_system() {
 		rm -rf -- "${sp:?}"
 		cp -R "$repo" "$sp"
 		ok "Deployed dir: ${sp}"
+	elif [[ "$type" == "json-merge" ]]; then
+		if [[ ! -f "$repo" ]]; then
+			warn "Skipping missing repo file: ${repo}"
+			return
+		fi
+		mkdir -p "$(dirname "$sp")"
+		# Preserve system's volatile keys; overlay repo base on top.
+		local volatile tmp
+		volatile="$(json_pick "$sp" "$ignore")"
+		tmp="${sp}.tmp.$"
+		jq -s '.[0] * .[1]' "$repo" <(printf '%s' "$volatile") > "$tmp" && mv "$tmp" "$sp"
+		ok "Merged: ${sp}"
 	else
 		if [[ ! -f "$repo" ]]; then
 			warn "Skipping missing repo file: ${repo}"
@@ -142,7 +193,7 @@ copy_to_system() {
 }
 
 copy_to_repo() {
-	local rp="$1" sp="$2" type="$3"
+	local rp="$1" sp="$2" type="$3" ignore="${4:-}"
 	local repo
 	repo="$(repo_path "$rp")"
 
@@ -160,6 +211,19 @@ copy_to_repo() {
 		rm -rf -- "${repo:?}"
 		cp -R "$sp" "$repo"
 		ok "Backfilled dir: ${repo}"
+	elif [[ "$type" == "json-merge" ]]; then
+		if [[ ! -f "$sp" ]]; then
+			warn "Skipping missing system file: ${sp}"
+			return
+		fi
+		if [[ "$repo" != "${DOTFILES_DIR}/"* ]]; then
+			err "Refusing unsafe repo path: ${repo}"
+			return 1
+		fi
+		mkdir -p "$(dirname "$repo")"
+		# Strip volatile keys before writing into repo.
+		json_strip "$sp" "$ignore" > "$repo"
+		ok "Backfilled (stripped volatile): ${repo}"
 	else
 		if [[ ! -f "$sp" ]]; then
 			warn "Skipping missing system file: ${sp}"
@@ -232,9 +296,9 @@ cmd_status() {
 
 	local all_synced=true
 
-	while IFS='|' read -r group type rp sp; do
+	while IFS='|' read -r group type rp sp ignore; do
 		local status
-		status="$(item_status "$rp" "$sp" "$type")"
+		status="$(item_status "$rp" "$sp" "$type" "$ignore")"
 		case "$status" in
 		in-sync)
 			ok "${group}: ${rp}"
@@ -268,15 +332,15 @@ cmd_diff() {
 	heading "Dotfiles diff"
 	local found_any=false
 
-	while IFS='|' read -r group type rp sp; do
+	while IFS='|' read -r group type rp sp ignore; do
 		local status
-		status="$(item_status "$rp" "$sp" "$type")"
+		status="$(item_status "$rp" "$sp" "$type" "$ignore")"
 		if [[ "$status" == "in-sync" || "$status" == "missing-repo" ]]; then
 			continue
 		fi
 		found_any=true
 		echo -e "\n${BOLD}${group}: ${rp}${RESET}  ${DIM}[${status}]${RESET}"
-		show_diff "$rp" "$sp" "$type"
+		show_diff "$rp" "$sp" "$type" "$ignore"
 	done < <(
 		dotfiles_manifest "$PI_AGENT_DIR" "$MCP_CONFIG_FILE" "$HOME"
 		dotfiles_manifest_optional "$PI_AGENT_DIR"
@@ -296,13 +360,15 @@ cmd_sync() {
 	local -a to_system_rp=()
 	local -a to_system_sp=()
 	local -a to_system_type=()
+	local -a to_system_ignore=()
 	local -a to_repo_rp=()
 	local -a to_repo_sp=()
 	local -a to_repo_type=()
+	local -a to_repo_ignore=()
 
-	while IFS='|' read -r group type rp sp; do
+	while IFS='|' read -r group type rp sp ignore; do
 		local status
-		status="$(item_status "$rp" "$sp" "$type")"
+		status="$(item_status "$rp" "$sp" "$type" "$ignore")"
 
 		if [[ "$status" == "in-sync" ]]; then
 			ok "${group}: ${rp}"
@@ -315,7 +381,7 @@ cmd_sync() {
 		fi
 
 		echo -e "\n${BOLD}${group}: ${rp}${RESET}  ${DIM}[${status}]${RESET}"
-		show_diff "$rp" "$sp" "$type"
+		show_diff "$rp" "$sp" "$type" "$ignore"
 
 		if [[ -n "$direction" ]]; then
 			# Non-interactive: queue based on direction
@@ -323,10 +389,12 @@ cmd_sync() {
 				to_system_rp+=("$rp")
 				to_system_sp+=("$sp")
 				to_system_type+=("$type")
+				to_system_ignore+=("$ignore")
 			else
 				to_repo_rp+=("$rp")
 				to_repo_sp+=("$sp")
 				to_repo_type+=("$type")
+				to_repo_ignore+=("$ignore")
 			fi
 		else
 			# Interactive per-item prompt
@@ -344,6 +412,7 @@ cmd_sync() {
 					to_system_rp+=("$rp")
 					to_system_sp+=("$sp")
 					to_system_type+=("$type")
+					to_system_ignore+=("$ignore")
 					break
 					;;
 				s | S)
@@ -351,6 +420,7 @@ cmd_sync() {
 					to_repo_rp+=("$rp")
 					to_repo_sp+=("$sp")
 					to_repo_type+=("$type")
+					to_repo_ignore+=("$ignore")
 					break
 					;;
 				k | K)
@@ -398,10 +468,10 @@ cmd_sync() {
 
 	# Execute queued writes
 	for i in "${!to_system_rp[@]}"; do
-		copy_to_system "${to_system_rp[$i]}" "${to_system_sp[$i]}" "${to_system_type[$i]}"
+		copy_to_system "${to_system_rp[$i]}" "${to_system_sp[$i]}" "${to_system_type[$i]}" "${to_system_ignore[$i]}"
 	done
 	for i in "${!to_repo_rp[@]}"; do
-		copy_to_repo "${to_repo_rp[$i]}" "${to_repo_sp[$i]}" "${to_repo_type[$i]}"
+		copy_to_repo "${to_repo_rp[$i]}" "${to_repo_sp[$i]}" "${to_repo_type[$i]}" "${to_repo_ignore[$i]}"
 	done
 
 	echo ""
