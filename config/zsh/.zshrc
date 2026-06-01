@@ -33,12 +33,6 @@ export PATH="/opt/homebrew/opt/mysql-client/bin:$PATH"
 export EDITOR=/opt/homebrew/bin/nvim
 export VISUAL=/opt/homebrew/bin/nvim
 
-# fzf
-export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git'
-bindkey "^[[A" history-beginning-search-backward
-bindkey "^[[B" history-beginning-search-forward
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-
 # Aliases
 source ~/.config/zsh/aliases.zsh
 
@@ -78,4 +72,3 @@ autoload -U add-zsh-hook
 add-zsh-hook chpwd loadNvmrc
 loadNvmrc
 
-source /opt/homebrew/opt/chruby/share/chruby/chruby.sh
