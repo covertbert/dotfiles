@@ -174,28 +174,28 @@ copy_to_repo() {
 # ── prompt helpers ─────────────────────────────────────────────────────────────
 read_user_input() {
 	local __result_var="$1"
-	local reply=""
+	local __reply=""
 
 	if [[ -r /dev/tty ]]; then
-		IFS= read -r reply </dev/tty || return 1
+		IFS= read -r __reply </dev/tty || return 1
 	else
-		IFS= read -r reply || return 1
+		IFS= read -r __reply || return 1
 	fi
 
-	printf -v "$__result_var" '%s' "$reply"
+	printf -v "$__result_var" '%s' "$__reply"
 }
 
 read_user_key() {
 	local __result_var="$1"
-	local reply=""
+	local __reply=""
 
 	if [[ -r /dev/tty ]]; then
-		IFS= read -r -s -n 1 reply </dev/tty || return 1
+		IFS= read -r -s -n 1 __reply </dev/tty || return 1
 	else
-		IFS= read -r -s -n 1 reply || return 1
+		IFS= read -r -s -n 1 __reply || return 1
 	fi
 
-	printf -v "$__result_var" '%s' "$reply"
+	printf -v "$__result_var" '%s' "$__reply"
 }
 
 confirm() {
