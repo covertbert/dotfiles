@@ -1,2 +1,16 @@
+# CLI distributed as casks
+cask "1password-cli"
+cask "claude-code"
+cask "codex"
+
+# Desktop apps
 cask "appcleaner"
+cask "aws-vpn-client"
+cask "docker-desktop"
+cask "ghostty"
+cask "ngrok"
+cask "tailscale-app"
+
+# Fonts and runtimes
 cask "font-jetbrains-mono-nerd-font"
+cask "temurin@11"

@@ -17,6 +17,7 @@ DOTFILES_DIR="$(cd -P "$(dirname "$SCRIPT_SOURCE")/.." && pwd)"
 PI_AGENT_DIR="${PI_CODING_AGENT_DIR:-$HOME/.pi/agent}"
 MCP_CONFIG_FILE="${MCP_CONFIG_FILE:-$HOME/.config/mcp/mcp.json}"
 NVM_DIR="${NVM_DIR:-$HOME/.nvm}"
+NVM_DEFAULT_VERSION="${NVM_DEFAULT_VERSION:-24}"
 
 # shellcheck source=../lib/manifest.sh
 source "${DOTFILES_DIR}/lib/manifest.sh"
@@ -203,6 +204,25 @@ confirm() {
 	echo -en "${YELLOW}${prompt}${RESET} [y/N] " >/dev/tty
 	read_user_input reply || return 1
 	[[ "$reply" =~ ^[Yy]$ ]]
+}
+
+ensure_nvm_default_node() {
+	if [[ ! -s "${NVM_DIR}/nvm.sh" ]]; then
+		err "NVM not found at ${NVM_DIR}/nvm.sh"
+		return 1
+	fi
+
+	# shellcheck source=/dev/null
+	source "${NVM_DIR}/nvm.sh"
+
+	if ! command -v nvm &>/dev/null; then
+		err "Failed to load nvm."
+		return 1
+	fi
+
+	nvm install "${NVM_DEFAULT_VERSION}" >/dev/null
+	nvm alias default "${NVM_DEFAULT_VERSION}" >/dev/null
+	nvm use --silent "${NVM_DEFAULT_VERSION}" >/dev/null
 }
 
 # ── commands ───────────────────────────────────────────────────────────────────
@@ -437,11 +457,65 @@ cmd_brew() {
 	fi
 	ok "Caskfile done."
 
-	if [[ -x "$(brew --prefix)/opt/fzf/install" ]]; then
-		"$(brew --prefix)"/opt/fzf/install --all
+	ok "Homebrew done."
+}
+
+cmd_npm() {
+	local yes_flag="${1:-}"
+
+	heading "npm globals"
+	echo ""
+
+	local globals_file="${DOTFILES_DIR}/npm/globals.txt"
+	if [[ ! -f "$globals_file" ]]; then
+		err "Globals file missing: ${globals_file}"
+		return 1
 	fi
 
-	ok "Homebrew done."
+	ensure_nvm_default_node || return 1
+
+	local packages=()
+	while IFS= read -r line; do
+		[[ -z "$line" || "$line" =~ ^[[:space:]]*# ]] && continue
+		packages+=("$line")
+	done < "$globals_file"
+
+	if [[ ${#packages[@]} -eq 0 ]]; then
+		warn "No npm globals listed in ${globals_file}."
+		return 0
+	fi
+
+	local missing=()
+	local pkg
+	for pkg in "${packages[@]}"; do
+		if npm -g ls --depth=0 "$pkg" &>/dev/null; then
+			ok "Installed: ${pkg}"
+		else
+			warn "Missing: ${pkg}"
+			missing+=("$pkg")
+		fi
+	done
+
+	echo ""
+	if [[ ${#missing[@]} -eq 0 ]]; then
+		ok "npm globals satisfied."
+		return 0
+	fi
+
+	if [[ "$yes_flag" != "--yes" ]]; then
+		confirm "Install missing npm globals?" || {
+			echo "Aborted."
+			return 1
+		}
+	fi
+
+	info "Installing npm globals from ${globals_file}..."
+	if ! npm install -g --ignore-scripts "${packages[@]}"; then
+		err "npm global install failed (see output above)."
+		return 1
+	fi
+
+	ok "npm globals done."
 }
 
 cmd_defaults() {
@@ -577,13 +651,14 @@ ${BOLD}COMMANDS${RESET}
   sync --to system    Deploy all changes from repo to system
   sync --to repo      Backfill all changes from system to repo
   brew                Preview and run Homebrew bundle install
+  npm                 Check and install managed npm globals
   defaults            Preview and apply macOS system defaults
   check               Run shellcheck/shfmt/bash -n on all shell files
   install             Create ~/.local/bin/dotfiles symlink
   installers          Install NVM and zgen if missing
 
 ${BOLD}FLAGS${RESET}
-  --yes               Skip confirmation prompts (for sync --to and brew/defaults)
+  --yes               Skip confirmation prompts (for sync --to, brew, npm, and defaults)
 
 ${BOLD}ALIASES${RESET}
   deploy              Alias for: sync --to system
@@ -596,6 +671,7 @@ ${BOLD}EXAMPLES${RESET}
   dotfiles sync --to system --yes
   dotfiles sync --to repo
   dotfiles brew
+  dotfiles npm
   dotfiles defaults --yes
   dotfiles deploy
   dotfiles backfill
@@ -636,6 +712,7 @@ main() {
 	deploy) cmd_sync "system" "$yes_flag" ;;
 	backfill) cmd_sync "repo" "$yes_flag" ;;
 	brew) cmd_brew "$yes_flag" ;;
+	npm) cmd_npm "$yes_flag" ;;
 	defaults) cmd_defaults "$yes_flag" ;;
 	check) cmd_check ;;
 	install) cmd_install ;;

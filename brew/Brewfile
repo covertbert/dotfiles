@@ -1,17 +1,65 @@
-# GitHub CLI
-brew "gh"
-# Better git diffs
-brew "git-delta"
-# ZSH theme / prompt
+# External taps
+
+tap "styrainc/packages"
+
+# Shell and terminal
 brew "starship"
-# http client
-brew "wget"
-# Fuzzy bash history search with ctrl+r
 brew "fzf"
-# Shell checking and formatting
+brew "bottom"
+brew "htop"
+
+# Core CLI utilities
+brew "bat"
+brew "coreutils"
+brew "fd"
+brew "jq"
 brew "shellcheck"
 brew "shfmt"
-# Better cat
-brew "bat"
-# GNU core utilities (up-to-date versions)
-brew "coreutils"
+brew "the_silver_searcher"
+brew "watchman"
+brew "wget"
+
+# Git and repo workflow
+brew "gh"
+brew "git-delta"
+brew "glab"
+brew "lefthook"
+brew "pre-commit"
+
+# Editors and local dev
+brew "chruby"
+brew "deno"
+brew "mysql-client"
+brew "neovim"
+brew "prettier"
+brew "pyenv"
+brew "python@3.11"
+brew "python@3.12"
+brew "ruby-install"
+brew "virtualenv"
+brew "yarn"
+
+# Infra and platform tooling
+brew "caddy"
+brew "hadolint"
+brew "nmap"
+brew "opa"
+brew "open-mpi"
+brew "opentofu"
+brew "styrainc/packages/regal"
+brew "tfenv"
+brew "tflint"
+
+# Language, package, and runtime support
+brew "automake"
+brew "bison"
+brew "code-server"
+brew "composer"
+brew "dockutil"
+brew "gdbm"
+brew "httpie"
+brew "libffi"
+brew "mongosh"
+brew "openssl@1.1"
+brew "rtmpdump"
+brew "vips"

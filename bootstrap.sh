@@ -19,5 +19,8 @@ echo "==> Applying macOS defaults..."
 echo "==> Installing Homebrew packages..."
 "${SCRIPT_DIR}/bin/dotfiles" brew --yes
 
+echo "==> Installing npm global packages..."
+"${SCRIPT_DIR}/bin/dotfiles" npm --yes
+
 echo ""
 echo "Bootstrap complete. Run 'dotfiles status' to verify."

@@ -12,3 +12,4 @@ Caskfile
 config/pi/zsh-shell
 bin/dotfiles
 .gitkeep
+npm/*.txt

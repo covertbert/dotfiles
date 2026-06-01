@@ -34,7 +34,8 @@ Bootstrap runs in this order:
 2. `dotfiles installers` — installs NVM and zgen if missing
 3. `dotfiles sync --to system` — deploys all managed config files
 4. `dotfiles defaults` — applies macOS system defaults (requires `sudo`)
-5. `dotfiles brew` — installs Homebrew and runs bundle
+5. `dotfiles brew` — installs Homebrew packages and casks
+6. `dotfiles npm` — installs managed npm global packages
 
 ```
 Bootstrap complete. Run 'dotfiles status' to verify.
@@ -80,6 +81,7 @@ dotfiles sync                Interactive: choose direction per changed item
 dotfiles sync --to system    Deploy all from repo → system
 dotfiles sync --to repo      Backfill all from system → repo
 dotfiles brew                Preview and run Homebrew bundle
+dotfiles npm                 Check and install managed npm globals
 dotfiles defaults            Preview and apply macOS system defaults
 dotfiles check               Run shellcheck/shfmt/bash -n on all shell files
 dotfiles install             (Re)create ~/.local/bin/dotfiles symlink
@@ -88,7 +90,7 @@ dotfiles installers          Install NVM and zgen if missing
 
 Aliases: `deploy` = `sync --to system`, `backfill` = `sync --to repo`.
 
-Add `--yes` to skip confirmation prompts on `sync --to`, `brew`, and `defaults`.
+Add `--yes` to skip confirmation prompts on `sync --to`, `brew`, `npm`, and `defaults`.
 
 ### 📋 Typical workflows
 
@@ -162,27 +164,27 @@ Defined in `lib/manifest.sh`. Everything in this table is tracked by `dotfiles s
 
 ---
 
-## 🍺 Homebrew
+## 🍺 Homebrew + npm globals
 
-Packages split across two files:
+Packages are split across three files:
 
-**`brew/Brewfile`** — CLI tools:
+**`brew/Brewfile`** — Homebrew formulae (CLI and dev tooling)
 
-- `gh` — GitHub CLI
-- `git-delta` — better git diffs
-- `starship` — ZSH prompt
-- `wget` — HTTP client
-- `fzf` — fuzzy finder (Ctrl+R history search)
-- `shellcheck` + `shfmt` — shell linting/formatting
-- `bat` — better `cat`
-- `coreutils` — up-to-date GNU utils
+Examples: `gh`, `git-delta`, `glab`, `fd`, `fzf`, `neovim`, `mysql-client`, `bottom`, `htop`, `yarn`, `opentofu`, `tflint`.
 
-**`brew/Caskfile`** — GUI apps + fonts:
+**`brew/Caskfile`** — Homebrew casks (GUI apps, CLI-distributed casks, fonts, runtimes)
 
-- `appcleaner`
-- `font-jetbrains-mono-nerd-font`
+Examples: `ghostty`, `docker-desktop`, `1password-cli`, `claude-code`, `codex`, `font-jetbrains-mono-nerd-font`, `temurin@11`.
 
-`dotfiles brew` checks what's missing, shows a preview, runs `brew bundle` for both files, then installs fzf shell integrations.
+**`npm/globals.txt`** — managed npm global packages
+
+- `@earendil-works/pi-coding-agent`
+- `corepack`
+- `openclaw`
+
+`dotfiles brew` checks what’s missing and runs `brew bundle` for both brew files.
+
+`dotfiles npm` ensures the default NVM Node version exists, then installs globals from `npm/globals.txt`.
 
 ---
 
@@ -228,7 +230,7 @@ Config split across three files in `config/zsh/`:
 
 **`aliases.zsh`** — highlights:
 
-- `vim` → `nvim`, `cat` → `bat`, `top` → `bpytop`
+- `vim` → `nvim`, `cat` → `bat`, `top` → `btm`
 - `g`, `ga`, `gaa`, `gb`, `gcl`, `gcmsg`, `gd`, `gp`, `gl`, `gss`, `gsv`, `gco`, `glog`, `gloga`, `gpristine`
 - `z` — reload ZSH config
 - `fd` → `find`, `t` → `tail -f`, `sgrep` — recursive grep with context
@@ -343,10 +345,12 @@ find . -name '*.sh' -not -path './.git/*' -print0 | xargs -0 -I {} bash -n {}
 │   └── dotfiles              # Primary CLI (all sync/diff/deploy commands)
 ├── lib/
 │   └── manifest.sh           # Managed paths (repo ↔ system mapping)
-├── bootstrap.sh              # Full install: install → installers → sync → defaults → brew
+├── bootstrap.sh              # Full install: install → installers → sync → defaults → brew → npm
 ├── brew/
-│   ├── Brewfile              # CLI packages
-│   └── Caskfile              # GUI apps and fonts
+│   ├── Brewfile              # Homebrew formulae
+│   └── Caskfile              # Homebrew casks
+├── npm/
+│   └── globals.txt           # Managed npm global packages
 ├── config/
 │   ├── git/                  # .gitconfig, themes.gitconfig, user.gitconfig template
 │   ├── mcp/                  # Shared MCP server config
