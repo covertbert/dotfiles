@@ -4,6 +4,7 @@
 *.sh
 *.gitconfig
 *.toml
+*.ghostty
 .zshrc
 .DS_Store
 Brewfile

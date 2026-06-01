@@ -14,7 +14,7 @@ My personal macOS dotfiles. One command to go from a blank Mac to a fully config
 | 🧬 **Git**            | `.gitconfig` with delta diffs, GPG signing, branch/push defaults, includes                                          |
 | 🍎 **macOS defaults** | Keyboard, Finder, Dock, screenshots, Trash, software updates, Chrome, Transmission                                  |
 | 🍺 **Homebrew**       | CLI tools (`Brewfile`) and GUI apps/fonts (`Caskfile`)                                                              |
-| 🖥️ **Terminal**       | Hyper config, Starship theme                                                                                        |
+| 🖥️ **Terminal**       | Hyper config, Ghostty config, Starship theme                                                                        |
 | 🤖 **Pi agent**       | Settings, models, Plannotator, AGENTS.md, skills, prompts, extensions                                               |
 | 🔌 **MCP**            | Shared MCP server config (`chrome-devtools`)                                                                        |
 
@@ -131,25 +131,26 @@ git pull && ./bootstrap.sh
 
 Defined in `lib/manifest.sh`. Everything in this table is tracked by `dotfiles sync`.
 
-| Group  | Repo path                       | System path                    |
-| ------ | ------------------------------- | ------------------------------ |
-| config | `config/git/.gitconfig`         | `~/.gitconfig`                 |
-| config | `config/git/themes.gitconfig`   | `~/themes.gitconfig`           |
-| config | `config/terminal/starship.toml` | `~/.config/starship.toml`      |
-| config | `config/terminal/.hyper.js`     | `~/.hyper.js`                  |
-| config | `config/zsh/.zshrc`             | `~/.zshrc`                     |
-| config | `config/zsh/` (dir)             | `~/.config/zsh/`               |
-| pi     | `config/pi/AGENTS.md`           | `~/.pi/agent/AGENTS.md`        |
-| pi     | `config/pi/settings.json`       | `~/.pi/agent/settings.json`    |
-| pi     | `config/pi/models.json`         | `~/.pi/agent/models.json`      |
-| pi     | `config/pi/plannotator.json`    | `~/.pi/agent/plannotator.json` |
-| pi     | `config/pi/zsh-shell`           | `~/.pi/agent/zsh-shell`        |
-| pi     | `config/pi/agents/` (dir)       | `~/.pi/agent/agents/`          |
-| pi     | `config/pi/skills/` (dir)       | `~/.pi/agent/skills/`          |
-| pi     | `config/pi/extensions/` (dir)   | `~/.pi/agent/extensions/`      |
-| pi     | `config/pi/themes/` (dir)       | `~/.pi/agent/themes/`          |
-| pi     | `config/pi/prompts/` (dir)      | `~/.pi/agent/prompts/`         |
-| mcp    | `config/mcp/mcp.json`           | `~/.config/mcp/mcp.json`       |
+| Group  | Repo path                        | System path                                                          |
+| ------ | -------------------------------- | -------------------------------------------------------------------- |
+| config | `config/git/.gitconfig`          | `~/.gitconfig`                                                       |
+| config | `config/git/themes.gitconfig`    | `~/themes.gitconfig`                                                 |
+| config | `config/terminal/starship.toml`  | `~/.config/starship.toml`                                            |
+| config | `config/terminal/.hyper.js`      | `~/.hyper.js`                                                        |
+| config | `config/terminal/config.ghostty` | `~/Library/Application Support/com.mitchellh.ghostty/config.ghostty` |
+| config | `config/zsh/.zshrc`              | `~/.zshrc`                                                           |
+| config | `config/zsh/` (dir)              | `~/.config/zsh/`                                                     |
+| pi     | `config/pi/AGENTS.md`            | `~/.pi/agent/AGENTS.md`                                              |
+| pi     | `config/pi/settings.json`        | `~/.pi/agent/settings.json`                                          |
+| pi     | `config/pi/models.json`          | `~/.pi/agent/models.json`                                            |
+| pi     | `config/pi/plannotator.json`     | `~/.pi/agent/plannotator.json`                                       |
+| pi     | `config/pi/zsh-shell`            | `~/.pi/agent/zsh-shell`                                              |
+| pi     | `config/pi/agents/` (dir)        | `~/.pi/agent/agents/`                                                |
+| pi     | `config/pi/skills/` (dir)        | `~/.pi/agent/skills/`                                                |
+| pi     | `config/pi/extensions/` (dir)    | `~/.pi/agent/extensions/`                                            |
+| pi     | `config/pi/themes/` (dir)        | `~/.pi/agent/themes/`                                                |
+| pi     | `config/pi/prompts/` (dir)       | `~/.pi/agent/prompts/`                                               |
+| mcp    | `config/mcp/mcp.json`            | `~/.config/mcp/mcp.json`                                             |
 
 **Optional** (synced only if present):
 
@@ -349,7 +350,7 @@ find . -name '*.sh' -not -path './.git/*' -print0 | xargs -0 -I {} bash -n {}
 ├── config/
 │   ├── git/                  # .gitconfig, themes.gitconfig, user.gitconfig template
 │   ├── mcp/                  # Shared MCP server config
-│   ├── terminal/             # starship.toml, .hyper.js
+│   ├── terminal/             # starship.toml, .hyper.js, config.ghostty
 │   ├── zsh/                  # .zshrc, aliases.zsh, functions.zsh
 │   └── pi/                   # Pi agent: settings, models, AGENTS.md, skills, prompts…
 └── defaults/

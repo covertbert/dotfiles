@@ -1,0 +1,4 @@
+# Tab switching
+keybind = cmd+shift+left=previous_tab
+keybind = cmd+shift+right=next_tab
+macos-option-as-alt = true
