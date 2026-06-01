@@ -81,6 +81,7 @@ dotfiles sync                Interactive: choose direction per changed item
 dotfiles sync --to system    Deploy all from repo → system
 dotfiles sync --to repo      Backfill all from system → repo
 dotfiles brew                Preview and run Homebrew bundle
+dotfiles brew-cleanup        Uninstall Homebrew packages not listed in brew files
 dotfiles npm                 Check and install managed npm globals
 dotfiles defaults            Preview and apply macOS system defaults
 dotfiles check               Run shellcheck/shfmt/bash -n on all shell files
@@ -90,7 +91,7 @@ dotfiles installers          Install NVM and zgen if missing
 
 Aliases: `deploy` = `sync --to system`, `backfill` = `sync --to repo`.
 
-Add `--yes` to skip confirmation prompts on `sync --to`, `brew`, `npm`, and `defaults`.
+Add `--yes` to skip confirmation prompts on `sync --to`, `brew`, `brew-cleanup`, `npm`, and `defaults`.
 
 ### 📋 Typical workflows
 
@@ -183,6 +184,8 @@ Examples: `ghostty`, `docker-desktop`, `1password-cli`, `claude-code`, `codex`, 
 - `openclaw`
 
 `dotfiles brew` checks what’s missing and runs `brew bundle` for both brew files.
+
+`dotfiles brew-cleanup` previews and removes Homebrew formulae/casks not listed in `brew/Brewfile` or `brew/Caskfile`.
 
 `dotfiles npm` ensures the default NVM Node version exists, then installs globals from `npm/globals.txt`.
 

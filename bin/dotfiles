@@ -460,6 +460,53 @@ cmd_brew() {
 	ok "Homebrew done."
 }
 
+cmd_brew_cleanup() {
+	local yes_flag="${1:-}"
+
+	heading "Homebrew cleanup"
+	echo ""
+
+	local brewfile="${DOTFILES_DIR}/brew/Brewfile"
+	local caskfile="${DOTFILES_DIR}/brew/Caskfile"
+
+	warn "This uninstalls Homebrew formulae and casks not listed in repo files."
+	dim "  formulae source: ${brewfile}"
+	dim "  casks source:    ${caskfile}"
+	echo ""
+
+	info "Formula cleanup preview..."
+	brew bundle cleanup --file="$brewfile" --formula 2>&1 | sed 's/^/  /' || true
+
+	echo ""
+	info "Cask cleanup preview..."
+	brew bundle cleanup --file="$caskfile" --cask 2>&1 | sed 's/^/  /' || true
+
+	echo ""
+	if [[ "$yes_flag" != "--yes" ]]; then
+		confirm "Uninstall Homebrew packages not listed in brew files?" || {
+			echo "Aborted."
+			return 1
+		}
+	fi
+
+	info "Cleaning formulae..."
+	if ! brew bundle cleanup --file="$brewfile" --formula --force; then
+		err "Formula cleanup failed (see output above)."
+		return 1
+	fi
+	ok "Formula cleanup done."
+
+	echo ""
+	info "Cleaning casks..."
+	if ! brew bundle cleanup --file="$caskfile" --cask --force; then
+		err "Cask cleanup failed (see output above)."
+		return 1
+	fi
+	ok "Cask cleanup done."
+
+	ok "Homebrew cleanup done."
+}
+
 cmd_npm() {
 	local yes_flag="${1:-}"
 
@@ -651,6 +698,7 @@ ${BOLD}COMMANDS${RESET}
   sync --to system    Deploy all changes from repo to system
   sync --to repo      Backfill all changes from system to repo
   brew                Preview and run Homebrew bundle install
+  brew-cleanup        Uninstall Homebrew packages not listed in brew files
   npm                 Check and install managed npm globals
   defaults            Preview and apply macOS system defaults
   check               Run shellcheck/shfmt/bash -n on all shell files
@@ -658,7 +706,7 @@ ${BOLD}COMMANDS${RESET}
   installers          Install NVM and zgen if missing
 
 ${BOLD}FLAGS${RESET}
-  --yes               Skip confirmation prompts (for sync --to, brew, npm, and defaults)
+  --yes               Skip confirmation prompts (for sync --to, brew, brew-cleanup, npm, and defaults)
 
 ${BOLD}ALIASES${RESET}
   deploy              Alias for: sync --to system
@@ -671,6 +719,7 @@ ${BOLD}EXAMPLES${RESET}
   dotfiles sync --to system --yes
   dotfiles sync --to repo
   dotfiles brew
+  dotfiles brew-cleanup
   dotfiles npm
   dotfiles defaults --yes
   dotfiles deploy
@@ -712,6 +761,7 @@ main() {
 	deploy) cmd_sync "system" "$yes_flag" ;;
 	backfill) cmd_sync "repo" "$yes_flag" ;;
 	brew) cmd_brew "$yes_flag" ;;
+	brew-cleanup) cmd_brew_cleanup "$yes_flag" ;;
 	npm) cmd_npm "$yes_flag" ;;
 	defaults) cmd_defaults "$yes_flag" ;;
 	check) cmd_check ;;
