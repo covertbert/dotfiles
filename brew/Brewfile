@@ -6,6 +6,7 @@ tap "styrainc/packages"
 brew "starship"
 brew "bottom"
 brew "htop"
+brew "fzf"
 brew "ripgrep"
 
 # Core CLI utilities
