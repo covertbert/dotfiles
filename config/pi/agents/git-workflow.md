@@ -44,4 +44,9 @@ When asked to draft an MR:
 1. Run `git log --oneline origin/HEAD..HEAD 2>/dev/null | head -c 1000` to see commits on branch.
 2. Run `git diff origin/HEAD...HEAD --stat 2>/dev/null | head -c 1000` for changed files.
 3. Draft a plain-Markdown MR description with two sections only: intent (what and why) and scope (what changed). No "Validation" section. No escaped newlines.
-4. Output the draft description only. Parent agent writes it to a temp file and runs glab.
+4. Output the draft description only. Parent agent must:
+   - push branch first
+   - write draft to temp file
+   - run `glab mr create --description "$(cat "$tmpfile")" ...`
+   - not use git push options for multiline descriptions
+   - not assume `glab` has `--description-file`
