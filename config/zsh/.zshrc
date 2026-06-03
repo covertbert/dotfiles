@@ -28,6 +28,9 @@ setopt CHASE_LINKS
 # Path
 export PATH="$HOME/.local/bin:/usr/local/sbin:$PATH"
 export PATH="/opt/homebrew/opt/mysql-client/bin:$PATH"
+if [ -d "/Applications/Visual Studio Code.app/Contents/Resources/app/bin" ]; then
+	export PATH="/Applications/Visual Studio Code.app/Contents/Resources/app/bin:$PATH"
+fi
 
 # Editor
 export EDITOR="code --wait"

@@ -2,8 +2,6 @@ alias vim='nvim'
 alias cat='bat'
 alias ~='cd ~'
 alias pys='python -m SimpleHTTPServer'
-alias code='open -a Visual\ Studio\ Code.app'
-
 alias z='source ~/.zshrc'
 
 alias grep='grep --color'
