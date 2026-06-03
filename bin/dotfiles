@@ -104,7 +104,8 @@ show_diff() {
 		elif [[ ! -d "$sp" ]]; then
 			warn "  system dir missing (new on deploy): ${sp}"
 		else
-			diff -rq --exclude='*.sw*' --exclude='.DS_Store' "$repo" "$sp" 2>/dev/null |
+			diff --color=always -ruN --exclude='*.sw*' --exclude='.DS_Store' "$repo" "$sp" 2>/dev/null |
+				grep -v 'No newline at end of file' |
 				sed 's/^/  /' || true
 		fi
 	elif [[ "$type" == "json-merge" ]]; then
