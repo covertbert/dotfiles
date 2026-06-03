@@ -14,22 +14,53 @@ COMMAND 2>&1 | head -c 4000
 
 ## Subagent Usage
 
-Proactively use subagents when a task benefits from delegation. Infer the best agent from prompt content:
+Use subagents only when they reduce uncertainty, preserve main context, provide independent review, or let a cheaper model handle bounded work. Do not delegate small obvious fixes.
 
-- Use `scout` for codebase exploration, finding relevant files, and understanding flow.
-- Use `researcher` when external docs, current info, APIs, libraries, or ecosystem behavior matter.
-- Use `planner` for multi-step, risky, broad, or architecture-sensitive changes before editing.
-- Use `worker` for implementation after scope is clear.
-- Use `reviewer` for diffs, plans, completed work, risk checks, and validation.
-- Use `oracle` when direction, assumptions, architecture, tradeoffs, or context drift need challenge.
-- Use `git-workflow` for branch names, commit messages, MR descriptions, and push checks.
+### Agents
 
-Default workflow:
+- `scout`: find relevant files, symbols, flows, entry points, and risks.
+- `researcher`: check external docs, APIs, libraries, ecosystem behaviour, or version-specific details. Requires web access.
+- `context-builder`: compress scattered repo/conversation context into an actionable brief.
+- `planner`: plan broad, risky, architectural, security-sensitive, migration-heavy, or ambiguous changes. Plans only.
+- `worker`: implement after scope, files, and acceptance criteria are clear.
+- `delegate`: handle bounded mechanical work, isolated inspection, simple tests, repetitive edits, narrow checks, or git-workflow preflight.
+- `reviewer`: review plans, diffs, completed work, risks, tests, edge cases, and simplicity. Prefer fresh context.
+- `oracle`: challenge assumptions, architecture, direction, tradeoffs, and context drift. Advises only.
 
-- Small obvious fix: handle directly unless subagents are requested or risk is non-trivial.
-- Unknown code area: use `scout` first.
-- Non-trivial change: use `scout` → `planner` → ask/confirm when needed → `worker` → `reviewer`.
-- Completed diff: use one or more fresh-context `reviewer` passes.
-- Ambiguous or risky decision: use `oracle`.
+### Model/cost intent
 
-Prefer cheap overridden agents where configured. Keep one writer thread. Ask before broad/costly fanout or irreversible changes.
+- Prefer `gpt-5.4-mini` agents for exploration, compression, bounded execution, research, and mechanical checks.
+- Reserve `gpt-5.5` agents for judgement-heavy work: planning, architecture, high-risk review, and challenging assumptions.
+- Do not escalate to `gpt-5.5` unless ambiguity, risk, architectural impact, or correctness sensitivity justifies it.
+
+### Workflow
+
+- Small obvious fix: handle directly.
+- Unknown code area: `scout`, then continue directly unless risk or scope is high.
+- Medium clear change: `scout` if needed → implement directly unless delegation is useful → optional fresh-context `reviewer`.
+- Broad/risky change: `scout` → `planner` → one writer thread → fresh-context `reviewer`.
+- Architecture-sensitive decision: `planner` and/or `oracle`.
+- External uncertainty: `researcher` → main thread decides.
+- Messy long task: `context-builder` → main thread or `worker`.
+- Git branch/commit/push/MR prep: use `delegate` with the git-workflow skill rules before running git/glab commands.
+
+### Rules
+
+- Use one subagent at a time by default.
+- Ask before broad fanout, parallel review, background work, or expensive multi-agent workflows.
+- Keep one writer thread.
+- Avoid large inherited/forked context unless needed.
+- Subagents must return compressed findings for parent consumption.
+
+Return:
+
+- relevant files, symbols, facts, risks, unknowns, validation suggestions, and next action
+
+Do not return:
+
+- full transcripts, pasted files, broad explanations, repeated context, or speculative implementation unless assigned to implement
+
+Target length:
+
+- normal scout/research/delegate/review: 300-900 words
+- context-builder/planner/oracle: 600-1500 words

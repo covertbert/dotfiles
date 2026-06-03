@@ -30,8 +30,8 @@ export PATH="$HOME/.local/bin:/usr/local/sbin:$PATH"
 export PATH="/opt/homebrew/opt/mysql-client/bin:$PATH"
 
 # Editor
-export EDITOR=/opt/homebrew/bin/nvim
-export VISUAL=/opt/homebrew/bin/nvim
+export EDITOR="code --wait"
+export VISUAL="code --wait"
 
 # fzf
 export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git'

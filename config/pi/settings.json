@@ -43,17 +43,40 @@
         "model": "openai-codex/gpt-5.4-mini",
         "thinking": "low"
       },
+
       "delegate": {
         "model": "openai-codex/gpt-5.4-mini",
-        "thinking": "minimal"
+        "thinking": "low"
       },
+
       "researcher": {
         "model": "openai-codex/gpt-5.4-mini",
         "thinking": "medium"
       },
+
       "context-builder": {
         "model": "openai-codex/gpt-5.4-mini",
         "thinking": "medium"
+      },
+
+      "planner": {
+        "model": "openai-codex/gpt-5.5",
+        "thinking": "high"
+      },
+
+      "worker": {
+        "model": "openai-codex/gpt-5.4-mini",
+        "thinking": "medium"
+      },
+
+      "reviewer": {
+        "model": "openai-codex/gpt-5.5",
+        "thinking": "medium"
+      },
+
+      "oracle": {
+        "model": "openai-codex/gpt-5.5",
+        "thinking": "high"
       }
     }
   }
