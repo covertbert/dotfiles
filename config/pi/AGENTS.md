@@ -42,7 +42,7 @@ Use subagents only when they reduce uncertainty, preserve main context, provide 
 - Architecture-sensitive decision: `planner` and/or `oracle`.
 - External uncertainty: `researcher` → main thread decides.
 - Messy long task: `context-builder` → main thread or `worker`.
-- Git branch/commit/push/MR prep: use `delegate` with the git-workflow skill rules before running git/glab commands.
+- Git branch/commit/push/MR prep: use `git-workflow` subagent before running git/glab commands. Parent agent runs final git/glab commands.
 
 ### Rules
 
