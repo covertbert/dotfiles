@@ -15,7 +15,7 @@ My personal macOS dotfiles. One command to go from a blank Mac to a fully config
 | 🍎 **macOS defaults** | Keyboard, Finder, Dock, screenshots, Trash, software updates, Chrome, Transmission                                  |
 | 🍺 **Homebrew**       | CLI tools (`Brewfile`) and GUI apps/fonts (`Caskfile`)                                                              |
 | 🖥️ **Terminal**       | Hyper config, Ghostty config, Starship theme                                                                        |
-| 🤖 **Pi agent**       | Settings, models, Plannotator, AGENTS.md, skills, prompts, extensions                                               |
+| 🤖 **Pi agent**       | Settings, models, AGENTS.md, skills, prompts, extensions                                                            |
 | 🔌 **MCP**            | Shared MCP server config (`chrome-devtools`)                                                                        |
 
 ---
@@ -146,7 +146,6 @@ Defined in `lib/manifest.sh`. Everything in this table is tracked by `dotfiles s
 | pi     | `config/pi/AGENTS.md`            | `~/.pi/agent/AGENTS.md`                                              |
 | pi     | `config/pi/settings.json`        | `~/.pi/agent/settings.json`                                          |
 | pi     | `config/pi/models.json`          | `~/.pi/agent/models.json`                                            |
-| pi     | `config/pi/plannotator.json`     | `~/.pi/agent/plannotator.json`                                       |
 | pi     | `config/pi/zsh-shell`            | `~/.pi/agent/zsh-shell`                                              |
 | pi     | `config/pi/agents/` (dir)        | `~/.pi/agent/agents/`                                                |
 | pi     | `config/pi/skills/` (dir)        | `~/.pi/agent/skills/`                                                |
@@ -266,22 +265,20 @@ Config split across three files in `config/zsh/`:
 
 `config/pi/` holds portable Pi coding agent config:
 
-| File/Dir                 | Purpose                                                                                           |
-| ------------------------ | ------------------------------------------------------------------------------------------------- |
-| `settings.json`          | Agent settings: default model (`gpt-5.5`), enabled models, packages, UI options                   |
-| `models.json`            | Provider config: Anthropic (via proxy), OpenRouter (Auto, Qwen, DeepSeek)                         |
-| `plannotator.json`       | Plannotator extension: planning uses `gpt-5.5` with high thinking; executing uses OpenRouter Auto |
-| `AGENTS.md`              | Global agent instructions: caveman mode, commit rules, context protection                         |
-| `agents/git-workflow.md` | Git workflow agent                                                                                |
-| `skills/`                | Skill definitions: `git-workflow`, `node-npm`, `notion-doc-writing`, `php-symfony`                |
-| `prompts/`               | Custom prompt templates                                                                           |
-| `extensions/`            | Local Pi extensions                                                                               |
-| `themes/`                | UI themes                                                                                         |
-| `zsh-shell`              | Shell config for Pi's embedded shell                                                              |
+| File/Dir                 | Purpose                                                                            |
+| ------------------------ | ---------------------------------------------------------------------------------- |
+| `settings.json`          | Agent settings: default model (`gpt-5.5`), enabled models, packages, UI options    |
+| `models.json`            | Provider config: Anthropic (via proxy), OpenRouter (Auto, Qwen, DeepSeek)          |
+| `AGENTS.md`              | Global agent instructions: caveman mode, commit rules, context protection          |
+| `agents/git-workflow.md` | Git workflow agent                                                                 |
+| `skills/`                | Skill definitions: `git-workflow`, `node-npm`, `notion-doc-writing`, `php-symfony` |
+| `prompts/`               | Custom prompt templates                                                            |
+| `extensions/`            | Local Pi extensions                                                                |
+| `themes/`                | UI themes                                                                          |
+| `zsh-shell`              | Shell config for Pi's embedded shell                                               |
 
 **Installed packages** (from `settings.json`):
 
-- `@plannotator/pi-extension` — plan tracking
 - `pi-caveman` — caveman mode responses
 - `pi-mcp-adapter` — MCP server integration
 - `@feniix/pi-notion` — Notion integration

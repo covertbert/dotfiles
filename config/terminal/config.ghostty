@@ -2,6 +2,3 @@
 keybind = cmd+shift+left=previous_tab
 keybind = cmd+shift+right=next_tab
 macos-option-as-alt = true
-
-# Force stable Ctrl+Option+P for Pi/Plannotator across Ghostty keyboard protocol modes.
-keybind = ctrl+alt+p=text:\x1b[112;7u

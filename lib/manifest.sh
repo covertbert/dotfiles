@@ -24,7 +24,6 @@ config|dir|config/zsh|${home}/.config/zsh|
 pi|file|config/pi/AGENTS.md|${pi_dir}/AGENTS.md|
 pi|json-merge|config/pi/settings.json|${pi_dir}/settings.json|lastChangelogVersion,defaultProvider,defaultModel,defaultThinkingLevel
 pi|file|config/pi/models.json|${pi_dir}/models.json|
-pi|file|config/pi/plannotator.json|${pi_dir}/plannotator.json|
 pi|file|config/pi/zsh-shell|${pi_dir}/zsh-shell|
 pi|dir|config/pi/agents|${pi_dir}/agents|
 pi|dir|config/pi/skills|${pi_dir}/skills|
