@@ -265,17 +265,17 @@ Config split across three files in `config/zsh/`:
 
 `config/pi/` holds portable Pi coding agent config:
 
-| File/Dir                 | Purpose                                                                            |
-| ------------------------ | ---------------------------------------------------------------------------------- |
-| `settings.json`          | Agent settings: default model (`gpt-5.5`), enabled models, packages, UI options    |
-| `models.json`            | Provider config: Anthropic (via proxy), OpenRouter (Auto, Qwen, DeepSeek)          |
-| `AGENTS.md`              | Global agent instructions: caveman mode, commit rules, context protection          |
-| `agents/git-workflow.md` | Git workflow agent                                                                 |
-| `skills/`                | Skill definitions: `git-workflow`, `node-npm`, `notion-doc-writing`, `php-symfony` |
-| `prompts/`               | Custom prompt templates                                                            |
-| `extensions/`            | Local Pi extensions                                                                |
-| `themes/`                | UI themes                                                                          |
-| `zsh-shell`              | Shell config for Pi's embedded shell                                               |
+| File/Dir        | Purpose                                                                                         |
+| --------------- | ----------------------------------------------------------------------------------------------- |
+| `settings.json` | Agent settings: default model (`gpt-5.5`), enabled models, packages, UI options                 |
+| `models.json`   | Provider config: Anthropic (via proxy), OpenRouter (Auto, Qwen, DeepSeek)                       |
+| `AGENTS.md`     | Global agent instructions: caveman mode, commit rules, context protection                       |
+| `agents/`       | Custom subagents: `git-workflow`, `frontend-ui-builder`                                         |
+| `skills/`       | Skill definitions: `git-workflow`, `node-npm`, `notion-doc-writing`, `php-symfony`, `shadcn-ui` |
+| `prompts/`      | Custom prompt templates, including `/ui-rebuild`                                                |
+| `extensions/`   | Local Pi extensions                                                                             |
+| `themes/`       | UI themes                                                                                       |
+| `zsh-shell`     | Shell config for Pi's embedded shell                                                            |
 
 **Installed packages** (from `settings.json`):
 
