@@ -19,7 +19,8 @@
     "npm:pi-subagents",
     "npm:pi-powerline-footer",
     "npm:@juicesharp/rpiv-ask-user-question",
-    "npm:@mjfuertesf/pi-quota-status"
+    "npm:@mjfuertesf/pi-quota-status",
+    "npm:pi-frontend-create@1.0.3"
   ],
   "hideThinkingBlock": false,
   "powerline": {

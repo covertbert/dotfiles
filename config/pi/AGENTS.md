@@ -43,7 +43,7 @@ Use subagents only when they reduce uncertainty, preserve main context, provide 
 - External uncertainty: `researcher` → main thread decides.
 - Messy long task: `context-builder` → main thread or `worker`.
 - Git branch/commit/push/MR prep: use `git-workflow` subagent before running git/glab commands. Parent agent runs final git/glab commands.
-- Frontend UI build/rebuild/redesign/polish/UX work: prefer `frontend-ui-builder` for implementation unless the task is tiny. For React/Next/Vite + Tailwind UI work, use the `shadcn-ui` skill when relevant. Preserve behavior/data flow by default; validate responsive states and browser UX when possible.
+- Frontend UI build/rebuild/redesign/polish/UX work: load the `frontend-create` skill for distinctive, non-generic visual design. Preserve behavior/data flow by default. Use the `shadcn-ui` skill only when the project already uses shadcn/ui or the user asks for it. Validate responsive states and browser UX when possible.
 
 ### Rules
 
