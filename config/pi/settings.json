@@ -15,7 +15,6 @@
   "packages": [
     "npm:pi-caveman",
     "npm:pi-mcp-adapter",
-    "npm:pi-subagents",
     "npm:pi-powerline-footer",
     "npm:@mjfuertesf/pi-quota-status",
     "npm:pi-frontend-create@1.0.3"
@@ -34,41 +33,5 @@
   "workingVibe": "caveman",
   "workingVibeMode": "file",
   "workingVibeFallback": "Working",
-  "workingVibeMaxLength": 65,
-  "subagents": {
-    "agentOverrides": {
-      "scout": {
-        "model": "openai-codex/gpt-5.4-mini",
-        "thinking": "low"
-      },
-      "delegate": {
-        "model": "openai-codex/gpt-5.4-mini",
-        "thinking": "low"
-      },
-      "researcher": {
-        "model": "openai-codex/gpt-5.4-mini",
-        "thinking": "medium"
-      },
-      "context-builder": {
-        "model": "openai-codex/gpt-5.4-mini",
-        "thinking": "medium"
-      },
-      "planner": {
-        "model": "openai-codex/gpt-5.5",
-        "thinking": "high"
-      },
-      "worker": {
-        "model": "openai-codex/gpt-5.4-mini",
-        "thinking": "medium"
-      },
-      "reviewer": {
-        "model": "openai-codex/gpt-5.5",
-        "thinking": "medium"
-      },
-      "oracle": {
-        "model": "openai-codex/gpt-5.5",
-        "thinking": "high"
-      }
-    }
-  }
+  "workingVibeMaxLength": 65
 }

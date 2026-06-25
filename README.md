@@ -270,7 +270,7 @@ Config split across three files in `config/zsh/`:
 | `settings.json` | Agent settings: default model (`gpt-5.5`), enabled models, packages, UI options                 |
 | `models.json`   | Provider config: Anthropic (via proxy), OpenRouter (Auto, Qwen, DeepSeek)                       |
 | `AGENTS.md`     | Global agent instructions: caveman mode, commit rules, context protection                       |
-| `agents/`       | Custom subagents: `git-workflow`, `frontend-ui-builder`                                         |
+| `agents/`       | Reserved local agent directory                                                                  |
 | `skills/`       | Skill definitions: `git-workflow`, `node-npm`, `notion-doc-writing`, `php-symfony`, `shadcn-ui` |
 | `prompts/`      | Custom prompt templates, including `/ui-rebuild`                                                |
 | `extensions/`   | Local Pi extensions                                                                             |
@@ -282,7 +282,6 @@ Config split across three files in `config/zsh/`:
 - `pi-caveman` — caveman mode responses
 - `pi-mcp-adapter` — MCP server integration
 - `@feniix/pi-notion` — Notion integration
-- `pi-subagents` — subagent support
 - `pi-powerline-footer` — powerline status bar
 
 **Private/local state** (not committed, excluded by `.gitignore`):
