@@ -17,7 +17,8 @@
     "npm:pi-mcp-adapter",
     "npm:pi-powerline-footer",
     "npm:@mjfuertesf/pi-quota-status",
-    "npm:pi-frontend-create@1.0.3"
+    "npm:pi-frontend-create@1.0.3",
+    "npm:pi-web-access"
   ],
   "hideThinkingBlock": false,
   "powerline": {
