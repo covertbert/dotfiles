@@ -33,5 +33,6 @@
   "workingVibe": "caveman",
   "workingVibeMode": "file",
   "workingVibeFallback": "Working",
-  "workingVibeMaxLength": 65
+  "workingVibeMaxLength": 65,
+  "theme": "dark"
 }

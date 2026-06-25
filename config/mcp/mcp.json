@@ -13,6 +13,11 @@
         "GITLAB_READ_ONLY_MODE": "true"
       },
       "lifecycle": "lazy"
+    },
+    "notion": {
+      "url": "https://mcp.notion.com/mcp",
+      "auth": "oauth",
+      "lifecycle": "lazy"
     }
   }
 }
