@@ -3,14 +3,10 @@
   "enabledModels": [
     "anthropic/claude-haiku-4-5",
     "anthropic/claude-sonnet-4-6",
-    "anthropic/claude-opus-4-7",
     "anthropic/claude-opus-4-8",
     "openai-codex/gpt-5.5",
     "openai-codex/gpt-5.4-mini",
-    "openrouter/auto",
-    "openrouter/qwen/qwen3-coder",
-    "openrouter/deepseek/deepseek-chat-v3.1",
-    "openrouter/qwen/qwen3-coder-30b-a3b-instruct"
+    "openrouter/qwen/qwen3-coder"
   ],
   "packages": [
     "npm:pi-caveman",

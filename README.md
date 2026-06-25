@@ -268,7 +268,7 @@ Config split across three files in `config/zsh/`:
 | File/Dir        | Purpose                                                                                         |
 | --------------- | ----------------------------------------------------------------------------------------------- |
 | `settings.json` | Agent settings: default model (`gpt-5.5`), enabled models, packages, UI options                 |
-| `models.json`   | Provider config: Anthropic (via proxy), OpenRouter (Auto, Qwen, DeepSeek)                       |
+| `models.json`   | Provider config: Anthropic (via proxy), OpenRouter (Qwen Coder)                                 |
 | `AGENTS.md`     | Global agent instructions: caveman mode, commit rules, context protection                       |
 | `agents/`       | Reserved local agent directory                                                                  |
 | `skills/`       | Skill definitions: `git-workflow`, `node-npm`, `notion-doc-writing`, `php-symfony`, `shadcn-ui` |

@@ -19,28 +19,10 @@
       },
       "models": [
         {
-          "contextWindow": 2000000,
-          "id": "auto",
-          "maxTokens": 8192,
-          "name": "OpenRouter Auto"
-        },
-        {
           "contextWindow": 262144,
           "id": "qwen/qwen3-coder",
           "maxTokens": 8192,
           "name": "Qwen Coder - Best"
-        },
-        {
-          "contextWindow": 164000,
-          "id": "deepseek/deepseek-chat-v3.1",
-          "maxTokens": 8192,
-          "name": "DeepSeek V3.1 - Balanced"
-        },
-        {
-          "contextWindow": 160000,
-          "id": "qwen/qwen3-coder-30b-a3b-instruct",
-          "maxTokens": 8192,
-          "name": "Qwen Coder 30B - Cheap"
         }
       ],
       "name": "OpenRouter"
