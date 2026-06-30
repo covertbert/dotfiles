@@ -23,11 +23,7 @@ Follow this workflow directly for branch creation, commits, pushes, and merge re
 Pause and ask, or run deeper checks, when any apply:
 
 - dirty worktree before push or MR
-- branch behind/diverged from upstream
 - force push required
-- no upstream and branch name/remote is unclear
-- risky files touched: secrets, `.env*`, credentials, auth, migrations, infra, lockfiles
-- many deletes/renames or unusually large diff
 - commit/MR intent unclear from request, branch, staged files, or commits
 - user asks for review
 - command is destructive or irreversible
@@ -38,10 +34,9 @@ When asked to create or name a branch:
 
 1. Run:
    - `git status --short 2>&1 | head -c 4000`
-   - `git log --oneline -5 2>&1 | head -c 1000`
-2. Propose a kebab-case branch name using `type/short-description`.
+2. Create a kebab-case branch name using `type/short-description`.
 3. Output proposed branch name and checkout command.
-4. Run checkout command if user asked to create branch and no tripwire appears.
+4. Run checkout command if no tripwire appears.
 
 Example:
 
@@ -82,7 +77,7 @@ When asked to push:
    - `git push`
 3. If no upstream but current branch/remote are clear, push:
    - `git push -u origin "$(git branch --show-current)"`
-4. If dirty, behind/diverged, force-push needed, or upstream unclear, pause and explain risk.
+4. If dirty, force-push needed, or upstream unclear, pause and explain risk.
 
 Run deeper checks only if a tripwire appears:
 
@@ -116,8 +111,7 @@ When asked to open or update an MR:
    - `git diff origin/HEAD...HEAD --stat 2>/dev/null | head -c 2000`
 2. If branch is not pushed, push before creating MR.
 3. Derive title from branch and commits:
-   - Prefer latest or single commit subject if it already uses Conventional Commit format.
-   - Otherwise derive from branch, commits, and diff stat.
+   - Derive from branch, commits, and diff stat.
    - Always normalize title to Conventional Commit format: `type(scope): summary` or `type: summary`.
    - Title must match `^(feat|fix|docs|refactor|test|chore|ci|build|perf)(\([a-z0-9-]+\))?: .+`.
    - If type, scope, or summary cannot be inferred, pause and ask.
