@@ -15,6 +15,8 @@ Follow this workflow directly for branch creation, commits, pushes, and merge re
 - Prefer status/stat/log summaries over full diffs.
 - Do not run destructive commands without explicit confirmation.
 - Never use `git add .` unless user explicitly asks.
+- MR titles must use Conventional Commit format: `type(scope): summary` or `type: summary`.
+- MR title types must be one of: `feat`, `fix`, `docs`, `refactor`, `test`, `chore`, `ci`, `build`, `perf`.
 
 ## Tripwires
 
@@ -113,7 +115,13 @@ When asked to open or update an MR:
    - `git log --oneline origin/HEAD..HEAD 2>/dev/null | head -c 2000`
    - `git diff origin/HEAD...HEAD --stat 2>/dev/null | head -c 2000`
 2. If branch is not pushed, push before creating MR.
-3. Derive title from branch and commits.
+3. Derive title from branch and commits:
+   - Prefer latest or single commit subject if it already uses Conventional Commit format.
+   - Otherwise derive from branch, commits, and diff stat.
+   - Always normalize title to Conventional Commit format: `type(scope): summary` or `type: summary`.
+   - Title must match `^(feat|fix|docs|refactor|test|chore|ci|build|perf)(\([a-z0-9-]+\))?: .+`.
+   - If type, scope, or summary cannot be inferred, pause and ask.
+   - Do not create an MR with a non-conventional title.
 4. Draft short `intent` and `scope` from user request, commit summaries, and diff stat.
 5. Create MR using a temp file for the description.
 
@@ -131,10 +139,11 @@ cat > "$tmpfile" <<'EOF'
 
 ...
 EOF
-glab mr create --source-branch <branch> --target-branch main --title "<title>" --description "$(cat "$tmpfile")" --yes
+glab mr create --source-branch <branch> --target-branch main --title "feat(scope): summary" --description "$(cat "$tmpfile")" --yes
 rm -f "$tmpfile"
 ```
 
+Do not use raw branch names as MR titles.
 Do not use `glab mr create --fill --yes` by itself because it does not guarantee the required intent/scope description.
 Do not use git push options for multiline MR descriptions.
 Do not assume `glab` supports `--description-file`; check `glab mr create --help` if uncertain.
