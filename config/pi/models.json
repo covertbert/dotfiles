@@ -1,12 +1,5 @@
 {
   "providers": {
-    "anthropic": {
-      "apiKey": "x",
-      "baseUrl": "http://127.0.0.1:3457",
-      "headers": {
-        "x-meridian-agent": "pi"
-      }
-    },
     "openrouter": {
       "api": "openai-completions",
       "apiKey": "$OPENROUTER_API_KEY",
