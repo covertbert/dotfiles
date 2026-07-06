@@ -19,10 +19,11 @@
       },
       "models": [
         {
-          "contextWindow": 262144,
-          "id": "qwen/qwen3-coder",
-          "maxTokens": 8192,
-          "name": "Qwen Coder - Best"
+          "contextWindow": 1048576,
+          "id": "deepseek/deepseek-v4-pro",
+          "maxTokens": 384000,
+          "name": "DeepSeek V4 Pro",
+          "reasoning": true
         }
       ],
       "name": "OpenRouter"
