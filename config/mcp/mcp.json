@@ -18,6 +18,13 @@
       "url": "https://mcp.notion.com/mcp",
       "auth": "oauth",
       "lifecycle": "lazy"
+    },
+    "linearb": {
+      "url": "https://mcp.linearb.io/mcp",
+      "headers": {
+        "x-api-key": "${LINEARB_API_KEY}"
+      },
+      "lifecycle": "lazy"
     }
   }
 }

@@ -16,7 +16,7 @@ My personal macOS dotfiles. One command to go from a blank Mac to a fully config
 | 🍺 **Homebrew**       | CLI tools (`Brewfile`) and GUI apps/fonts (`Caskfile`)                                                              |
 | 🖥️ **Terminal**       | Hyper config, Ghostty config, Starship theme                                                                        |
 | 🤖 **Pi agent**       | Settings, models, AGENTS.md, skills, prompts, extensions                                                            |
-| 🔌 **MCP**            | Shared MCP server config (`chrome-devtools`)                                                                        |
+| 🔌 **MCP**            | Shared MCP server config (Chrome DevTools, GitLab, Notion, LinearB)                                                 |
 
 ---
 
@@ -301,9 +301,23 @@ config/pi/**/.env
 
 **Current servers:**
 
-| Server            | How it runs                         |
-| ----------------- | ----------------------------------- |
-| `chrome-devtools` | `npx -y chrome-devtools-mcp@latest` |
+| Server            | How it runs/auths                                                   |
+| ----------------- | ------------------------------------------------------------------- |
+| `chrome-devtools` | `npx -y chrome-devtools-mcp@latest`                                 |
+| `gitlab`          | `npx -y @zereight/mcp-gitlab`, reads `GITLAB_PERSONAL_ACCESS_TOKEN` |
+| `notion`          | Remote MCP at `https://mcp.notion.com/mcp`, OAuth                   |
+| `linearb`         | Remote MCP at `https://mcp.linearb.io/mcp`, reads `LINEARB_API_KEY` |
+
+**LinearB setup:**
+
+1. In LinearB, go to **Settings → API Tokens** and generate an admin API key.
+2. Export it before launching Pi so Pi inherits it: `export LINEARB_API_KEY="..."`.
+   - Prefer 1Password: `setSecret LINEARB_API_KEY` if item/field matches.
+   - Or store local-only export in `~/.zshrc.local` if plaintext local secret is acceptable.
+3. Run `dotfiles deploy` to sync `config/mcp/mcp.json` to `~/.config/mcp/mcp.json`.
+4. Restart Pi from that shell, then verify MCP server `linearb` connects.
+
+Do not commit API keys. Repo stores only env var reference.
 
 ---
 
