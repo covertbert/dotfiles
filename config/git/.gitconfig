@@ -33,3 +33,5 @@ forceSignAnnotated = true
 [push]
 autoSetupRemote = true
 default = current
+[checkout]
+defaultRemote = origin
