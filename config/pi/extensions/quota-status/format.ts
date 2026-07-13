@@ -7,6 +7,22 @@ export interface ThemeLike {
   fg?(color: string, text: string): string;
 }
 
+type StatusLevel = "normal" | "warning" | "error";
+
+const MUTED_STATUS_COLORS: Record<
+  StatusLevel,
+  readonly [number, number, number]
+> = {
+  normal: [143, 181, 115],
+  warning: [219, 188, 127],
+  error: [230, 126, 128]
+};
+
+function mutedFg(level: StatusLevel, text: string): string {
+  const [r, g, b] = MUTED_STATUS_COLORS[level];
+  return `\x1b[38;2;${r};${g};${b}m${text}\x1b[39m`;
+}
+
 function clampPct(value: number): number {
   if (!Number.isFinite(value)) return 0;
   return Math.max(0, Math.min(100, value));
@@ -54,7 +70,7 @@ export function formatUsage(
 
 export function statusLevel(
   usage: NormalizedQuotaUsage | undefined
-): "normal" | "warning" | "error" {
+): StatusLevel {
   const values = [
     usage?.fiveHour?.remainingPct,
     usage?.weekly?.remainingPct
@@ -62,26 +78,20 @@ export function statusLevel(
     (value): value is number =>
       typeof value === "number" && Number.isFinite(value)
   );
-  if (values.some((value) => value <= 0)) return "error";
-  if (values.some((value) => value < 15)) return "warning";
+  if (values.some((value) => value < 10)) return "error";
+  if (values.some((value) => value < 30)) return "warning";
   return "normal";
 }
 
 export function styleStatus(
   label: string,
   theme?: ThemeLike,
-  level: "normal" | "warning" | "error" | "dim" = "normal"
+  level: StatusLevel | "dim" = "normal"
 ): string {
-  const color =
-    level === "error"
-      ? "error"
-      : level === "warning"
-        ? "warning"
-        : level === "dim"
-          ? "dim"
-          : "mdHeading";
+  if (level !== "dim") return mutedFg(level, label);
+
   try {
-    return theme?.fg ? theme.fg(color, label) : label;
+    return theme?.fg ? theme.fg("dim", label) : label;
   } catch {
     return label;
   }

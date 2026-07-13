@@ -14,6 +14,7 @@ Meaning:
 - `0%` = no usage remaining
 - `5h` = rolling five-hour window
 - `Wk` = weekly/seven-day window
+- Color uses the lowest remaining quota window: muted green at `>=30%`, muted amber at `10–29%`, muted red below `10%`.
 
 ## Commands
 
