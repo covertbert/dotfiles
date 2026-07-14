@@ -23,7 +23,7 @@ My personal macOS dotfiles. One command to go from a blank Mac to a fully config
 ## 🚀 Quick start
 
 ```sh
-git clone <repo-url> ~/dotfiles
+git clone git@github.com:covertbert/dotfiles.git ~/dotfiles
 cd ~/dotfiles
 ./bootstrap.sh
 ```
