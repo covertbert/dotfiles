@@ -24,7 +24,7 @@ My personal macOS dotfiles. One command to go from a blank Mac to a fully config
 ## 🚀 Quick start
 
 ```sh
-git clone git@github.com:covertbert/dotfiles.git ~/dotfiles
+git clone https://github.com/covertbert/dotfiles.git ~/dotfiles
 cd ~/dotfiles
 ./bootstrap.sh
 ```
@@ -32,12 +32,13 @@ cd ~/dotfiles
 Bootstrap runs in this order:
 
 1. `dotfiles install` — creates `~/.local/bin/dotfiles` symlink
-2. `dotfiles installers` — installs NVM and zgen if missing
-3. `dotfiles sync --to system` — deploys all managed config files
-4. `dotfiles defaults` — applies macOS system defaults (requires `sudo`)
-5. `dotfiles brew` — installs Homebrew packages and casks
-6. `dotfiles npm` — installs managed npm global packages
-7. `dotfiles pi-meridian setup` — deploys and starts the local Pi → Meridian stack
+2. Homebrew setup — installs Homebrew if missing and loads its environment
+3. `dotfiles installers` — installs NVM and zgen if missing
+4. `dotfiles brew` — installs Homebrew packages and casks
+5. `dotfiles npm` — installs managed npm global packages
+6. `dotfiles sync --to system` — deploys all managed config files
+7. `dotfiles defaults` — applies macOS system defaults (requires `sudo`)
+8. `dotfiles pi-meridian setup` — deploys and starts the local Pi → Meridian stack
 
 ```
 Bootstrap complete. Run 'dotfiles status' to verify.
