@@ -30,6 +30,9 @@ pi|dir|config/pi/skills|${pi_dir}/skills|
 pi|dir|config/pi/extensions|${pi_dir}/extensions|
 pi|dir|config/pi/themes|${pi_dir}/themes|
 pi|dir|config/pi/prompts|${pi_dir}/prompts|
+service|file|services/pi-meridian/pi-meridian-proxy.mjs|${home}/.local/bin/pi-meridian-proxy.mjs|
+service|file|services/pi-meridian/pi-meridian-stack.sh|${home}/.local/bin/pi-meridian-stack.sh|
+service|file|services/pi-meridian/com.bertie.pi-meridian-stack.plist|${home}/Library/LaunchAgents/com.bertie.pi-meridian-stack.plist|
 mcp|file|config/mcp/mcp.json|${mcp_config}|
 EOF
 }

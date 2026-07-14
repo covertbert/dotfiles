@@ -578,6 +578,78 @@ cmd_brew_cleanup() {
 	ok "Homebrew cleanup done."
 }
 
+npm_package_name_from_spec() {
+	local package_spec="$1"
+
+	if [[ "$package_spec" == @* ]]; then
+		if [[ "$package_spec" == @*/*@* ]]; then
+			echo "${package_spec%@*}"
+		else
+			echo "$package_spec"
+		fi
+	elif [[ "$package_spec" == *@* ]]; then
+		echo "${package_spec%%@*}"
+	else
+		echo "$package_spec"
+	fi
+}
+
+npm_global_bin_names() {
+	local package_json="$1"
+
+	node -e '
+const fs = require("node:fs");
+const pkg = JSON.parse(fs.readFileSync(process.argv[1], "utf8"));
+if (typeof pkg.bin === "string") {
+  console.log(pkg.name.replace(/^@[^/]+\//, ""));
+} else if (pkg.bin && typeof pkg.bin === "object") {
+  for (const name of Object.keys(pkg.bin)) console.log(name);
+}
+' "$package_json"
+}
+
+npm_global_bins_are_healthy() {
+	local package_spec="$1" current_prefix="$2"
+	local package_name package_json bin_names bin_name
+	package_name="$(npm_package_name_from_spec "$package_spec")"
+	package_json="${current_prefix}/lib/node_modules/${package_name}/package.json"
+
+	[[ -f "$package_json" ]] || return 1
+	bin_names="$(npm_global_bin_names "$package_json")" || return 1
+
+	while IFS= read -r bin_name; do
+		[[ -z "$bin_name" ]] && continue
+		[[ -x "${current_prefix}/bin/${bin_name}" ]] || return 1
+	done <<< "$bin_names"
+}
+
+npm_other_nvm_installations() {
+	local package_spec="$1" current_prefix="$2"
+	local package_name current_version current_major version_dir version
+	local found_versions=()
+	package_name="$(npm_package_name_from_spec "$package_spec")"
+	current_version="$(basename "$current_prefix")"
+	current_major="${current_version%%.*}"
+
+	for version_dir in "${NVM_DIR}"/versions/node/v*; do
+		[[ -d "$version_dir" ]] || continue
+		[[ "${version_dir%/}" == "${current_prefix%/}" ]] && continue
+		[[ -f "${version_dir}/lib/node_modules/${package_name}/package.json" ]] || continue
+
+		version="$(basename "$version_dir")"
+		[[ "$version" == "${current_major}."* ]] || continue
+		found_versions+=("$version")
+	done
+
+	if [[ ${#found_versions[@]} -eq 0 ]]; then
+		return 1
+	fi
+
+	printf '%s\n' "${found_versions[@]}" |
+		sort -t. -k1.2,1n -k2,2n -k3,3n |
+		tail -n 3
+}
+
 cmd_npm() {
 	local yes_flag="${1:-}"
 
@@ -603,16 +675,41 @@ cmd_npm() {
 		return 0
 	fi
 
+	local current_node current_prefix old_installations
 	local missing=()
 	local pkg
+	local found_old_nvm_install=false
+	current_node="$(node --version)"
+	current_prefix="$(npm prefix -g)"
+
 	for pkg in "${packages[@]}"; do
 		if npm -g ls --depth=0 "$pkg" &>/dev/null; then
-			ok "Installed: ${pkg}"
+			if npm_global_bins_are_healthy "$pkg" "$current_prefix"; then
+				ok "Installed under Node ${current_node}: ${pkg}"
+				continue
+			fi
+
+			warn "Broken under Node ${current_node}: ${pkg} (global bin missing)"
 		else
-			warn "Missing: ${pkg}"
-			missing+=("$pkg")
+			warn "Missing under Node ${current_node}: ${pkg}"
+		fi
+
+		missing+=("$pkg")
+
+		if old_installations="$(npm_other_nvm_installations "$pkg" "$current_prefix")"; then
+			while IFS= read -r old_version; do
+				dim "    found under old Node ${old_version}"
+			done <<< "$old_installations"
+			found_old_nvm_install=true
 		fi
 	done
+
+	if $found_old_nvm_install; then
+		echo ""
+		warn "Old NVM package copies were left untouched."
+		dim "  Inspect runtimes: nvm ls"
+		dim "  After verifying no project needs one: nvm uninstall <version>"
+	fi
 
 	echo ""
 	if [[ ${#missing[@]} -eq 0 ]]; then
@@ -627,13 +724,325 @@ cmd_npm() {
 		}
 	fi
 
-	info "Installing npm globals from ${globals_file}..."
-	if ! npm install -g --ignore-scripts "${packages[@]}"; then
+	info "Installing missing npm globals under Node ${current_node}..."
+	if ! npm install -g --ignore-scripts "${missing[@]}"; then
 		err "npm global install failed (see output above)."
 		return 1
 	fi
 
+	local install_failed=false
+	for pkg in "${missing[@]}"; do
+		if npm -g ls --depth=0 "$pkg" &>/dev/null && npm_global_bins_are_healthy "$pkg" "$current_prefix"; then
+			ok "Ready under Node ${current_node}: ${pkg}"
+		else
+			err "Package installed without expected global bin: ${pkg}"
+			install_failed=true
+		fi
+	done
+
+	if $install_failed; then
+		return 1
+	fi
+
 	ok "npm globals done."
+}
+
+load_nvm_runtime() {
+	if [[ ! -s "${NVM_DIR}/nvm.sh" ]]; then
+		err "NVM not found at ${NVM_DIR}/nvm.sh"
+		return 1
+	fi
+
+	# NVM is not nounset-safe while loading.
+	set +u
+	# shellcheck source=/dev/null
+	local source_status=0
+	source "${NVM_DIR}/nvm.sh" || source_status=$?
+	set -u
+
+	if ((source_status != 0)) || ! command -v nvm &>/dev/null; then
+		err "Failed to load NVM."
+		return 1
+	fi
+}
+
+pi_meridian_node_bin_dir() {
+	load_nvm_runtime >/dev/null || return 1
+
+	local node_bin
+	if ! node_bin="$(nvm which default 2>/dev/null)" || [[ ! -x "$node_bin" ]]; then
+		err "Default NVM Node not found. Run: dotfiles npm"
+		return 1
+	fi
+
+	dirname "$node_bin"
+}
+
+pi_meridian_wait_for_health() {
+	local url="$1" attempts="$2"
+	local attempt
+
+	for ((attempt = 1; attempt <= attempts; attempt++)); do
+		if curl -fsS --max-time 2 "$url" >/dev/null 2>&1; then
+			return 0
+		fi
+		sleep 1
+	done
+
+	return 1
+}
+
+pi_meridian_show_health() {
+	local label="$1" url="$2"
+	local body status
+
+	if ! body="$(curl -fsS --max-time 2 "$url" 2>/dev/null)"; then
+		warn "${label}: unavailable (${url})"
+		return 1
+	fi
+
+	if command -v jq &>/dev/null; then
+		status="$(printf '%s' "$body" | jq -r '.status // "responding"' 2>/dev/null || echo "responding")"
+	else
+		status="responding"
+	fi
+
+	ok "${label}: ${status} (${url})"
+}
+
+pi_meridian_check_dependencies() {
+	local node_bin_dir node_major
+	local dependency
+
+	for dependency in curl launchctl plutil; do
+		if ! command -v "$dependency" &>/dev/null; then
+			err "Missing dependency: ${dependency}"
+			return 1
+		fi
+	done
+
+	if ! PATH="/opt/homebrew/bin:/usr/local/bin:$PATH" command -v claude &>/dev/null; then
+		err "Claude Code not found. Run: dotfiles brew"
+		return 1
+	fi
+
+	node_bin_dir="$(pi_meridian_node_bin_dir)" || return 1
+	node_major="$("${node_bin_dir}/node" -p 'process.versions.node.split(".")[0]')"
+
+	if ((node_major < 22)); then
+		err "Meridian requires Node 22 or newer; default NVM Node is $("${node_bin_dir}/node" --version)."
+		return 1
+	fi
+
+	for dependency in meridian pi; do
+		if [[ ! -x "${node_bin_dir}/${dependency}" ]]; then
+			err "${dependency} not installed under default NVM Node. Run: dotfiles npm"
+			return 1
+		fi
+	done
+}
+
+cmd_pi_meridian_setup() {
+	local yes_flag="${1:-}"
+	local label="com.bertie.pi-meridian-stack"
+	local uid domain target plist
+
+	heading "Pi → Meridian setup"
+	echo ""
+
+	if [[ "$(uname -s)" != "Darwin" ]]; then
+		err "Pi → Meridian launchd service requires macOS."
+		return 1
+	fi
+
+	pi_meridian_check_dependencies || return 1
+
+	if [[ "$yes_flag" != "--yes" ]]; then
+		warn "This deploys service files and reloads the launchd agent."
+		confirm "Set up Pi → Meridian service?" || {
+			echo "Aborted."
+			return 1
+		}
+	fi
+
+	copy_to_system \
+		"services/pi-meridian/pi-meridian-proxy.mjs" \
+		"${HOME}/.local/bin/pi-meridian-proxy.mjs" \
+		"file"
+	copy_to_system \
+		"services/pi-meridian/pi-meridian-stack.sh" \
+		"${HOME}/.local/bin/pi-meridian-stack.sh" \
+		"file"
+	copy_to_system \
+		"services/pi-meridian/com.bertie.pi-meridian-stack.plist" \
+		"${HOME}/Library/LaunchAgents/${label}.plist" \
+		"file"
+
+	chmod +x \
+		"${HOME}/.local/bin/pi-meridian-proxy.mjs" \
+		"${HOME}/.local/bin/pi-meridian-stack.sh"
+	mkdir -p "${HOME}/Library/Logs/pi-meridian"
+
+	plist="${HOME}/Library/LaunchAgents/${label}.plist"
+	if ! plutil -lint "$plist"; then
+		err "Invalid launchd plist: ${plist}"
+		return 1
+	fi
+
+	uid="$(id -u)"
+	domain="gui/${uid}"
+	target="${domain}/${label}"
+
+	if launchctl print "$target" &>/dev/null; then
+		info "Unloading existing launchd service..."
+		if ! launchctl bootout "$target"; then
+			launchctl bootout "$domain" "$plist"
+		fi
+	fi
+
+	launchctl enable "$target"
+	launchctl bootstrap "$domain" "$plist"
+	launchctl kickstart -k "$target"
+	ok "Launchd service loaded: ${label}"
+
+	if pi_meridian_wait_for_health "http://127.0.0.1:3456/health" 30; then
+		ok "Meridian responding on 127.0.0.1:3456"
+	else
+		warn "Meridian health check failed. Run: dotfiles pi-meridian logs"
+	fi
+
+	if pi_meridian_wait_for_health "http://127.0.0.1:3457/health" 15; then
+		ok "Rewrite proxy responding on 127.0.0.1:3457"
+	else
+		warn "Rewrite proxy health check failed. Run: dotfiles pi-meridian logs"
+	fi
+
+	if PATH="/opt/homebrew/bin:/usr/local/bin:$PATH" claude auth status &>/dev/null; then
+		ok "Claude Code authenticated."
+	else
+		warn "Claude Code not authenticated. Run: claude login"
+		warn "Then restart stack: dotfiles pi-meridian restart"
+	fi
+}
+
+cmd_pi_meridian_status() {
+	local label="com.bertie.pi-meridian-stack"
+	local target
+	local node_bin_dir=""
+	local service_state=""
+	target="gui/$(id -u)/${label}"
+
+	heading "Pi → Meridian status"
+	echo ""
+
+	if launchctl print "$target" &>/dev/null; then
+		service_state="$(launchctl print "$target" 2>/dev/null | awk '/^[[:space:]]*state = / { print $3; exit }')"
+		ok "Launchd: ${service_state:-loaded} (${label})"
+	else
+		warn "Launchd: not loaded. Run: dotfiles pi-meridian setup"
+	fi
+
+	pi_meridian_show_health "Meridian" "http://127.0.0.1:3456/health" || true
+	pi_meridian_show_health "Rewrite proxy" "http://127.0.0.1:3457/health" || true
+
+	if node_bin_dir="$(pi_meridian_node_bin_dir 2>/dev/null)"; then
+		if [[ -x "${node_bin_dir}/meridian" ]]; then
+			ok "Meridian CLI: $("${node_bin_dir}/meridian" --version 2>/dev/null)"
+		else
+			warn "Meridian CLI missing under default NVM Node."
+		fi
+	else
+		warn "Default NVM Node unavailable."
+	fi
+
+	if PATH="/opt/homebrew/bin:/usr/local/bin:$PATH" command -v claude &>/dev/null; then
+		if PATH="/opt/homebrew/bin:/usr/local/bin:$PATH" claude auth status &>/dev/null; then
+			ok "Claude Code: authenticated"
+		else
+			warn "Claude Code: not authenticated. Run: claude login"
+		fi
+	else
+		warn "Claude Code: not installed. Run: dotfiles brew"
+	fi
+}
+
+cmd_pi_meridian_restart() {
+	local label="com.bertie.pi-meridian-stack"
+	local domain target
+	local plist="${HOME}/Library/LaunchAgents/${label}.plist"
+	domain="gui/$(id -u)"
+	target="${domain}/${label}"
+
+	heading "Pi → Meridian restart"
+
+	if [[ ! -f "$plist" ]]; then
+		err "Launch agent missing: ${plist}"
+		err "Run: dotfiles pi-meridian setup"
+		return 1
+	fi
+
+	plutil -lint "$plist" >/dev/null
+	launchctl enable "$target"
+
+	if launchctl print "$target" &>/dev/null; then
+		launchctl kickstart -k "$target"
+	else
+		launchctl bootstrap "$domain" "$plist"
+		launchctl kickstart -k "$target"
+	fi
+
+	ok "Restarted: ${label}"
+}
+
+cmd_pi_meridian_stop() {
+	local label="com.bertie.pi-meridian-stack"
+	local target
+	target="gui/$(id -u)/${label}"
+
+	heading "Pi → Meridian stop"
+
+	launchctl disable "$target"
+	if launchctl print "$target" &>/dev/null; then
+		launchctl bootout "$target"
+		ok "Stopped and unloaded: ${label}"
+	else
+		ok "Already stopped: ${label}"
+	fi
+}
+
+cmd_pi_meridian_logs() {
+	local log_dir="${HOME}/Library/Logs/pi-meridian"
+	local log_file
+
+	heading "Pi → Meridian logs"
+
+	for log_file in stack.log meridian.log proxy.log; do
+		echo ""
+		echo -e "${BOLD}${log_file}${RESET}"
+		if [[ -f "${log_dir}/${log_file}" ]]; then
+			tail -n 100 "${log_dir}/${log_file}"
+		else
+			dim "  No log file at ${log_dir}/${log_file}"
+		fi
+	done
+}
+
+cmd_pi_meridian() {
+	local action="${1:-status}"
+	local yes_flag="${2:-}"
+
+	case "$action" in
+	setup) cmd_pi_meridian_setup "$yes_flag" ;;
+	status) cmd_pi_meridian_status ;;
+	restart) cmd_pi_meridian_restart ;;
+	stop) cmd_pi_meridian_stop ;;
+	logs) cmd_pi_meridian_logs ;;
+	*)
+		err "Unknown pi-meridian action: ${action}"
+		echo "Usage: dotfiles pi-meridian {setup|status|restart|stop|logs} [--yes]"
+		return 1
+		;;
+	esac
 }
 
 cmd_defaults() {
@@ -696,6 +1105,38 @@ cmd_check() {
 			failed=true
 		fi
 	done
+
+	local node_bin_dir=""
+	local node_command=""
+	if node_bin_dir="$(pi_meridian_node_bin_dir 2>/dev/null)"; then
+		node_command="${node_bin_dir}/node"
+	elif command -v node &>/dev/null; then
+		node_command="$(command -v node)"
+	fi
+
+	if [[ -z "$node_command" ]]; then
+		warn "Node unavailable: cannot validate Pi → Meridian proxy"
+		failed=true
+	else
+		while IFS= read -r -d '' f; do
+			if ! "$node_command" --check "$f" &>/dev/null; then
+				warn "node --check: ${f}"
+				failed=true
+			fi
+		done < <(find "${DOTFILES_DIR}/services/pi-meridian" -name '*.mjs' -print0)
+
+		if ! "$node_command" --test "${DOTFILES_DIR}/services/pi-meridian/pi-meridian-proxy.test.mjs"; then
+			warn "node --test: Pi → Meridian proxy"
+			failed=true
+		fi
+	fi
+
+	while IFS= read -r -d '' f; do
+		if ! plutil -lint "$f" &>/dev/null; then
+			warn "plutil: ${f}"
+			failed=true
+		fi
+	done < <(find "${DOTFILES_DIR}/services/pi-meridian" -name '*.plist' -print0)
 
 	if $failed; then
 		err "Validation failed."
@@ -771,13 +1212,14 @@ ${BOLD}COMMANDS${RESET}
   brew                Preview and run Homebrew bundle install
   brew-cleanup        Uninstall Homebrew packages not listed in brew files
   npm                 Check and install managed npm globals
+  pi-meridian <action> Manage Pi → Meridian launchd service
   defaults            Preview and apply macOS system defaults
-  check               Run shellcheck/shfmt/bash -n on all shell files
+  check               Validate shell, proxy, tests, and launchd plist
   install             Create ~/.local/bin/dotfiles symlink
   installers          Install NVM and zgen if missing
 
 ${BOLD}FLAGS${RESET}
-  --yes               Skip confirmation prompts (for sync --to, brew, brew-cleanup, npm, and defaults)
+  --yes               Skip confirmation prompts (for sync --to, brew, brew-cleanup, npm, pi-meridian setup, and defaults)
 
 ${BOLD}ALIASES${RESET}
   deploy              Alias for: sync --to system
@@ -792,6 +1234,8 @@ ${BOLD}EXAMPLES${RESET}
   dotfiles brew
   dotfiles brew-cleanup
   dotfiles npm
+  dotfiles pi-meridian setup
+  dotfiles pi-meridian status
   dotfiles defaults --yes
   dotfiles deploy
   dotfiles backfill
@@ -834,6 +1278,7 @@ main() {
 	brew) cmd_brew "$yes_flag" ;;
 	brew-cleanup) cmd_brew_cleanup "$yes_flag" ;;
 	npm) cmd_npm "$yes_flag" ;;
+	pi-meridian) cmd_pi_meridian "${positional[0]:-status}" "$yes_flag" ;;
 	defaults) cmd_defaults "$yes_flag" ;;
 	check) cmd_check ;;
 	install) cmd_install ;;

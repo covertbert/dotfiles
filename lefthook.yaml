@@ -17,6 +17,15 @@ pre-commit:
     bash-syntax:
       glob: "**/*.sh"
       run: bash -c 'for file do bash -n "$file"; done' -- {staged_files}
+    node-syntax:
+      glob: "services/pi-meridian/*.mjs"
+      run: bash -c 'for file do node --check "$file"; done' -- {staged_files}
+    pi-meridian-tests:
+      glob: "services/pi-meridian/*.mjs"
+      run: node --test services/pi-meridian/pi-meridian-proxy.test.mjs
+    plist:
+      glob: "**/*.plist"
+      run: bash -c 'for file do plutil -lint "$file"; done' -- {staged_files}
 
 pre-push:
   parallel: true
@@ -33,3 +42,12 @@ pre-push:
     bash-syntax:
       glob: "**/*.sh"
       run: bash -c 'for file do bash -n "$file"; done' -- {push_files}
+    node-syntax:
+      glob: "services/pi-meridian/*.mjs"
+      run: bash -c 'for file do node --check "$file"; done' -- {push_files}
+    pi-meridian-tests:
+      glob: "services/pi-meridian/*.mjs"
+      run: node --test services/pi-meridian/pi-meridian-proxy.test.mjs
+    plist:
+      glob: "**/*.plist"
+      run: bash -c 'for file do plutil -lint "$file"; done' -- {push_files}

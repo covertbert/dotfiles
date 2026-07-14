@@ -22,5 +22,8 @@ echo "==> Installing Homebrew packages..."
 echo "==> Installing npm global packages..."
 "${SCRIPT_DIR}/bin/dotfiles" npm --yes
 
+echo "==> Setting up Pi → Meridian service..."
+"${SCRIPT_DIR}/bin/dotfiles" pi-meridian setup --yes
+
 echo ""
 echo "Bootstrap complete. Run 'dotfiles status' to verify."

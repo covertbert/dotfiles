@@ -1,5 +1,7 @@
 .prettierignore
 .gitignore
+.nvmrc
+*.plist
 *.zsh
 *.sh
 *.gitconfig

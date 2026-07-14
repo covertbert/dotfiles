@@ -1,3 +1,4 @@
 @earendil-works/pi-coding-agent
+@rynfar/meridian
 corepack
 openclaw

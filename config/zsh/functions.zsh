@@ -17,17 +17,20 @@ setSecret() {
 export NVM_DIR="${NVM_DIR:-$HOME/.nvm}"
 export NVM_DEFAULT_VERSION="${NVM_DEFAULT_VERSION:-24}"
 
-# Make globally installed commands from the default Node version (e.g. `pi`)
-# available before nvm is lazy-loaded.
-__add_nvm_default_bin_to_path() {
-	local node_bin
+# Keep one NVM global bin on PATH. Falling through old Node patch versions can
+# make a command appear installed even when it is missing under the active Node.
+__set_single_nvm_bin_on_path() {
+	local node_bin="${1:h}" entry
+	local -a cleaned_path
 
-	for node_bin in "$NVM_DIR"/versions/node/v"$NVM_DEFAULT_VERSION".*/bin(Nn); do
-		path=("$node_bin" ${path:#$node_bin})
+	for entry in "${path[@]}"; do
+		if [[ "$entry" != "$NVM_DIR"/versions/node/*/bin ]]; then
+			cleaned_path+=("$entry")
+		fi
 	done
-}
 
-__add_nvm_default_bin_to_path
+	path=("$node_bin" "${cleaned_path[@]}")
+}
 
 __find_nvmrc_upwards() {
 	local dir="${1:-$PWD}"
@@ -50,7 +53,11 @@ __find_nvmrc_upwards() {
 }
 
 __load_nvm() {
+	local selected_node
+
 	if [ "$__NVM_LOADED" = "1" ] && whence -w nvm >/dev/null 2>&1; then
+		selected_node="$(nvm which current 2>/dev/null)" || return 1
+		__set_single_nvm_bin_on_path "$selected_node"
 		return 0
 	fi
 
@@ -62,6 +69,9 @@ __load_nvm() {
 		[ -s "$NVM_DIR/bash_completion" ] && source "$NVM_DIR/bash_completion"
 		__NVM_LOADED=1
 		__ensure_nvm_default
+		nvm use --silent default >/dev/null || return 1
+		selected_node="$(nvm which default 2>/dev/null)" || return 1
+		__set_single_nvm_bin_on_path "$selected_node"
 		return 0
 	fi
 
@@ -106,28 +116,29 @@ loadNvmrc() {
 }
 
 # Run pi using its installed Node version regardless of active .nvmrc.
-# pi is a global npm install under NVM_DEFAULT_VERSION; nvm use changes PATH
+# pi is a global npm install under the default NVM Node; nvm use changes PATH
 # and hides that bin dir. This wrapper resolves the correct node + pi binary
 # explicitly so repo Node version is unaffected.
 pi() {
-	local pi_node_bin=""
-	local candidate
+	local pi_node pi_node_bin
 
-	for candidate in "$NVM_DIR"/versions/node/v"$NVM_DEFAULT_VERSION".*/bin(Nn[-1]); do
-		pi_node_bin="$candidate"
-	done
-
-	if [[ -z "$pi_node_bin" || ! -x "$pi_node_bin/node" ]]; then
-		echo "pi: Node ${NVM_DEFAULT_VERSION} not found under \$NVM_DIR." >&2
-		echo "    Run: nvm install ${NVM_DEFAULT_VERSION}" >&2
+	__load_nvm || {
+		echo "pi: NVM unavailable at $NVM_DIR." >&2
 		return 127
-	fi
+	}
+
+	pi_node="$(nvm which default 2>/dev/null)" || {
+		echo "pi: default NVM Node unavailable." >&2
+		echo "    Run: dotfiles npm" >&2
+		return 127
+	}
+	pi_node_bin="${pi_node:h}"
 
 	if [[ ! -x "$pi_node_bin/pi" ]]; then
-		echo "pi: not installed under Node ${NVM_DEFAULT_VERSION}." >&2
-		echo "    Run: nvm exec ${NVM_DEFAULT_VERSION} npm install -g --ignore-scripts @earendil-works/pi-coding-agent" >&2
+		echo "pi: not installed under default Node $(nvm version default)." >&2
+		echo "    Run: dotfiles npm" >&2
 		return 127
 	fi
 
-	PATH="$pi_node_bin:$PATH" "$pi_node_bin/node" "$pi_node_bin/pi" "$@"
+	PATH="$pi_node_bin:$PATH" "$pi_node" "$pi_node_bin/pi" "$@"
 }
