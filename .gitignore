@@ -3,6 +3,11 @@
 .vscode
 dslkjf
 
+# Local shell secrets and temporary conflict copies
+.zshrc.local
+**/.zshrc.local
+**/.zshrc.local.*
+
 # Pi private/local state
 config/pi/sessions/
 config/pi/auth/

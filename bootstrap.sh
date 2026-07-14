@@ -27,3 +27,4 @@ echo "==> Setting up Pi → Meridian service..."
 
 echo ""
 echo "Bootstrap complete. Run 'dotfiles status' to verify."
+echo "Optional private ZSH restore: dotfiles zsh-local setup"

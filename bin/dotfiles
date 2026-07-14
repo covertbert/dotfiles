@@ -21,6 +21,8 @@ NVM_DEFAULT_VERSION="${NVM_DEFAULT_VERSION:-24}"
 
 # shellcheck source=../lib/manifest.sh
 source "${DOTFILES_DIR}/lib/manifest.sh"
+# shellcheck source=../lib/zsh-local-sync.sh
+source "${DOTFILES_DIR}/lib/zsh-local-sync.sh"
 
 # ── colours ──────────────────────────────────────────────────────────────────
 if [[ -t 1 ]]; then
@@ -1138,6 +1140,11 @@ cmd_check() {
 		fi
 	done < <(find "${DOTFILES_DIR}/services/pi-meridian" -name '*.plist' -print0)
 
+	if ! bash "${DOTFILES_DIR}/tests/zsh-local-sync.test.sh"; then
+		warn "tests: zsh-local sync"
+		failed=true
+	fi
+
 	if $failed; then
 		err "Validation failed."
 		return 1
@@ -1212,6 +1219,7 @@ ${BOLD}COMMANDS${RESET}
   brew                Preview and run Homebrew bundle install
   brew-cleanup        Uninstall Homebrew packages not listed in brew files
   npm                 Check and install managed npm globals
+  zsh-local <action>  Back up and restore ~/.zshrc.local with 1Password
   pi-meridian <action> Manage Pi → Meridian launchd service
   defaults            Preview and apply macOS system defaults
   check               Validate shell, proxy, tests, and launchd plist
@@ -1219,7 +1227,7 @@ ${BOLD}COMMANDS${RESET}
   installers          Install NVM and zgen if missing
 
 ${BOLD}FLAGS${RESET}
-  --yes               Skip confirmation prompts (for sync --to, brew, brew-cleanup, npm, pi-meridian setup, and defaults)
+  --yes               Skip confirmation prompts (including explicit zsh-local overwrites)
 
 ${BOLD}ALIASES${RESET}
   deploy              Alias for: sync --to system
@@ -1234,6 +1242,8 @@ ${BOLD}EXAMPLES${RESET}
   dotfiles brew
   dotfiles brew-cleanup
   dotfiles npm
+  dotfiles zsh-local setup
+  dotfiles zsh-local edit
   dotfiles pi-meridian setup
   dotfiles pi-meridian status
   dotfiles defaults --yes
@@ -1278,6 +1288,7 @@ main() {
 	brew) cmd_brew "$yes_flag" ;;
 	brew-cleanup) cmd_brew_cleanup "$yes_flag" ;;
 	npm) cmd_npm "$yes_flag" ;;
+	zsh-local) cmd_zsh_local "$yes_flag" "${positional[@]}" ;;
 	pi-meridian) cmd_pi_meridian "${positional[0]:-status}" "$yes_flag" ;;
 	defaults) cmd_defaults "$yes_flag" ;;
 	check) cmd_check ;;

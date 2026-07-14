@@ -23,6 +23,9 @@ pre-commit:
     pi-meridian-tests:
       glob: "services/pi-meridian/*.mjs"
       run: node --test services/pi-meridian/pi-meridian-proxy.test.mjs
+    zsh-local-tests:
+      glob: "{bin/dotfiles,lib/zsh-local-sync.sh,tests/zsh-local-sync.test.sh}"
+      run: bash tests/zsh-local-sync.test.sh
     plist:
       glob: "**/*.plist"
       run: bash -c 'for file do plutil -lint "$file"; done' -- {staged_files}
@@ -48,6 +51,9 @@ pre-push:
     pi-meridian-tests:
       glob: "services/pi-meridian/*.mjs"
       run: node --test services/pi-meridian/pi-meridian-proxy.test.mjs
+    zsh-local-tests:
+      glob: "{bin/dotfiles,lib/zsh-local-sync.sh,tests/zsh-local-sync.test.sh}"
+      run: bash tests/zsh-local-sync.test.sh
     plist:
       glob: "**/*.plist"
       run: bash -c 'for file do plutil -lint "$file"; done' -- {push_files}

@@ -8,16 +8,16 @@ My personal macOS dotfiles. One command to go from a blank Mac to a fully config
 
 ## 🗺️ What's managed
 
-| Area                  | What it covers                                                                                                      |
-| --------------------- | ------------------------------------------------------------------------------------------------------------------- |
-| 🐚 **ZSH**            | `.zshrc`, aliases, functions, plugins (zgen), Starship prompt, fzf, history, NVM, 1Password completions, Pi wrapper |
-| 🧬 **Git**            | `.gitconfig` with delta diffs, GPG signing, branch/push defaults, includes                                          |
-| 🍎 **macOS defaults** | Keyboard, Finder, Dock, screenshots, Trash, software updates, Chrome, Transmission                                  |
-| 🍺 **Homebrew**       | CLI tools (`Brewfile`) and GUI apps/fonts (`Caskfile`)                                                              |
-| 🖥️ **Terminal**       | Hyper config, Ghostty config, Starship theme                                                                        |
-| 🤖 **Pi agent**       | Settings, models, AGENTS.md, skills, prompts, extensions                                                            |
-| 🔀 **Pi + Meridian**  | Rewrite proxy, launchd service, lifecycle commands, and managed dependencies                                        |
-| 🔌 **MCP**            | Shared MCP server config (Chrome DevTools, GitLab, Notion, LinearB)                                                 |
+| Area                  | What it covers                                                                                           |
+| --------------------- | -------------------------------------------------------------------------------------------------------- |
+| 🐚 **ZSH**            | `.zshrc`, aliases, functions, plugins, prompt, NVM, plus private `.zshrc.local` backup through 1Password |
+| 🧬 **Git**            | `.gitconfig` with delta diffs, GPG signing, branch/push defaults, includes                               |
+| 🍎 **macOS defaults** | Keyboard, Finder, Dock, screenshots, Trash, software updates, Chrome, Transmission                       |
+| 🍺 **Homebrew**       | CLI tools (`Brewfile`) and GUI apps/fonts (`Caskfile`)                                                   |
+| 🖥️ **Terminal**       | Hyper config, Ghostty config, Starship theme                                                             |
+| 🤖 **Pi agent**       | Settings, models, AGENTS.md, skills, prompts, extensions                                                 |
+| 🔀 **Pi + Meridian**  | Rewrite proxy, launchd service, lifecycle commands, and managed dependencies                             |
+| 🔌 **MCP**            | Shared MCP server config (Chrome DevTools, GitLab, Notion, LinearB)                                      |
 
 ---
 
@@ -93,6 +93,7 @@ dotfiles sync --to repo      Backfill all from system → repo
 dotfiles brew                Preview and run Homebrew bundle
 dotfiles brew-cleanup        Uninstall Homebrew packages not listed in brew files
 dotfiles npm                 Check and install managed npm globals
+dotfiles zsh-local <action>  Back up and restore ~/.zshrc.local with 1Password
 dotfiles pi-meridian <action> Set up and manage the Pi → Meridian service
 dotfiles defaults            Preview and apply macOS system defaults
 dotfiles check               Validate shell, proxy, tests, and launchd plist
@@ -131,6 +132,12 @@ dotfiles backfill
 
 ```sh
 dotfiles backfill
+```
+
+**Edit private ZSH config and back it up:**
+
+```sh
+dotfiles zsh-local edit
 ```
 
 **Full re-bootstrap after pulling updates:**
@@ -265,6 +272,47 @@ Config split across three files in `config/zsh/`:
 - `setSecret` — pull a 1Password secret into env
 - `loadNvmrc` — auto-switch Node version on `cd` when `.nvmrc` found
 - `pi()` — wrapper that resolves Pi from the exact default NVM Node, unaffected by `.nvmrc` overrides
+
+### Private `.zshrc.local` backup
+
+`~/.zshrc.local` remains outside Git and is sourced by the managed `.zshrc`. The `zsh-local` command stores an encrypted backup as a 1Password Document. Local content is the normal source of truth; restore is always explicit.
+
+First-time setup uses the `Private` vault and document title `dotfiles: .zshrc.local` by default:
+
+```sh
+dotfiles zsh-local setup
+```
+
+Use another vault or title when needed:
+
+```sh
+dotfiles zsh-local setup --vault "Dotfiles" --document "shell: .zshrc.local"
+```
+
+Normal change flow:
+
+```sh
+dotfiles zsh-local edit    # check remote, open $EDITOR, validate, upload
+dotfiles zsh-local status  # compare copies without showing contents
+dotfiles zsh-local push    # upload changes made outside the edit command
+```
+
+Restore on a new machine by running `dotfiles zsh-local setup`; when the local file is missing and the Document exists, setup restores it automatically. Later restores are explicit:
+
+```sh
+dotfiles zsh-local pull
+```
+
+Push refuses when the 1Password copy changed since the last successful sync. Pull refuses when local content has unsynced changes. Inspect the Document in 1Password, then resolve deliberately:
+
+```sh
+dotfiles zsh-local push --force  # local wins
+dotfiles zsh-local pull --force  # 1Password wins
+```
+
+Enable **Settings → Developer → Integrate with 1Password CLI** in the 1Password desktop app. Commands may request Touch ID or device authentication. No service account, background process, or permanent token is used.
+
+Sync state contains only item/vault identifiers and a content hash under `~/.local/state/dotfiles/zsh-local/`. Pulled files use mode `0600`. File contents are never printed by these commands.
 
 ---
 
@@ -409,6 +457,7 @@ find . -name '*.sh' -not -path './.git/*' -print0 | xargs -0 shfmt -d
 find . -name '*.sh' -not -path './.git/*' -print0 | xargs -0 -I {} bash -n {}
 node --check services/pi-meridian/pi-meridian-proxy.mjs
 node --test services/pi-meridian/pi-meridian-proxy.test.mjs
+bash tests/zsh-local-sync.test.sh
 plutil -lint services/pi-meridian/com.bertie.pi-meridian-stack.plist
 ```
 
@@ -421,7 +470,10 @@ plutil -lint services/pi-meridian/com.bertie.pi-meridian-stack.plist
 ├── bin/
 │   └── dotfiles              # Primary CLI (all sync/diff/deploy commands)
 ├── lib/
-│   └── manifest.sh           # Managed paths (repo ↔ system mapping)
+│   ├── manifest.sh           # Managed paths (repo ↔ system mapping)
+│   └── zsh-local-sync.sh     # Interactive 1Password backup/restore engine
+├── tests/
+│   └── zsh-local-sync.test.sh # Mocked secret-sync safety tests
 ├── bootstrap.sh              # Full install through Pi → Meridian service setup
 ├── brew/
 │   ├── Brewfile              # Homebrew formulae
