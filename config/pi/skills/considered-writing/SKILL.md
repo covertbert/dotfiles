@@ -1,16 +1,24 @@
 ---
-name: notion-doc-writing
-description: Use when writing, drafting, rewriting, editing, or creating strategy notes, internal comms, technical documents, summaries, appraisals, planning documents, incident notes, Slack updates, Notion pages, and longer-form analysis. Do not use for coding tasks unless documentation is explicitly requested.
+name: considered-writing
+description: Use when the user asks to draft, rewrite, edit, polish, structure, summarise, or turn material into a document or message. Includes briefs, proposals, strategy notes, decisions, feedback, emails, and Slack updates. Do not use for ordinary questions, explanations, research, brainstorming, or code. `notion:` or an explicit request to save, create, or update something in Notion means publish there. Otherwise respond in chat.
 ---
 
-# Bertie Writing Style
+# Considered Writing
 
-## Default parent
+## Activation and output
 
-Unless the user specifies a parent page, create standalone Notion docs under the private Scratchpad:
+Use for producing or revising a written artifact, not merely because a response may be long.
 
-- page_id: `f16fb79f-5960-4b77-987e-151727dbed1b`
-- URL: `https://www.notion.so/f16fb79f59604b77987e151727dbed1b`
+- `write:` explicitly activates considered writing in chat.
+- `notion:` explicitly activates considered writing and saves it to Notion.
+- Without either prefix, infer intent from the request.
+- Ordinary questions should receive normal chat answers.
+
+Only write to Notion when explicitly requested. Unless another parent is given, use Scratchpad:
+
+`f16fb79f-5960-4b77-987e-151727dbed1b`
+
+After writing, return page title and URL. Do not repeat full content in chat unless requested.
 
 ## Purpose
 

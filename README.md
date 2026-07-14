@@ -271,7 +271,7 @@ Config split across three files in `config/zsh/`:
 | `models.json`   | Provider config: Anthropic (via proxy), OpenRouter (DeepSeek V4 Pro)                            |
 | `AGENTS.md`     | Global agent instructions: caveman mode, commit rules, context protection                       |
 | `agents/`       | Reserved local agent directory                                                                  |
-| `skills/`       | Skill definitions: `git-workflow`, `node-npm`, `notion-doc-writing`, `php-symfony`, `shadcn-ui` |
+| `skills/`       | Skill definitions: `considered-writing`, `git-workflow`, `node-npm`, `php-symfony`, `shadcn-ui` |
 | `prompts/`      | Custom prompt templates, including `/ui-rebuild`                                                |
 | `extensions/`   | Local Pi extensions                                                                             |
 | `themes/`       | UI themes                                                                                       |
