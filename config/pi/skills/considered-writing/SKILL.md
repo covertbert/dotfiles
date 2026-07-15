@@ -1,6 +1,6 @@
 ---
 name: considered-writing
-description: Use when the user asks to draft, rewrite, edit, polish, structure, summarise, or turn material into a document or message. Includes briefs, proposals, strategy notes, decisions, feedback, emails, and Slack updates. Do not use for ordinary questions, explanations, research, brainstorming, or code. `notion:` or an explicit request to save, create, or update something in Notion means publish there. Otherwise respond in chat.
+description: Use when the user asks to draft, rewrite, edit, polish, structure, summarise or turn material into a document or message. Includes briefs, proposals, strategy notes, decisions, feedback, emails and Slack updates. Do not use for ordinary questions, explanations, research, brainstorming or code. `notion:` or an explicit request to save, create or update something in Notion means publish there. Otherwise respond in chat.
 ---
 
 # Considered Writing
@@ -22,9 +22,9 @@ After writing, return page title and URL. Do not repeat full content in chat unl
 
 ## Purpose
 
-Write in Bertie's natural style across different document types: strategy notes, internal comms, technical documents, summaries, appraisals, planning documents, incident notes, Slack updates, and longer-form analysis.
+Write in Bertie's natural style across different document types: strategy notes, internal comms, technical documents, summaries, appraisals, planning documents, incident notes, Slack updates and longer-form analysis.
 
-The goal is not to make everything sound academic. The goal is to make writing clear, grounded, measured, and useful.
+The goal is not to make everything sound academic. The goal is to make writing clear, grounded, measured and useful.
 
 ## Core style
 
@@ -100,9 +100,9 @@ Prefer:
 - Short paragraphs
 - Bullets where they genuinely improve readability
 - Clear opening that states the point
-- Clear ending that states the implication, decision, or next step
+- Clear ending that states the implication, decision or next step
 
-Do not over-format. Avoid unnecessary tables, excessive bolding, and ornamental structure.
+Do not over-format. Avoid unnecessary tables, excessive bolding and ornamental structure.
 
 ## Sentence style
 
@@ -204,7 +204,7 @@ Instead of:
 
 Write:
 
-> The process is inefficient because it relies on manual follow-up, repeated context sharing, and unclear ownership.
+> The process is inefficient because it relies on manual follow-up, repeated context sharing and unclear ownership.
 
 ## Recommendations
 
@@ -231,7 +231,7 @@ What is happening and why it matters.
 
 ## Current issue
 
-The specific problem, constraint, or opportunity.
+The specific problem, constraint or opportunity.
 
 ## Options / considerations
 
@@ -243,7 +243,7 @@ The proposed direction and why it is credible.
 
 ## Next steps
 
-Concrete actions, owners, or decisions needed.
+Concrete actions, owners or decisions needed.
 ```
 
 Use only sections that are useful. Do not force every document into this format.
@@ -273,7 +273,7 @@ What this improves and what it does not solve.
 
 ## Risks
 
-Known risks, assumptions, and failure modes.
+Known risks, assumptions and failure modes.
 
 ## Next steps
 
@@ -341,6 +341,8 @@ Avoid:
 
 - Em dashes
 - Semicolons
+- Oxford commas. In lists of three or more items, omit the comma before final `and` or `or`
+- Ambiguous lists that appear to need an Oxford comma. Rewrite the sentence instead
 - Excessive bold text
 - "Label: explanation" bullet patterns unless requested
 - Emojis
@@ -359,3 +361,5 @@ Check that writing:
 - Makes practical implications clear
 - Sounds like a real person, not a comms template
 - Has no em dashes or semicolons
+- Has no Oxford commas
+- Reviews commas before `and` or `or` and keeps only those that are not part of a serial list
