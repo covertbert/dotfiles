@@ -7,6 +7,7 @@ brew "starship"
 brew "bottom"
 brew "htop"
 brew "fzf"
+brew "fnm"
 brew "ripgrep"
 
 # Core CLI utilities

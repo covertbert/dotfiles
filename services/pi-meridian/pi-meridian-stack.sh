@@ -2,7 +2,6 @@
 
 set -euo pipefail
 
-NVM_DIR="${NVM_DIR:-$HOME/.nvm}"
 LOG_DIR="${PI_MERIDIAN_LOG_DIR:-$HOME/Library/Logs/pi-meridian}"
 PROXY_SCRIPT="${PI_MERIDIAN_PROXY_SCRIPT:-$HOME/.local/bin/pi-meridian-proxy.mjs}"
 MERIDIAN_HEALTH_URL="http://127.0.0.1:3456/health"
@@ -13,19 +12,15 @@ exec >>"$LOG_DIR/stack.log" 2>&1
 
 echo "$(date -u +'%Y-%m-%dT%H:%M:%SZ') Starting Pi → Meridian stack"
 
-if [[ ! -s "$NVM_DIR/nvm.sh" ]]; then
-	echo "NVM not found at $NVM_DIR/nvm.sh" >&2
+export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+
+if ! command -v fnm >/dev/null 2>&1; then
+	echo "fnm not found. Run: dotfiles brew" >&2
 	exit 1
 fi
 
-# NVM is not nounset-safe while loading.
-set +u
-# shellcheck source=/dev/null
-source "$NVM_DIR/nvm.sh"
-set -u
-
-if ! NODE_BIN="$(nvm which default 2>/dev/null)" || [[ ! -x "$NODE_BIN" ]]; then
-	echo "Default NVM Node not found. Run: dotfiles npm" >&2
+if ! NODE_BIN="$(fnm exec --using=default node -p 'process.execPath' 2>/dev/null)" || [[ ! -x "$NODE_BIN" ]]; then
+	echo "Default fnm Node not found. Run: dotfiles npm" >&2
 	exit 1
 fi
 
@@ -33,7 +28,7 @@ NODE_BIN_DIR="$(dirname "$NODE_BIN")"
 MERIDIAN_BIN="$NODE_BIN_DIR/meridian"
 
 if [[ ! -x "$MERIDIAN_BIN" ]]; then
-	echo "Meridian not installed under default NVM Node. Run: dotfiles npm" >&2
+	echo "Meridian not installed under default fnm Node. Run: dotfiles npm" >&2
 	exit 1
 fi
 

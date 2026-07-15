@@ -16,8 +16,7 @@ done
 DOTFILES_DIR="$(cd -P "$(dirname "$SCRIPT_SOURCE")/.." && pwd)"
 PI_AGENT_DIR="${PI_CODING_AGENT_DIR:-$HOME/.pi/agent}"
 MCP_CONFIG_FILE="${MCP_CONFIG_FILE:-$HOME/.config/mcp/mcp.json}"
-NVM_DIR="${NVM_DIR:-$HOME/.nvm}"
-NVM_DEFAULT_VERSION="${NVM_DEFAULT_VERSION:-24}"
+FNM_DEFAULT_VERSION="${FNM_DEFAULT_VERSION:-24}"
 
 # shellcheck source=../lib/manifest.sh
 source "${DOTFILES_DIR}/lib/manifest.sh"
@@ -273,23 +272,34 @@ confirm() {
 	[[ "$reply" =~ ^[Yy]$ ]]
 }
 
-ensure_nvm_default_node() {
-	if [[ ! -s "${NVM_DIR}/nvm.sh" ]]; then
-		err "NVM not found at ${NVM_DIR}/nvm.sh"
+fnm_bin_path() {
+	if command -v fnm &>/dev/null; then
+		command -v fnm
+	elif [[ -x /opt/homebrew/bin/fnm ]]; then
+		echo "/opt/homebrew/bin/fnm"
+	elif [[ -x /usr/local/bin/fnm ]]; then
+		echo "/usr/local/bin/fnm"
+	else
+		return 1
+	fi
+}
+
+ensure_fnm_default_node() {
+	local fnm_bin fnm_env
+	if ! fnm_bin="$(fnm_bin_path)"; then
+		err "fnm not found. Run: dotfiles brew"
 		return 1
 	fi
 
-	# shellcheck source=/dev/null
-	source "${NVM_DIR}/nvm.sh"
-
-	if ! command -v nvm &>/dev/null; then
-		err "Failed to load nvm."
+	if ! fnm_env="$("$fnm_bin" env --shell bash --version-file-strategy=recursive --resolve-engines=false)"; then
+		err "Failed to initialise fnm."
 		return 1
 	fi
+	eval "$fnm_env"
 
-	nvm install "${NVM_DEFAULT_VERSION}" >/dev/null
-	nvm alias default "${NVM_DEFAULT_VERSION}" >/dev/null
-	nvm use --silent "${NVM_DEFAULT_VERSION}" >/dev/null
+	"$fnm_bin" install "${FNM_DEFAULT_VERSION}" >/dev/null
+	"$fnm_bin" default "${FNM_DEFAULT_VERSION}" >/dev/null
+	"$fnm_bin" use --silent-if-unchanged default >/dev/null
 }
 
 # ── commands ───────────────────────────────────────────────────────────────────
@@ -625,21 +635,22 @@ npm_global_bins_are_healthy() {
 	done <<< "$bin_names"
 }
 
-npm_other_nvm_installations() {
+npm_other_fnm_installations() {
 	local package_spec="$1" current_prefix="$2"
-	local package_name current_version current_major version_dir version
+	local package_name current_version current_major installation_dir version
 	local found_versions=()
 	package_name="$(npm_package_name_from_spec "$package_spec")"
-	current_version="$(basename "$current_prefix")"
-	current_major="${current_version%%.*}"
+	current_version="$(node --version)"
+	current_major="${current_version#v}"
+	current_major="${current_major%%.*}"
 
-	for version_dir in "${NVM_DIR}"/versions/node/v*; do
-		[[ -d "$version_dir" ]] || continue
-		[[ "${version_dir%/}" == "${current_prefix%/}" ]] && continue
-		[[ -f "${version_dir}/lib/node_modules/${package_name}/package.json" ]] || continue
+	for installation_dir in "${FNM_DIR}"/node-versions/v*/installation; do
+		[[ -d "$installation_dir" ]] || continue
+		[[ "${installation_dir%/}" == "${current_prefix%/}" ]] && continue
+		[[ -f "${installation_dir}/lib/node_modules/${package_name}/package.json" ]] || continue
 
-		version="$(basename "$version_dir")"
-		[[ "$version" == "${current_major}."* ]] || continue
+		version="$(basename "$(dirname "$installation_dir")")"
+		[[ "${version#v}" == "${current_major}."* ]] || continue
 		found_versions+=("$version")
 	done
 
@@ -664,7 +675,7 @@ cmd_npm() {
 		return 1
 	fi
 
-	ensure_nvm_default_node || return 1
+	ensure_fnm_default_node || return 1
 
 	local packages=()
 	while IFS= read -r line; do
@@ -680,7 +691,7 @@ cmd_npm() {
 	local current_node current_prefix old_installations
 	local missing=()
 	local pkg
-	local found_old_nvm_install=false
+	local found_old_fnm_install=false
 	current_node="$(node --version)"
 	current_prefix="$(npm prefix -g)"
 
@@ -698,23 +709,24 @@ cmd_npm() {
 
 		missing+=("$pkg")
 
-		if old_installations="$(npm_other_nvm_installations "$pkg" "$current_prefix")"; then
+		if old_installations="$(npm_other_fnm_installations "$pkg" "$current_prefix")"; then
 			while IFS= read -r old_version; do
 				dim "    found under old Node ${old_version}"
 			done <<< "$old_installations"
-			found_old_nvm_install=true
+			found_old_fnm_install=true
 		fi
 	done
 
-	if $found_old_nvm_install; then
+	if $found_old_fnm_install; then
 		echo ""
-		warn "Old NVM package copies were left untouched."
-		dim "  Inspect runtimes: nvm ls"
-		dim "  After verifying no project needs one: nvm uninstall <version>"
+		warn "Old fnm package copies were left untouched."
+		dim "  Inspect runtimes: fnm list"
+		dim "  After verifying no project needs one: fnm uninstall <version>"
 	fi
 
 	echo ""
 	if [[ ${#missing[@]} -eq 0 ]]; then
+		ensure_meridian_opencode_plugin || return 1
 		ok "npm globals satisfied."
 		return 0
 	fi
@@ -746,38 +758,64 @@ cmd_npm() {
 		return 1
 	fi
 
+	ensure_meridian_opencode_plugin || return 1
 	ok "npm globals done."
 }
 
-load_nvm_runtime() {
-	if [[ ! -s "${NVM_DIR}/nvm.sh" ]]; then
-		err "NVM not found at ${NVM_DIR}/nvm.sh"
-		return 1
-	fi
-
-	# NVM is not nounset-safe while loading.
-	set +u
-	# shellcheck source=/dev/null
-	local source_status=0
-	source "${NVM_DIR}/nvm.sh" || source_status=$?
-	set -u
-
-	if ((source_status != 0)) || ! command -v nvm &>/dev/null; then
-		err "Failed to load NVM."
-		return 1
-	fi
-}
-
 pi_meridian_node_bin_dir() {
-	load_nvm_runtime >/dev/null || return 1
+	local fnm_bin node_bin
+	if ! fnm_bin="$(fnm_bin_path)"; then
+		err "fnm not found. Run: dotfiles brew"
+		return 1
+	fi
 
-	local node_bin
-	if ! node_bin="$(nvm which default 2>/dev/null)" || [[ ! -x "$node_bin" ]]; then
-		err "Default NVM Node not found. Run: dotfiles npm"
+	if ! node_bin="$("$fnm_bin" exec --using=default node -p 'process.execPath' 2>/dev/null)" || [[ ! -x "$node_bin" ]]; then
+		err "Default fnm Node not found. Run: dotfiles npm"
 		return 1
 	fi
 
 	dirname "$node_bin"
+}
+
+ensure_meridian_opencode_plugin() {
+	local node_bin_dir node_root plugin_source plugin_dir plugin_link
+	local config_dir config_file tmp
+
+	node_bin_dir="$(pi_meridian_node_bin_dir)" || return 1
+	node_root="$(dirname "$node_bin_dir")"
+	plugin_source="${node_root}/lib/node_modules/@rynfar/meridian/plugin/meridian.ts"
+	if [[ ! -f "$plugin_source" ]]; then
+		err "Meridian OpenCode plugin missing: ${plugin_source}"
+		return 1
+	fi
+
+	plugin_dir="${HOME}/.local/share/meridian/plugin"
+	plugin_link="${plugin_dir}/meridian.ts"
+	mkdir -p "$plugin_dir"
+	ln -sfn "$plugin_source" "$plugin_link"
+
+	config_dir="${OPENCODE_CONFIG_DIR:-${XDG_CONFIG_HOME:-$HOME/.config}/opencode}"
+	config_file="${config_dir}/opencode.json"
+	if [[ ! -f "$config_file" ]]; then
+		ok "Meridian plugin link: ${plugin_link}"
+		return 0
+	fi
+
+	tmp="${config_file}.tmp.$$"
+	if ! jq --arg plugin "$plugin_link" '
+		.plugin = (
+			((.plugin // []) | map(select(
+				(type != "string") or
+				(test("@rynfar/meridian|meridian\\.ts|opencode-claude-max-proxy") | not)
+			))) + [$plugin] | unique
+		)
+	' "$config_file" >"$tmp"; then
+		rm -f "$tmp"
+		err "Failed to update OpenCode plugin config: ${config_file}"
+		return 1
+	fi
+	mv "$tmp" "$config_file"
+	ok "OpenCode Meridian plugin: ${plugin_link}"
 }
 
 pi_meridian_wait_for_health() {
@@ -832,13 +870,13 @@ pi_meridian_check_dependencies() {
 	node_major="$("${node_bin_dir}/node" -p 'process.versions.node.split(".")[0]')"
 
 	if ((node_major < 22)); then
-		err "Meridian requires Node 22 or newer; default NVM Node is $("${node_bin_dir}/node" --version)."
+		err "Meridian requires Node 22 or newer; default fnm Node is $("${node_bin_dir}/node" --version)."
 		return 1
 	fi
 
 	for dependency in meridian pi; do
 		if [[ ! -x "${node_bin_dir}/${dependency}" ]]; then
-			err "${dependency} not installed under default NVM Node. Run: dotfiles npm"
+			err "${dependency} not installed under default fnm Node. Run: dotfiles npm"
 			return 1
 		fi
 	done
@@ -858,6 +896,7 @@ cmd_pi_meridian_setup() {
 	fi
 
 	pi_meridian_check_dependencies || return 1
+	ensure_meridian_opencode_plugin || return 1
 
 	if [[ "$yes_flag" != "--yes" ]]; then
 		warn "This deploys service files and reloads the launchd agent."
@@ -903,7 +942,11 @@ cmd_pi_meridian_setup() {
 	fi
 
 	launchctl enable "$target"
-	launchctl bootstrap "$domain" "$plist"
+	if ! launchctl bootstrap "$domain" "$plist"; then
+		warn "launchd reload raced with shutdown; retrying..."
+		sleep 2
+		launchctl bootstrap "$domain" "$plist"
+	fi
 	launchctl kickstart -k "$target"
 	ok "Launchd service loaded: ${label}"
 
@@ -951,10 +994,10 @@ cmd_pi_meridian_status() {
 		if [[ -x "${node_bin_dir}/meridian" ]]; then
 			ok "Meridian CLI: $("${node_bin_dir}/meridian" --version 2>/dev/null)"
 		else
-			warn "Meridian CLI missing under default NVM Node."
+			warn "Meridian CLI missing under default fnm Node."
 		fi
 	else
-		warn "Default NVM Node unavailable."
+		warn "Default fnm Node unavailable."
 	fi
 
 	if PATH="/opt/homebrew/bin:/usr/local/bin:$PATH" command -v claude &>/dev/null; then
@@ -1175,19 +1218,8 @@ cmd_install() {
 cmd_installers() {
 	local yes_flag="${1:-}"
 
-	heading "Install dependencies (NVM, zgen)"
+	heading "Install dependencies (zgen)"
 	echo ""
-
-	# NVM
-	if command -v nvm &>/dev/null || [[ -s "${NVM_DIR}/nvm.sh" ]]; then
-		ok "NVM already installed."
-	else
-		if [[ "$yes_flag" != "--yes" ]]; then
-			confirm "Install NVM?" || true
-		fi
-		echo "Installing NVM..."
-		curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
-	fi
 
 	# zgen
 	local zgen_dir="${HOME}/.zgen"
@@ -1224,7 +1256,7 @@ ${BOLD}COMMANDS${RESET}
   defaults            Preview and apply macOS system defaults
   check               Validate shell, proxy, tests, and launchd plist
   install             Create ~/.local/bin/dotfiles symlink
-  installers          Install NVM and zgen if missing
+  installers          Install zgen if missing
 
 ${BOLD}FLAGS${RESET}
   --yes               Skip confirmation prompts (including explicit zsh-local overwrites)

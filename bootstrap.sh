@@ -37,7 +37,7 @@ echo "==> Installing dotfiles command..."
 
 ensure_homebrew
 
-echo "==> Installing NVM and zgen..."
+echo "==> Installing zgen..."
 "${SCRIPT_DIR}/bin/dotfiles" installers --yes
 
 echo "==> Installing Homebrew packages..."

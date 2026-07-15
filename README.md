@@ -10,7 +10,7 @@ My personal macOS dotfiles. One command to go from a blank Mac to a fully config
 
 | Area                  | What it covers                                                                                           |
 | --------------------- | -------------------------------------------------------------------------------------------------------- |
-| 🐚 **ZSH**            | `.zshrc`, aliases, functions, plugins, prompt, NVM, plus private `.zshrc.local` backup through 1Password |
+| 🐚 **ZSH**            | `.zshrc`, aliases, functions, plugins, prompt, fnm, plus private `.zshrc.local` backup through 1Password |
 | 🧬 **Git**            | `.gitconfig` with delta diffs, GPG signing, branch/push defaults, includes                               |
 | 🍎 **macOS defaults** | Keyboard, Finder, Dock, screenshots, Trash, software updates, Chrome, Transmission                       |
 | 🍺 **Homebrew**       | CLI tools (`Brewfile`) and GUI apps/fonts (`Caskfile`)                                                   |
@@ -33,8 +33,8 @@ Bootstrap runs in this order:
 
 1. `dotfiles install` — creates `~/.local/bin/dotfiles` symlink
 2. Homebrew setup — installs Homebrew if missing and loads its environment
-3. `dotfiles installers` — installs NVM and zgen if missing
-4. `dotfiles brew` — installs Homebrew packages and casks
+3. `dotfiles installers` — installs zgen if missing
+4. `dotfiles brew` — installs Homebrew packages, including fnm, and casks
 5. `dotfiles npm` — installs managed npm global packages
 6. `dotfiles sync --to system` — deploys all managed config files
 7. `dotfiles defaults` — applies macOS system defaults (requires `sudo`)
@@ -99,7 +99,7 @@ dotfiles pi-meridian <action> Set up and manage the Pi → Meridian service
 dotfiles defaults            Preview and apply macOS system defaults
 dotfiles check               Validate shell, proxy, tests, and launchd plist
 dotfiles install             (Re)create ~/.local/bin/dotfiles symlink
-dotfiles installers          Install NVM and zgen if missing
+dotfiles installers          Install zgen if missing
 ```
 
 Aliases: `deploy` = `sync --to system`, `backfill` = `sync --to repo`.
@@ -209,13 +209,13 @@ Examples: `ghostty`, `docker-desktop`, `1password-cli`, `claude-code`, `codex`, 
 
 `dotfiles brew-cleanup` previews and removes Homebrew formulae/casks not listed in `brew/Brewfile` or `brew/Caskfile`.
 
-`dotfiles npm` treats `npm/globals.txt` as source of truth for the resolved default NVM Node. npm globals are isolated per Node installation, so a new Node patch starts with an empty global prefix. The command reports packages found under older NVM versions, checks both package metadata and expected global binaries, repairs missing or broken installs under the current default, and never removes old runtimes.
+`dotfiles npm` treats `npm/globals.txt` as source of truth for fnm's resolved default Node. npm globals are isolated per Node installation, so a new Node patch starts with an empty global prefix. The command reports packages found under older fnm versions, checks both package metadata and expected global binaries, repairs missing or broken installs under the current default and never removes old runtimes.
 
 After verifying no project needs an old runtime, clean it up explicitly:
 
 ```sh
-nvm ls
-nvm uninstall <version>
+fnm list
+fnm uninstall <version>
 ```
 
 ---
@@ -257,7 +257,7 @@ Config split across three files in `config/zsh/`:
 - zgen plugins: `zsh-syntax-highlighting`, `zsh-history-substring-search`, `zsh-autosuggestions`
 - Starship prompt init
 - 1Password completions
-- NVM default runtime with automatic `.nvmrc` switching and one active NVM global bin on `PATH`
+- fnm default runtime with recursive `.nvmrc` switching on shell startup and `cd`
 - chruby
 
 **`aliases.zsh`** — highlights:
@@ -271,8 +271,8 @@ Config split across three files in `config/zsh/`:
 
 - `rimraf` — nuke all `node_modules` dirs recursively
 - `setSecret` — pull a 1Password secret into env
-- `loadNvmrc` — auto-switch Node version on `cd` when `.nvmrc` found
-- `pi()` — wrapper that resolves Pi from the exact default NVM Node, unaffected by `.nvmrc` overrides
+- `_fnm_auto_use` — auto-install and switch Node from the nearest `.nvmrc`
+- `pi()` — wrapper that runs Pi through fnm's exact default Node, unaffected by `.nvmrc` overrides
 
 ### Private `.zshrc.local` backup
 
@@ -402,7 +402,7 @@ Pi → rewrite proxy :3457 → Meridian :3456 → Claude Code → Claude subscri
 
 Dependencies are managed by existing installers:
 
-- Node 24 through NVM (`.nvmrc` records the repo runtime)
+- Node 24 through fnm (`.nvmrc` records the repo runtime)
 - Claude Code through `brew/Caskfile`
 - Pi and Meridian through `npm/globals.txt`
 - `curl`, `launchctl`, and `plutil` from macOS
@@ -502,4 +502,4 @@ plutil -lint services/pi-meridian/com.bertie.pi-meridian-stack.plist
 
 - macOS
 - Git (via Xcode CLT: `xcode-select --install`)
-- Internet access (Homebrew and NVM installed automatically if missing)
+- Internet access (Homebrew and fnm installed automatically if missing)
