@@ -8,6 +8,7 @@ alias grep='grep --color'
 alias sgrep='grep -R -n -H -C 5 --exclude-dir={.git,.svn,CVS} '
 
 alias fd='find'
+alias la='ls -la'
 
 alias t='tail -f'
 
