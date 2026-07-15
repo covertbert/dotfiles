@@ -15,7 +15,7 @@
     "npm:pi-caveman",
     "npm:pi-mcp-adapter",
     "npm:pi-powerline-footer",
-    "npm:pi-frontend-create@1.0.3",
+    "npm:pi-frontend-create",
     "npm:pi-web-access"
   ],
   "hideThinkingBlock": false,

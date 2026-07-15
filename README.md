@@ -272,7 +272,7 @@ Config split across three files in `config/zsh/`:
 - `rimraf` — nuke all `node_modules` dirs recursively
 - `setSecret` — pull a 1Password secret into env
 - `_fnm_auto_use` — auto-install and switch Node from the nearest `.nvmrc`
-- `pi()` — wrapper that runs Pi through fnm's exact default Node, unaffected by `.nvmrc` overrides
+- `pi()` — runs Pi through fnm's exact default Node and auto-updates Pi plus unpinned packages at most once per day before interactive runs
 
 ### Private `.zshrc.local` backup
 
