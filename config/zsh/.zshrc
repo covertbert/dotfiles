@@ -103,10 +103,4 @@ __zsh_startup_begin "Starship"
 eval "$(starship init zsh)"
 __zsh_startup_end
 
-# OnePassword Completions
-__zsh_startup_begin "1Password completion"
-eval "$(op completion zsh)"
-compdef _op op
-__zsh_startup_end
-
 __zsh_startup_finish
