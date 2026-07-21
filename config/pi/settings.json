@@ -1,16 +1,11 @@
 {
   "shellPath": "/Users/bertieblackman/.pi/agent/zsh-shell",
   "enabledModels": [
-    "anthropic/claude-haiku-4-5",
     "anthropic/claude-sonnet-4-6",
-    "anthropic/claude-fable-5",
     "anthropic/claude-opus-4-8",
-    "openai-codex/gpt-5.5",
     "openai-codex/gpt-5.6-sol",
     "openai-codex/gpt-5.6-terra",
     "openai-codex/gpt-5.6-luna",
-    "openrouter/deepseek/deepseek-v4-pro",
-    "google/gemini-3.1-flash-lite",
     "google/gemini-flash-lite-latest"
   ],
   "packages": [
