@@ -4,6 +4,7 @@
 *.plist
 *.zsh
 *.sh
+*.py
 *.gitconfig
 *.toml
 *.ghostty

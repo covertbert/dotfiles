@@ -336,17 +336,17 @@ Sync state contains only item/vault identifiers and a content hash under `~/.loc
 
 `config/pi/` holds portable Pi coding agent config:
 
-| File/Dir        | Purpose                                                                                         |
-| --------------- | ----------------------------------------------------------------------------------------------- |
-| `settings.json` | Agent settings: default model (`gpt-5.5`), enabled models, packages, UI options                 |
-| `models.json`   | Provider config: Anthropic (via proxy), OpenRouter (DeepSeek V4 Pro)                            |
-| `AGENTS.md`     | Global agent instructions: caveman mode, commit rules, context protection                       |
-| `agents/`       | Reserved local agent directory                                                                  |
-| `skills/`       | Skill definitions: `considered-writing`, `git-workflow`, `node-npm`, `php-symfony`, `shadcn-ui` |
-| `prompts/`      | Custom prompt templates, including `/ui-rebuild`                                                |
-| `extensions/`   | Local Pi extensions                                                                             |
-| `themes/`       | UI themes                                                                                       |
-| `zsh-shell`     | Shell config for Pi's embedded shell                                                            |
+| File/Dir        | Purpose                                                                                    |
+| --------------- | ------------------------------------------------------------------------------------------ |
+| `settings.json` | Agent settings: default model (`gpt-5.5`), enabled models, packages, UI options            |
+| `models.json`   | Provider config: Anthropic (via proxy), OpenRouter (DeepSeek V4 Pro)                       |
+| `AGENTS.md`     | Global agent instructions: caveman mode, commit rules, context protection                  |
+| `agents/`       | Reserved local agent directory                                                             |
+| `skills/`       | Skill definitions, including `coderabbit-review`, `git-workflow` and repository toolchains |
+| `prompts/`      | Custom prompt templates, including `/coderabbit` and `/ui-rebuild`                         |
+| `extensions/`   | Local Pi extensions                                                                        |
+| `themes/`       | UI themes                                                                                  |
+| `zsh-shell`     | Shell config for Pi's embedded shell                                                       |
 
 **Installed packages** (from `settings.json`):
 
