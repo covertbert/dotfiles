@@ -169,6 +169,44 @@ class MergeRequestSelectionTests(unittest.TestCase):
             coderabbit.select_open_mr(mrs, "fix/example")
 
 
+class GitHistoryTests(unittest.TestCase):
+    def setUp(self) -> None:
+        self.context = {"head_sha": "local-head"}
+        self.mr = {"sha": "mr-head"}
+
+    def test_exact_merge_request_head_is_accepted(self) -> None:
+        with patch.object(coderabbit, "git_is_ancestor") as is_ancestor:
+            coderabbit.ensure_matching_head(
+                {"head_sha": "same-head"},
+                {"sha": "same-head"},
+                allow_ahead=True,
+            )
+
+        is_ancestor.assert_not_called()
+
+    def test_scan_accepts_local_head_descending_from_merge_request(self) -> None:
+        with patch.object(coderabbit, "git_is_ancestor", return_value=True) as is_ancestor:
+            coderabbit.ensure_matching_head(self.context, self.mr, allow_ahead=True)
+
+        is_ancestor.assert_called_once_with("mr-head", "local-head")
+
+    def test_exact_head_check_rejects_unpushed_local_commit(self) -> None:
+        with (
+            patch.object(coderabbit, "git_is_ancestor") as is_ancestor,
+            self.assertRaisesRegex(coderabbit.SkillError, "does not match"),
+        ):
+            coderabbit.ensure_matching_head(self.context, self.mr)
+
+        is_ancestor.assert_not_called()
+
+    def test_scan_rejects_diverged_history(self) -> None:
+        with (
+            patch.object(coderabbit, "git_is_ancestor", return_value=False),
+            self.assertRaisesRegex(coderabbit.SkillError, "descend from it"),
+        ):
+            coderabbit.ensure_matching_head(self.context, self.mr, allow_ahead=True)
+
+
 class ReplyMarkerTests(unittest.TestCase):
     def test_appends_idempotency_marker(self) -> None:
         body = coderabbit.body_with_marker(

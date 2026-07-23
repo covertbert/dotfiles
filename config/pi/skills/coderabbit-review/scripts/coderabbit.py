@@ -148,19 +148,50 @@ def discover_open_mr(branch: str) -> JsonObject:
     return select_open_mr([item for item in payload if isinstance(item, dict)], branch)
 
 
-def ensure_matching_head(context: JsonObject, mr: JsonObject) -> None:
-    if context["head_sha"] != mr["sha"]:
-        raise SkillError(
-            "Local HEAD does not match merge request head. "
-            f"Local: {context['head_sha']}; MR: {mr['sha']}. Sync branch before continuing."
+def git_is_ancestor(ancestor: str, descendant: str) -> bool:
+    try:
+        result = subprocess.run(
+            ("git", "merge-base", "--is-ancestor", ancestor, descendant),
+            check=False,
+            capture_output=True,
+            text=True,
         )
+    except OSError as exc:
+        raise SkillError(f"Could not compare Git history: {exc}") from exc
+
+    if result.returncode in (0, 1):
+        return result.returncode == 0
+    detail = (result.stderr or result.stdout).strip()
+    raise SkillError(f"Could not compare Git history: {detail or 'git merge-base failed'}")
 
 
-def current_mr_context(*, require_clean: bool) -> tuple[JsonObject, JsonObject]:
+def ensure_matching_head(
+    context: JsonObject,
+    mr: JsonObject,
+    *,
+    allow_ahead: bool = False,
+) -> None:
+    local_sha = str(context["head_sha"])
+    mr_sha = str(mr["sha"])
+    if local_sha == mr_sha:
+        return
+    if allow_ahead and git_is_ancestor(mr_sha, local_sha):
+        return
+    raise SkillError(
+        "Local HEAD does not match merge request head or descend from it. "
+        f"Local: {local_sha}; MR: {mr_sha}. Sync branch before continuing."
+    )
+
+
+def current_mr_context(
+    *,
+    require_clean: bool,
+    allow_ahead: bool = False,
+) -> tuple[JsonObject, JsonObject]:
     require_tools()
     context = git_context(require_clean=require_clean)
     mr = discover_open_mr(str(context["branch"]))
-    ensure_matching_head(context, mr)
+    ensure_matching_head(context, mr, allow_ahead=allow_ahead)
     return context, mr
 
 
@@ -428,7 +459,7 @@ def command_scan(args: argparse.Namespace) -> None:
     if not 1 <= args.max_findings <= 100:
         raise SkillError("--max-findings must be between 1 and 100.")
 
-    context, mr = current_mr_context(require_clean=True)
+    context, mr = current_mr_context(require_clean=True, allow_ahead=True)
     discussions = fetch_discussions(int(mr["iid"]))
     scan = scan_discussions(
         discussions,
