@@ -9,6 +9,7 @@ brew "htop"
 brew "fzf"
 brew "fnm"
 brew "ripgrep"
+brew "herdr"
 
 # Core CLI utilities
 brew "bat"

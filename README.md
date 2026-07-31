@@ -34,9 +34,9 @@ Bootstrap runs in this order:
 1. `dotfiles install` — creates `~/.local/bin/dotfiles` symlink
 2. Homebrew setup — installs Homebrew if missing and loads its environment
 3. `dotfiles installers` — installs zgen if missing
-4. `dotfiles brew` — installs Homebrew packages, including fnm, and casks
+4. `dotfiles brew` — installs Homebrew packages, including fnm and Herdr, and casks
 5. `dotfiles npm` — installs managed npm global packages
-6. `dotfiles sync --to system` — deploys all managed config files
+6. `dotfiles sync --to system` — deploys all managed config files, including Pi's Herdr extension
 7. `dotfiles defaults` — applies macOS system defaults (requires `sudo`)
 8. `dotfiles pi-meridian setup` — deploys and starts the local Pi → Meridian stack
 
@@ -192,7 +192,7 @@ Packages are split across three files:
 
 **`brew/Brewfile`** — Homebrew formulae (CLI and dev tooling)
 
-Examples: `gh`, `git-delta`, `glab`, `fd`, `fzf`, `neovim`, `mysql-client`, `bottom`, `htop`, `yarn`, `opentofu`, `tflint`.
+Examples: `gh`, `git-delta`, `glab`, `fd`, `fzf`, `herdr`, `neovim`, `mysql-client`, `bottom`, `htop`, `yarn`, `opentofu`, `tflint`.
 
 **`brew/Caskfile`** — Homebrew casks (GUI apps, CLI-distributed casks, fonts, runtimes)
 
@@ -344,7 +344,7 @@ Sync state contains only item/vault identifiers and a content hash under `~/.loc
 | `agents/`       | Reserved local agent directory                                                             |
 | `skills/`       | Skill definitions, including `coderabbit-review`, `git-workflow` and repository toolchains |
 | `prompts/`      | Custom prompt templates, including `/coderabbit` and `/ui-rebuild`                         |
-| `extensions/`   | Local Pi extensions                                                                        |
+| `extensions/`   | Local Pi extensions, including Herdr lifecycle and session reporting                       |
 | `themes/`       | UI themes                                                                                  |
 | `zsh-shell`     | Shell config for Pi's embedded shell                                                       |
 
@@ -365,6 +365,34 @@ config/pi/npm/
 config/pi/**/*.local.json
 config/pi/**/.env
 ```
+
+## 🐑 Herdr + Pi
+
+Herdr is terminal-native persistent workspace for coding agents. Homebrew installs `herdr`; managed Pi extension reports lifecycle state and session identity when Pi runs inside Herdr.
+
+```sh
+cd ~/Projects/project
+herdr
+# Start `pi` in a Herdr pane.
+```
+
+Verify integration after deployment:
+
+```sh
+herdr integration status
+```
+
+Update flow: when Herdr reports Pi integration outdated, run `herdr integration install pi`, copy generated `~/.pi/agent/extensions/herdr-agent-state.ts` into `config/pi/extensions/`, review and commit it, then deploy. Do not edit generated extension directly.
+
+For remote host, bootstrap this dotfiles repo on host before attaching:
+
+```sh
+ssh workbox
+cd ~/dotfiles && ./bootstrap.sh
+cd ~/Projects/project && herdr
+```
+
+Then attach from another machine with `herdr --remote workbox`.
 
 ## 🔌 MCP config
 
