@@ -19,6 +19,7 @@ config|file|config/git/themes.gitconfig|${home}/themes.gitconfig|
 config|file|config/terminal/starship.toml|${home}/.config/starship.toml|
 config|file|config/terminal/.hyper.js|${home}/.hyper.js|
 config|file|config/terminal/config.ghostty|${home}/Library/Application Support/com.mitchellh.ghostty/config|
+config|file|config/ponytail/config.json|${home}/.config/ponytail/config.json|
 config|file|config/zsh/.zshrc|${home}/.zshrc|
 config|dir|config/zsh|${home}/.config/zsh|
 pi|file|config/pi/AGENTS.md|${pi_dir}/AGENTS.md|

@@ -160,6 +160,7 @@ Defined in `lib/manifest.sh`. Everything in this table is tracked by `dotfiles s
 | config  | `config/terminal/starship.toml`                           | `~/.config/starship.toml`                                            |
 | config  | `config/terminal/.hyper.js`                               | `~/.hyper.js`                                                        |
 | config  | `config/terminal/config.ghostty`                          | `~/Library/Application Support/com.mitchellh.ghostty/config.ghostty` |
+| config  | `config/ponytail/config.json`                             | `~/.config/ponytail/config.json`                                     |
 | config  | `config/zsh/.zshrc`                                       | `~/.zshrc`                                                           |
 | config  | `config/zsh/` (dir)                                       | `~/.config/zsh/`                                                     |
 | pi      | `config/pi/AGENTS.md`                                     | `~/.pi/agent/AGENTS.md`                                              |
@@ -354,6 +355,19 @@ Sync state contains only item/vault identifiers and a content hash under `~/.loc
 - `pi-mcp-adapter` — MCP server integration
 - `@feniix/pi-notion` — Notion integration
 - `pi-powerline-footer` — powerline status bar
+- `@dietrichgebert/ponytail@4.8.4` — minimal-code rules, commands and status indicator
+
+### Ponytail
+
+Ponytail runs alongside Caveman: Caveman keeps responses terse while Ponytail prefers smallest safe code change. Package source is pinned in `config/pi/settings.json`; Pi installs it under `~/.pi/agent/npm/`, which remains local and is not synced. `config/ponytail/config.json` sets synced default mode.
+
+```sh
+/ponytail status
+/ponytail lite|full|ultra
+/ponytail-review
+```
+
+Update deliberately: change package version in `config/pi/settings.json`, deploy, then run `pi update --extensions`. `normal mode` disables Ponytail for current session.
 
 **Private/local state** (not committed, excluded by `.gitignore`):
 

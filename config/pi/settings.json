@@ -13,7 +13,8 @@
     "npm:pi-mcp-adapter",
     "npm:pi-powerline-footer",
     "npm:pi-frontend-create",
-    "npm:pi-web-access"
+    "npm:pi-web-access",
+    "npm:@dietrichgebert/ponytail@4.8.4"
   ],
   "hideThinkingBlock": false,
   "powerline": {
