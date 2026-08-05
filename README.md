@@ -400,12 +400,13 @@ Then attach from another machine with `herdr --remote workbox`.
 
 **Current servers:**
 
-| Server            | How it runs/auths                                                   |
-| ----------------- | ------------------------------------------------------------------- |
-| `chrome-devtools` | `npx -y chrome-devtools-mcp@latest`                                 |
-| `gitlab`          | `npx -y @zereight/mcp-gitlab`, reads `GITLAB_PERSONAL_ACCESS_TOKEN` |
-| `notion`          | Remote MCP at `https://mcp.notion.com/mcp`, OAuth                   |
-| `linearb`         | Remote MCP at `https://mcp.linearb.io/mcp`, reads `LINEARB_API_KEY` |
+| Server            | How it runs/auths                                                                       |
+| ----------------- | --------------------------------------------------------------------------------------- |
+| `chrome-devtools` | `npx -y chrome-devtools-mcp@latest`                                                     |
+| `gitlab`          | `npx -y @zereight/mcp-gitlab`, reads `GITLAB_PERSONAL_ACCESS_TOKEN`                     |
+| `notion`          | Remote MCP at `https://mcp.notion.com/mcp`, OAuth                                       |
+| `linearb`         | Remote MCP at `https://mcp.linearb.io/mcp`, reads `LINEARB_API_KEY`                     |
+| `datadog`         | Remote EU MCP at `https://mcp.datadoghq.eu/v1/mcp`, reads `DD_API_KEY` and `DD_APP_KEY` |
 
 **LinearB setup:**
 
@@ -415,6 +416,15 @@ Then attach from another machine with `herdr --remote workbox`.
    - Or store local-only export in `~/.zshrc.local` if plaintext local secret is acceptable.
 3. Run `dotfiles deploy` to sync `config/mcp/mcp.json` to `~/.config/mcp/mcp.json`.
 4. Restart Pi from that shell, then verify MCP server `linearb` connects.
+
+**Datadog EU setup:**
+
+1. Store `DD_API_KEY` and `DD_APP_KEY` in private `~/.zshrc.local`; restore this file with `dotfiles zsh-local setup` on a new machine.
+2. Start Pi from a fresh Zsh session so it inherits both variables. Datadog server maps `DD_APP_KEY` to its required `DD_APPLICATION_KEY` request header.
+3. Run `dotfiles deploy`, then restart Pi or run `/reload`.
+4. Verify with `mcp({ connect: "datadog" })`, then search and call a harmless read-only tool.
+
+Datadog starts with default `core` toolset. Add named toolsets only when needed; avoid `toolsets=all` unless broad tool discovery is required.
 
 Do not commit API keys. Repo stores only env var reference.
 

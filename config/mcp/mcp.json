@@ -25,6 +25,24 @@
         "x-api-key": "${LINEARB_API_KEY}"
       },
       "lifecycle": "lazy"
+    },
+    "datadog": {
+      "url": "https://mcp.datadoghq.eu/v1/mcp",
+      "headers": {
+        "DD_API_KEY": "${DD_API_KEY}",
+        "DD_APPLICATION_KEY": "${DD_APP_KEY}"
+      },
+      "auth": false,
+      "lifecycle": "lazy",
+      "approveTools": [
+        "create_*",
+        "edit_*",
+        "update_*",
+        "delete_*",
+        "trigger_*",
+        "run_*",
+        "execute_*"
+      ]
     }
   }
 }
