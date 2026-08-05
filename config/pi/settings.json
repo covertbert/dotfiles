@@ -1,5 +1,5 @@
 {
-  "shellPath": "/Users/bertieblackman/.pi/agent/zsh-shell",
+  "shellPath": "/bin/bash",
   "enabledModels": [
     "anthropic/claude-sonnet-4-6",
     "anthropic/claude-opus-4-8",
