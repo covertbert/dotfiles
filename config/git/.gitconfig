@@ -7,6 +7,7 @@ defaultBranch = main
 
 [core]
 pager = delta
+excludesfile = /Users/bertieblackman/.config/git/ignore
 
 [interactive]
 diffFilter = delta --color-only
