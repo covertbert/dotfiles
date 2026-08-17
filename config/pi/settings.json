@@ -32,5 +32,6 @@
   "workingVibeMode": "file",
   "workingVibeFallback": "Working",
   "workingVibeMaxLength": 65,
-  "theme": "dark"
+  "theme": "dark",
+  "steeringMode": "all"
 }
