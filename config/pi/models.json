@@ -7,6 +7,33 @@
         "x-meridian-agent": "pi"
       }
     },
+    "runai": {
+      "baseUrl": "https://api.runinfra.ai/v1",
+      "apiKey": "$RUNINFRA_KEY",
+      "api": "openai-completions",
+      "models": [
+        {
+          "id": "qwen3-8-27b",
+          "name": "Qwen3 8-27B (RunAI)",
+          "reasoning": true,
+          "input": ["text"],
+          "contextWindow": 262144,
+          "maxTokens": 32768,
+          "cost": {
+            "input": 0.1,
+            "output": 0.4,
+            "cacheRead": 0.01,
+            "cacheWrite": 0
+          },
+          "compat": {
+            "thinkingFormat": "qwen",
+            "supportsDeveloperRole": false,
+            "supportsStore": false,
+            "supportsReasoningEffort": false
+          }
+        }
+      ]
+    },
     "openrouter": {
       "api": "openai-completions",
       "apiKey": "$OPENROUTER_API_KEY",
