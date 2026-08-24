@@ -1,0 +1,12 @@
+{
+  "phases": {
+    "planning": {
+      "model": { "provider": "openai-codex", "id": "gpt-5.6-sol" },
+      "thinking": "max"
+    },
+    "executing": {
+      "model": { "provider": "runai", "id": "qwen3-8-27b" },
+      "thinking": "medium"
+    }
+  }
+}
