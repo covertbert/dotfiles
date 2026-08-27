@@ -5,7 +5,7 @@
       "thinking": "max"
     },
     "executing": {
-      "model": { "provider": "openai-codex", "id": "gpt-5.6-luna" },
+      "model": { "provider": "runai", "id": "qwen3-8-27b" },
       "thinking": "medium"
     }
   }
