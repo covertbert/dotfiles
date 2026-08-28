@@ -21,6 +21,15 @@ For branch creation, commits, pushes, or merge requests, load and follow the `gi
 - Propose branch names, Conventional Commit messages, push commands, and MR descriptions from current repo state.
 - Run final git/glab commands only after user intent is clear.
 
+## MCP Auth
+
+When an MCP server reports it is not authenticated (`auth_required`, `needs-auth`, or HTTP 401), trigger that server's native OAuth flow. Do not fall back to chrome-devtools, raw API calls, CLIs, or manual tokens.
+
+1. Run `mcp({ action: "auth-start", server: "<name>" })`.
+2. Send me the returned browser URL.
+3. When I share the redirect URL, run `mcp({ action: "auth-complete", server: "<name>", args: { redirectUrl: "..." } })`.
+4. Retry the original MCP call.
+
 ## Workflow
 
 - Small obvious fix: handle directly.
