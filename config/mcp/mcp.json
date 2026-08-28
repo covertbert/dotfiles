@@ -56,6 +56,12 @@
         "run_*",
         "execute_*"
       ]
+    },
+    "spacelift": {
+      "url": "https://airtimerewards.app.spacelift.io/mcp",
+      "auth": "oauth",
+      "lifecycle": "lazy",
+      "approveTools": ["mutate", "intent"]
     }
   }
 }

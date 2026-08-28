@@ -17,7 +17,7 @@ My personal macOS dotfiles. One command to go from a blank Mac to a fully config
 | 🖥️ **Terminal**       | Hyper config, Ghostty config, Starship theme                                                             |
 | 🤖 **Pi agent**       | Settings, models, AGENTS.md, skills, prompts, extensions                                                 |
 | 🔀 **Pi + Meridian**  | Rewrite proxy, launchd service, lifecycle commands, and managed dependencies                             |
-| 🔌 **MCP**            | Shared MCP server config (Chrome DevTools, GitLab, Notion, LinearB)                                      |
+| 🔌 **MCP**            | Shared MCP server config (Chrome DevTools, GitLab, Notion, LinearB, Datadog, Spacelift)                  |
 
 ---
 
@@ -421,6 +421,7 @@ Then attach from another machine with `herdr --remote workbox`.
 | `notion`          | Remote MCP at `https://mcp.notion.com/mcp`, OAuth                                       |
 | `linearb`         | Remote MCP at `https://mcp.linearb.io/mcp`, reads `LINEARB_API_KEY`                     |
 | `datadog`         | Remote EU MCP at `https://mcp.datadoghq.eu/v1/mcp`, reads `DD_API_KEY` and `DD_APP_KEY` |
+| `spacelift`       | Remote MCP at `https://airtimerewards.app.spacelift.io/mcp`, OAuth                      |
 
 **LinearB setup:**
 
@@ -430,6 +431,14 @@ Then attach from another machine with `herdr --remote workbox`.
    - Or store local-only export in `~/.zshrc.local` if plaintext local secret is acceptable.
 3. Run `dotfiles deploy` to sync `config/mcp/mcp.json` to `~/.config/mcp/mcp.json`.
 4. Restart Pi from that shell, then verify MCP server `linearb` connects.
+
+**Spacelift setup:**
+
+1. On first connection, authenticate in browser and choose `mcp:read` or `mcp:write`.
+2. Run `dotfiles deploy`, then restart Pi or run `/reload`.
+3. Verify with `mcp({ connect: "spacelift" })` and a harmless read-only query.
+
+Write tools `mutate` and `intent` require explicit approval in Pi.
 
 **Datadog EU setup:**
 
