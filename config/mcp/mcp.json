@@ -25,6 +25,20 @@
       },
       "lifecycle": "lazy"
     },
+    "cloudflare": {
+      "url": "https://mcp.cloudflare.com/mcp",
+      "auth": "oauth",
+      "lifecycle": "lazy",
+      "approveTools": [
+        "create_*",
+        "edit_*",
+        "update_*",
+        "delete_*",
+        "trigger_*",
+        "run_*",
+        "execute_*"
+      ]
+    },
     "datadog": {
       "url": "https://mcp.datadoghq.eu/v1/mcp",
       "headers": {
