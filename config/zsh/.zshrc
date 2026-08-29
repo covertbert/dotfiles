@@ -46,6 +46,7 @@ fi
 # Editor
 export EDITOR="code --wait"
 export VISUAL="code --wait"
+export MCP_UI_VIEWER=none
 __zsh_startup_end
 
 # fzf
