@@ -31,6 +31,26 @@
             "supportsStore": false,
             "supportsReasoningEffort": false
           }
+        },
+        {
+          "id": "qwen3-8-flash-next",
+          "name": "Qwen3 8-Flash Next (RunAI)",
+          "reasoning": true,
+          "input": ["text"],
+          "contextWindow": 1048576,
+          "maxTokens": 1048576,
+          "cost": {
+            "input": 0.1,
+            "output": 0.4,
+            "cacheRead": 0.01,
+            "cacheWrite": 0
+          },
+          "compat": {
+            "thinkingFormat": "qwen",
+            "supportsDeveloperRole": false,
+            "supportsStore": false,
+            "supportsReasoningEffort": false
+          }
         }
       ]
     },
