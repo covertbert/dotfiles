@@ -62,6 +62,11 @@
       "auth": "oauth",
       "lifecycle": "lazy",
       "approveTools": ["mutate", "intent"]
+    },
+    "aws": {
+      "url": "https://aws-mcp.eu-central-1.api.aws/mcp",
+      "auth": "oauth",
+      "lifecycle": "lazy"
     }
   }
 }
