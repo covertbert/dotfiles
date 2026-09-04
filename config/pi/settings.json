@@ -1,5 +1,6 @@
 {
   "shellPath": "/bin/bash",
+  "npmCommand": ["npx", "--yes", "pnpm@10.29.2"],
   "enabledModels": [
     "anthropic/claude-sonnet-4-6",
     "anthropic/claude-opus-4-8",
