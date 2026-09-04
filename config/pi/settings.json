@@ -18,7 +18,8 @@
     "npm:pi-frontend-create",
     "npm:pi-web-access",
     "npm:@plannotator/pi-extension@0.27.7",
-    "npm:@dietrichgebert/ponytail@4.8.4"
+    "npm:@dietrichgebert/ponytail@4.8.4",
+    "npm:@mcuste/pi-diagram@0.6.0"
   ],
   "hideThinkingBlock": false,
   "powerline": {
