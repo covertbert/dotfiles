@@ -356,7 +356,6 @@ Sync state contains only item/vault identifiers and a content hash under `~/.loc
 - `@feniix/pi-notion` — Notion integration
 - `pi-powerline-footer` — powerline status bar
 - `@dietrichgebert/ponytail@4.8.4` — minimal-code rules, commands and status indicator
-- `@mcuste/pi-diagram@0.6.0` — D2-backed diagrams in Pi
 
 ### Ponytail
 
@@ -468,7 +467,6 @@ Dependencies are managed by existing installers:
 - Claude Code through `brew/Caskfile`
 - Pi and Meridian through `npm/globals.txt`
 - `curl`, `launchctl`, and `plutil` from macOS
-- D2 through `brew/Brewfile` for `@mcuste/pi-diagram`
 
 The rewrite proxy uses only Node built-ins. No local `node_modules` or API key is required.
 

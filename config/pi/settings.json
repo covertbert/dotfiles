@@ -1,6 +1,5 @@
 {
   "shellPath": "/bin/bash",
-  "npmCommand": ["npx", "--yes", "pnpm@10.29.2"],
   "enabledModels": [
     "anthropic/claude-sonnet-4-6",
     "anthropic/claude-opus-4-8",
@@ -19,8 +18,7 @@
     "npm:pi-frontend-create",
     "npm:pi-web-access",
     "npm:@plannotator/pi-extension@0.27.7",
-    "npm:@dietrichgebert/ponytail@4.8.4",
-    "git:github.com/be-ayush/pi-diagram@ad5f7838bd6888d04f72b1a89829994fc055a2ea"
+    "npm:@dietrichgebert/ponytail@4.8.4"
   ],
   "hideThinkingBlock": false,
   "powerline": {
