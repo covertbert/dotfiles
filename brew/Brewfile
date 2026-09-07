@@ -48,6 +48,7 @@ brew "tflint"
 # Language, package, and runtime support
 brew "automake"
 brew "bison"
+brew "d2"
 brew "code-server"
 brew "composer"
 brew "dockutil"
