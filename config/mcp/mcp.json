@@ -4,11 +4,6 @@
       "command": "npx",
       "args": ["-y", "chrome-devtools-mcp@latest"]
     },
-    "slack": {
-      "command": "npx",
-      "args": ["-y", "@aaronsb/slack-mcp"],
-      "lifecycle": "lazy"
-    },
     "gitlab": {
       "command": "npx",
       "args": ["-y", "@zereight/mcp-gitlab"],
