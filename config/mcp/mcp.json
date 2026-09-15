@@ -77,6 +77,22 @@
         "clientId": "http://localhost:3456",
         "redirectUri": "http://localhost:3456/callback"
       }
+    },
+    "dbhub": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@bytebase/dbhub@latest",
+        "--config",
+        "${HOME}/.config/mcp/dbhub.toml"
+      ],
+      "env": {
+        "ZORRO_PRODUCTION_USER": "${ZORRO_PRODUCTION_USER}",
+        "ZORRO_PRODUCTION_PASSWORD": "${ZORRO_PRODUCTION_PASSWORD}"
+      },
+      "inheritEnv": false,
+      "lifecycle": "lazy",
+      "requestTimeoutMs": 30000
     }
   }
 }

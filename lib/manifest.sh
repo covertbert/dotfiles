@@ -37,6 +37,7 @@ service|file|services/pi-meridian/pi-meridian-proxy.mjs|${home}/.local/bin/pi-me
 service|file|services/pi-meridian/pi-meridian-stack.sh|${home}/.local/bin/pi-meridian-stack.sh|
 service|file|services/pi-meridian/com.bertie.pi-meridian-stack.plist|${home}/Library/LaunchAgents/com.bertie.pi-meridian-stack.plist|
 mcp|file|config/mcp/mcp.json|${mcp_config}|
+mcp|file|config/mcp/dbhub.toml|${home}/.config/mcp/dbhub.toml|
 EOF
 }
 

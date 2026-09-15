@@ -411,7 +411,7 @@ Then attach from another machine with `herdr --remote workbox`.
 
 ## 🔌 MCP config
 
-`config/mcp/mcp.json` is source of truth for shared MCP servers, synced to `~/.config/mcp/mcp.json`.
+`config/mcp/mcp.json` and `config/mcp/dbhub.toml` are source of truth for shared MCP servers, synced to `~/.config/mcp/`.
 
 **Current servers:**
 
@@ -423,6 +423,7 @@ Then attach from another machine with `herdr --remote workbox`.
 | `linearb`         | Remote MCP at `https://mcp.linearb.io/mcp`, reads `LINEARB_API_KEY`                     |
 | `datadog`         | Remote EU MCP at `https://mcp.datadoghq.eu/v1/mcp`, reads `DD_API_KEY` and `DD_APP_KEY` |
 | `spacelift`       | Remote MCP at `https://airtimerewards.app.spacelift.io/mcp`, OAuth                      |
+| `dbhub`           | Local `npx @bytebase/dbhub`, reads Zsh environment secrets                              |
 
 **LinearB setup:**
 
@@ -450,7 +451,19 @@ Write tools `mutate` and `intent` require explicit approval in Pi.
 
 Datadog starts with default `core` toolset. Add named toolsets only when needed; avoid `toolsets=all` unless broad tool discovery is required.
 
-Do not commit API keys. Repo stores only env var reference.
+**Zorro production database setup:**
+
+1. Add secrets to private `~/.zshrc.local`:
+
+   ```sh
+   export ZORRO_PRODUCTION_USER="zorro"
+   export ZORRO_PRODUCTION_PASSWORD="..."
+   ```
+
+2. Run `dotfiles deploy`, then start Pi from fresh Zsh shell.
+3. Ask Pi `show databases on zorro-production`, then ask it to inspect table `production` in correct database.
+
+Do not commit API keys or database passwords. Repo stores only environment variable references.
 
 ---
 

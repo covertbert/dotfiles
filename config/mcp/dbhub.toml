@@ -1,0 +1,29 @@
+# DBHub configuration for Pi. Secrets resolve from ~/.zshrc.local at MCP startup.
+
+[[sources]]
+id = "zorro-production"
+description = "Zorro production MySQL RDS. Discover database before querying table production."
+type = "mysql"
+host = "zorro-production-cluster.cluster-cabvaipopn5b.eu-west-1.rds.amazonaws.com"
+port = 3306
+database = "information_schema"
+user = "${ZORRO_PRODUCTION_USER}"
+password = "${ZORRO_PRODUCTION_PASSWORD}"
+sslmode = "require"
+lazy = true
+connection_timeout = 10
+query_timeout = 30
+
+[[tools]]
+name = "execute_sql"
+source = "zorro-production"
+readonly = true
+max_rows = 100
+
+[[tools]]
+name = "search_objects"
+source = "zorro-production"
+
+[[tools]]
+name = "explain_sql"
+source = "zorro-production"
