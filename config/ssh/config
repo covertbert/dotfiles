@@ -2,3 +2,7 @@ Host homeassistant
   HostName homeassistant.mole-anaconda.ts.net
   User root
   Port 22
+
+Host raspi
+  HostName raspberrypi.mole-anaconda.ts.net
+  User covertbert
