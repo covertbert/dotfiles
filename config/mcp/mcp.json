@@ -72,7 +72,7 @@
       "url": "https://homeassistant.mole-anaconda.ts.net/api/mcp",
       "auth": "oauth",
       "lifecycle": "lazy",
-      "approveTools": true,
+      "approveTools": false,
       "oauth": {
         "clientId": "http://localhost:3456",
         "redirectUri": "http://localhost:3456/callback"
