@@ -1,0 +1,4 @@
+Host homeassistant
+  HostName homeassistant.mole-anaconda.ts.net
+  User root
+  Port 22

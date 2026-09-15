@@ -22,6 +22,7 @@ config|file|config/terminal/config.ghostty|${home}/Library/Application Support/c
 config|file|config/ponytail/config.json|${home}/.config/ponytail/config.json|
 config|file|config/zsh/.zshrc|${home}/.zshrc|
 config|dir|config/zsh|${home}/.config/zsh|
+config|file|config/ssh/config|${home}/.ssh/config|
 pi|file|config/pi/AGENTS.md|${pi_dir}/AGENTS.md|
 pi|json-merge|config/pi/settings.json|${pi_dir}/settings.json|lastChangelogVersion,defaultProvider,defaultModel,defaultThinkingLevel
 pi|file|config/pi/models.json|${pi_dir}/models.json|
