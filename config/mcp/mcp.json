@@ -70,13 +70,10 @@
     },
     "homeassistant": {
       "url": "https://homeassistant.mole-anaconda.ts.net/api/mcp",
-      "auth": "oauth",
+      "auth": "bearer",
+      "bearerTokenEnv": "HA_TOKEN",
       "lifecycle": "lazy",
-      "approveTools": false,
-      "oauth": {
-        "clientId": "http://localhost:3456",
-        "redirectUri": "http://localhost:3456/callback"
-      }
+      "approveTools": false
     },
     "dbhub": {
       "command": "npx",
