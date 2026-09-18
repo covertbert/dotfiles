@@ -51,6 +51,25 @@
             "supportsStore": false,
             "supportsReasoningEffort": false
           }
+        },
+        {
+          "id": "ornith-1-5-35b",
+          "name": "Ornith 1.5 35B (RunAI, vision)",
+          "reasoning": true,
+          "input": ["text", "image"],
+          "contextWindow": 131072,
+          "maxTokens": 32768,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          },
+          "compat": {
+            "supportsDeveloperRole": false,
+            "supportsStore": false,
+            "supportsReasoningEffort": false
+          }
         }
       ]
     },
