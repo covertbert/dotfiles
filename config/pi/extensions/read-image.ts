@@ -5,6 +5,11 @@ import { Type } from "typebox";
 // (e.g. qwen3-8-27b) can still "see" images. The image is sent to the vision
 // model over the RunInfra OpenAI-compatible API and the result is returned as
 // text to the active model. No model switching required.
+//
+// Registered for every model, but Ornith is only actually called when the
+// ACTIVE model is text-only (ctx.model.input lacks "image"). A vision-capable
+// active model is told to read the image itself, so Ornith is never used by a
+// model that can already see.
 const VISION_MODEL = "ornith-1-5-35b";
 const VISION_URL = "https://api.runinfra.ai/v1/chat/completions";
 
@@ -39,11 +44,11 @@ export default function readImageExtension(pi: ExtensionAPI) {
     name: "read_image",
     label: "Read Image",
     description:
-      "View an image from an http(s) URL or a local file path. The active model is text-only and cannot see images directly; this tool sends the image to a vision model (Ornith) and returns its description and any transcribed text.",
+      "View an image from an http(s) URL or a local file path. Use only when the active model is text-only and cannot see images itself: the image is sent to a vision model (Ornith) and its description plus any transcribed text is returned. Vision-capable models read images directly and should not call this.",
     promptSnippet:
       "View an image (URL or path) via a vision model, returning its contents as text.",
     promptGuidelines: [
-      "You are text-only and cannot view images yourself. Whenever the user shares, drops, or references an image (an http(s) URL or a file path) and you need its contents, call read_image with that URL or path. Do not guess what an image shows."
+      "Only if you cannot see images natively (you are a text-only model): whenever the user shares, drops, or references an image (an http(s) URL or a file path) and you need its contents, call read_image with that URL or path. If you can view images directly, read them yourself and do not call read_image. Never guess what an image shows."
     ],
     parameters: Type.Object({
       source: Type.String({
@@ -56,7 +61,22 @@ export default function readImageExtension(pi: ExtensionAPI) {
         })
       )
     }),
-    async execute(_toolCallId, params, signal) {
+    async execute(_toolCallId, params, signal, _onUpdate, ctx) {
+      // Delegate to Ornith only for text-only active models. A vision-capable
+      // model reads the image itself, so skip the vision call entirely.
+      const canSeeImages = ctx?.model?.input?.includes("image") ?? false;
+      if (canSeeImages) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: "The active model can view images directly — read the image from the conversation yourself instead of using read_image. read_image (Ornith) is reserved for text-only models."
+            }
+          ],
+          details: {},
+          isError: false
+        };
+      }
       const key = process.env.RUNINFRA_KEY || "";
       if (!key) {
         return {
