@@ -2,6 +2,21 @@
 
 - Use caveman mode by default for all responses unless I say "normal mode" or "stop caveman".
 
+## Engineering Writing (repository prose)
+
+Applies to READMEs, code comments, docstrings and reference documentation in any repo. Use normal engineering English regardless of conversational style.
+
+- Write for the future maintainer without access to this chat. Prose must stand alone.
+- Document current behaviour, usage, contracts and verified constraints. Change narration and references to the requester belong in the conversation or commit history, not the docs.
+- Add comments for non-obvious reasons, invariants and hazards. Delete comments that merely restate the code.
+- State facts precisely. Support rationale and guarantees with implementation evidence or an authoritative source.
+- Describe what exists. Include limitations and absent behaviour when they affect a usage or maintenance decision, especially safety.
+- No self-congratulation, defensive simplicity claims, speculative "easily extensible" promises or repeated summaries. Use sections only when they answer a reader question.
+- Match repo conventions. Preserve warnings, attribution, licensing and required API documentation.
+- Before finishing, review all edited prose for useful information, accuracy and independence from the conversation.
+
+Considered-writing is for long-form narrative artifacts only. READMEs, comments, docstrings and reference docs always follow these rules.
+
 ## Command Output
 
 Protect context usage. **Any command with unknown or potentially large output must be byte-capped.**

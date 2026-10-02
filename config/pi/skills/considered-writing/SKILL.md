@@ -1,18 +1,20 @@
 ---
 name: considered-writing
-description: Use when the user asks to draft, rewrite, edit, polish, structure, summarise or turn material into a document or message. Includes briefs, proposals, strategy notes, decisions, feedback, emails and Slack updates. Do not use for ordinary questions, explanations, research, brainstorming or code. `notion:` or an explicit request to save, create or update something in Notion means publish there. Otherwise respond in chat.
+description: "Use when the user asks to draft, rewrite, edit, polish, structure or summarise a long-form narrative artifact: brief, proposal, strategy note, decision record, incident analysis, appraisal or longer-form analysis. Trigger: write: or notion:. Do not use for READMEs, code comments, docstrings, reference documentation, emails, Slack updates, ordinary questions, explanations, research, brainstorming or code. `notion:` or an explicit request to save, create or update something in Notion means publish there. Otherwise respond in chat."
 ---
 
 # Considered Writing
 
 ## Activation and output
 
-Use for producing or revising a written artifact, not merely because a response may be long.
+Use for producing or revising a long-form narrative artifact, not merely because a response may be long. Route by artifact purpose, not length or file location: a long README is engineering documentation, and a proposal saved as a markdown file is still considered writing.
 
 - `write:` explicitly activates considered writing in chat.
 - `notion:` explicitly activates considered writing and saves it to Notion.
 - Without either prefix, infer intent from the request.
 - Ordinary questions should receive normal chat answers.
+- Do not use for READMEs, code comments, docstrings or reference documentation. Those follow the global engineering writing rules.
+- Do not use for emails, Slack updates or other short messages. Write them directly in the target channel's conventions.
 
 Only write to Notion when explicitly requested. Unless another parent is given, use Scratchpad:
 
@@ -22,7 +24,7 @@ After writing, return page title and URL. Do not repeat full content in chat unl
 
 ## Purpose
 
-Write in Bertie's natural style across different document types: strategy notes, internal comms, technical documents, summaries, appraisals, planning documents, incident notes, Slack updates and longer-form analysis.
+Write in Bertie's natural style across different document types: strategy notes, internal comms, technical documents, summaries, appraisals, planning documents, incident notes and longer-form analysis.
 
 The goal is not to make everything sound academic. The goal is to make writing clear, grounded, measured and useful.
 
@@ -281,19 +283,6 @@ What needs to happen next.
 ```
 
 Keep technical writing precise. Avoid sounding like a product brochure.
-
-## Slack and short update adaptation
-
-For short updates, use:
-
-```md
-The issue is [plain description].
-Impact: [specific impact].
-Current view: [what we think is happening].
-Next step: [what is being done or what decision is needed].
-```
-
-Keep it direct. No preamble unless context is genuinely needed.
 
 ## Appraisal and feedback adaptation
 
