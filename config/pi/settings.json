@@ -11,6 +11,7 @@
     "runai/deepseek-v4-1-flash",
     "opencode/muse-spark-1.3-contributor-free"
   ],
+  "extensions": ["-builtin:mcp"],
   "packages": [
     "npm:pi-caveman",
     "npm:pi-mcp-adapter",
