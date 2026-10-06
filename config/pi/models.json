@@ -33,20 +33,20 @@
           }
         },
         {
-          "id": "qwen3-8-flash-next",
-          "name": "Qwen3 8-Flash Next (RunAI)",
+          "id": "deepseek-v4-1-flash",
+          "name": "DeepSeek V4.1 Flash (RunAI)",
           "reasoning": true,
           "input": ["text"],
           "contextWindow": 1048576,
           "maxTokens": 1048576,
           "cost": {
             "input": 0.1,
-            "output": 0.4,
-            "cacheRead": 0.01,
+            "output": 0.43,
+            "cacheRead": 0.02,
             "cacheWrite": 0
           },
           "compat": {
-            "thinkingFormat": "qwen",
+            "thinkingFormat": "deepseek",
             "supportsDeveloperRole": false,
             "supportsStore": false,
             "supportsReasoningEffort": false
