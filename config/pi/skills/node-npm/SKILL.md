@@ -1,6 +1,6 @@
 ---
 name: node-npm
-description: Use when working in an NPM or Node.js repository, running npm scripts, installing packages, or selecting a Node version. Covers fnm and .nvmrc requirements.
+description: Use when working in an NPM or Node.js repository, running npm scripts, linting with ESLint, installing packages, or selecting a Node version. Covers fnm and .nvmrc requirements and resolving lint warnings.
 ---
 
 # Node / NPM
