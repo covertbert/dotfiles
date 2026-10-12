@@ -6,3 +6,7 @@ Host homeassistant
 Host raspi
   HostName raspberrypi.mole-anaconda.ts.net
   User covertbert
+
+Host nas
+  HostName synologynas.mole-anaconda.ts.net
+  User covertbert
