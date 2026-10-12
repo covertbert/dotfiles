@@ -6,7 +6,7 @@
     },
     "executing": {
       "model": { "provider": "runai", "id": "deepseek-v4-1-flash" },
-      "thinking": "medium"
+      "thinking": "high"
     }
   }
 }
