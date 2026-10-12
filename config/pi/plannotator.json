@@ -5,7 +5,7 @@
       "thinking": "max"
     },
     "executing": {
-      "model": { "provider": "runai", "id": "qwen3-8-27b" },
+      "model": { "provider": "runai", "id": "deepseek-v4-1-flash" },
       "thinking": "medium"
     }
   }
