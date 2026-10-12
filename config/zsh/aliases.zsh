@@ -14,6 +14,9 @@ alias t='tail -f'
 
 alias top='btm'
 
+# List SSH host aliases defined in ~/.ssh/config
+sshl() { grep -iE '^Host ' ~/.ssh/config | awk '{print $2}'; }
+
 # Make zsh know about hosts already accessed by SSH
 zstyle -e ':completion:*:(ssh|scp|sftp|rsh|rsync):hosts' hosts 'reply=(${=${${(f)"$(cat {/etc/ssh_,~/.ssh/known_}hosts(|2)(N) /dev/null)"}%%[# ]*}//,/ })'
 
