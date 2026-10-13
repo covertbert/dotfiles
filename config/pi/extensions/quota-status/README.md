@@ -27,6 +27,10 @@ Meaning:
 
 `/quota-debug` prints metadata only. No secrets.
 
+## Supported providers
+
+Only `openai-codex` reports quota. Other providers, including `anthropic`, show `n/a`, because API-key billing has no rolling usage window to read.
+
 ## Auth
 
 Reads `~/.pi/agent/auth.json` by default. Override with `PI_QUOTA_AUTH_PATH`.
@@ -41,41 +45,3 @@ OpenAI Codex/GPT:
   }
 }
 ```
-
-Claude web quota used for Anthropic/Meridian proxy models:
-
-```json
-{
-  "quota-status": {
-    "anthropic-subscription": {
-      "organizationUuid": "<uuid>",
-      "authCookie": "<cookie>",
-      "headers": {
-        "anthropic-device-id": "<device-id>",
-        "user-agent": "<browser user agent>"
-      }
-    }
-  }
-}
-```
-
-Optional custom proxy quota endpoint:
-
-```json
-{
-  "quota-status": {
-    "meridian": {
-      "usageUrl": "http://127.0.0.1:3456/usage",
-      "headers": {}
-    }
-  }
-}
-```
-
-Or env:
-
-```sh
-PI_QUOTA_MERIDIAN_USAGE_URL=http://127.0.0.1:3456/usage
-```
-
-Proxy endpoint may return normalized, Claude-like, or Codex-like windows.

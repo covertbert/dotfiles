@@ -726,7 +726,6 @@ cmd_npm() {
 
 	echo ""
 	if [[ ${#missing[@]} -eq 0 ]]; then
-		ensure_meridian_opencode_plugin || return 1
 		ok "npm globals satisfied."
 		return 0
 	fi
@@ -758,336 +757,7 @@ cmd_npm() {
 		return 1
 	fi
 
-	ensure_meridian_opencode_plugin || return 1
 	ok "npm globals done."
-}
-
-pi_meridian_node_bin_dir() {
-	local fnm_bin node_bin
-	if ! fnm_bin="$(fnm_bin_path)"; then
-		err "fnm not found. Run: dotfiles brew"
-		return 1
-	fi
-
-	if ! node_bin="$("$fnm_bin" exec --using=default node -p 'process.execPath' 2>/dev/null)" || [[ ! -x "$node_bin" ]]; then
-		err "Default fnm Node not found. Run: dotfiles npm"
-		return 1
-	fi
-
-	dirname "$node_bin"
-}
-
-ensure_meridian_opencode_plugin() {
-	local node_bin_dir node_root plugin_source plugin_dir plugin_link
-	local config_dir config_file tmp
-
-	node_bin_dir="$(pi_meridian_node_bin_dir)" || return 1
-	node_root="$(dirname "$node_bin_dir")"
-	plugin_source="${node_root}/lib/node_modules/@rynfar/meridian/plugin/meridian.ts"
-	if [[ ! -f "$plugin_source" ]]; then
-		err "Meridian OpenCode plugin missing: ${plugin_source}"
-		return 1
-	fi
-
-	plugin_dir="${HOME}/.local/share/meridian/plugin"
-	plugin_link="${plugin_dir}/meridian.ts"
-	mkdir -p "$plugin_dir"
-	ln -sfn "$plugin_source" "$plugin_link"
-
-	config_dir="${OPENCODE_CONFIG_DIR:-${XDG_CONFIG_HOME:-$HOME/.config}/opencode}"
-	config_file="${config_dir}/opencode.json"
-	if [[ ! -f "$config_file" ]]; then
-		ok "Meridian plugin link: ${plugin_link}"
-		return 0
-	fi
-
-	tmp="${config_file}.tmp.$$"
-	if ! jq --arg plugin "$plugin_link" '
-		.plugin = (
-			((.plugin // []) | map(select(
-				(type != "string") or
-				(test("@rynfar/meridian|meridian\\.ts|opencode-claude-max-proxy") | not)
-			))) + [$plugin] | unique
-		)
-	' "$config_file" >"$tmp"; then
-		rm -f "$tmp"
-		err "Failed to update OpenCode plugin config: ${config_file}"
-		return 1
-	fi
-	mv "$tmp" "$config_file"
-	ok "OpenCode Meridian plugin: ${plugin_link}"
-}
-
-pi_meridian_wait_for_health() {
-	local url="$1" attempts="$2"
-	local attempt
-
-	for ((attempt = 1; attempt <= attempts; attempt++)); do
-		if curl -fsS --max-time 2 "$url" >/dev/null 2>&1; then
-			return 0
-		fi
-		sleep 1
-	done
-
-	return 1
-}
-
-pi_meridian_show_health() {
-	local label="$1" url="$2"
-	local body status
-
-	if ! body="$(curl -fsS --max-time 2 "$url" 2>/dev/null)"; then
-		warn "${label}: unavailable (${url})"
-		return 1
-	fi
-
-	if command -v jq &>/dev/null; then
-		status="$(printf '%s' "$body" | jq -r '.status // "responding"' 2>/dev/null || echo "responding")"
-	else
-		status="responding"
-	fi
-
-	ok "${label}: ${status} (${url})"
-}
-
-pi_meridian_check_dependencies() {
-	local node_bin_dir node_major
-	local dependency
-
-	for dependency in curl launchctl plutil; do
-		if ! command -v "$dependency" &>/dev/null; then
-			err "Missing dependency: ${dependency}"
-			return 1
-		fi
-	done
-
-	if ! PATH="/opt/homebrew/bin:/usr/local/bin:$PATH" command -v claude &>/dev/null; then
-		err "Claude Code not found. Run: dotfiles brew"
-		return 1
-	fi
-
-	node_bin_dir="$(pi_meridian_node_bin_dir)" || return 1
-	node_major="$("${node_bin_dir}/node" -p 'process.versions.node.split(".")[0]')"
-
-	if ((node_major < 22)); then
-		err "Meridian requires Node 22 or newer; default fnm Node is $("${node_bin_dir}/node" --version)."
-		return 1
-	fi
-
-	for dependency in meridian pi; do
-		if [[ ! -x "${node_bin_dir}/${dependency}" ]]; then
-			err "${dependency} not installed under default fnm Node. Run: dotfiles npm"
-			return 1
-		fi
-	done
-}
-
-cmd_pi_meridian_setup() {
-	local yes_flag="${1:-}"
-	local label="com.bertie.pi-meridian-stack"
-	local uid domain target plist
-
-	heading "Pi → Meridian setup"
-	echo ""
-
-	if [[ "$(uname -s)" != "Darwin" ]]; then
-		err "Pi → Meridian launchd service requires macOS."
-		return 1
-	fi
-
-	pi_meridian_check_dependencies || return 1
-	ensure_meridian_opencode_plugin || return 1
-
-	if [[ "$yes_flag" != "--yes" ]]; then
-		warn "This deploys service files and reloads the launchd agent."
-		confirm "Set up Pi → Meridian service?" || {
-			echo "Aborted."
-			return 1
-		}
-	fi
-
-	copy_to_system \
-		"services/pi-meridian/pi-meridian-proxy.mjs" \
-		"${HOME}/.local/bin/pi-meridian-proxy.mjs" \
-		"file"
-	copy_to_system \
-		"services/pi-meridian/pi-meridian-stack.sh" \
-		"${HOME}/.local/bin/pi-meridian-stack.sh" \
-		"file"
-	copy_to_system \
-		"services/pi-meridian/com.bertie.pi-meridian-stack.plist" \
-		"${HOME}/Library/LaunchAgents/${label}.plist" \
-		"file"
-
-	chmod +x \
-		"${HOME}/.local/bin/pi-meridian-proxy.mjs" \
-		"${HOME}/.local/bin/pi-meridian-stack.sh"
-	mkdir -p "${HOME}/Library/Logs/pi-meridian"
-
-	plist="${HOME}/Library/LaunchAgents/${label}.plist"
-	if ! plutil -lint "$plist"; then
-		err "Invalid launchd plist: ${plist}"
-		return 1
-	fi
-
-	uid="$(id -u)"
-	domain="gui/${uid}"
-	target="${domain}/${label}"
-
-	if launchctl print "$target" &>/dev/null; then
-		info "Unloading existing launchd service..."
-		if ! launchctl bootout "$target"; then
-			launchctl bootout "$domain" "$plist"
-		fi
-	fi
-
-	launchctl enable "$target"
-	if ! launchctl bootstrap "$domain" "$plist"; then
-		warn "launchd reload raced with shutdown; retrying..."
-		sleep 2
-		launchctl bootstrap "$domain" "$plist"
-	fi
-	launchctl kickstart -k "$target"
-	ok "Launchd service loaded: ${label}"
-
-	if pi_meridian_wait_for_health "http://127.0.0.1:3456/health" 30; then
-		ok "Meridian responding on 127.0.0.1:3456"
-	else
-		warn "Meridian health check failed. Run: dotfiles pi-meridian logs"
-	fi
-
-	if pi_meridian_wait_for_health "http://127.0.0.1:3457/health" 15; then
-		ok "Rewrite proxy responding on 127.0.0.1:3457"
-	else
-		warn "Rewrite proxy health check failed. Run: dotfiles pi-meridian logs"
-	fi
-
-	if PATH="/opt/homebrew/bin:/usr/local/bin:$PATH" claude auth status &>/dev/null; then
-		ok "Claude Code authenticated."
-	else
-		warn "Claude Code not authenticated. Run: claude login"
-		warn "Then restart stack: dotfiles pi-meridian restart"
-	fi
-}
-
-cmd_pi_meridian_status() {
-	local label="com.bertie.pi-meridian-stack"
-	local target
-	local node_bin_dir=""
-	local service_state=""
-	target="gui/$(id -u)/${label}"
-
-	heading "Pi → Meridian status"
-	echo ""
-
-	if launchctl print "$target" &>/dev/null; then
-		service_state="$(launchctl print "$target" 2>/dev/null | awk '/^[[:space:]]*state = / { print $3; exit }')"
-		ok "Launchd: ${service_state:-loaded} (${label})"
-	else
-		warn "Launchd: not loaded. Run: dotfiles pi-meridian setup"
-	fi
-
-	pi_meridian_show_health "Meridian" "http://127.0.0.1:3456/health" || true
-	pi_meridian_show_health "Rewrite proxy" "http://127.0.0.1:3457/health" || true
-
-	if node_bin_dir="$(pi_meridian_node_bin_dir 2>/dev/null)"; then
-		if [[ -x "${node_bin_dir}/meridian" ]]; then
-			ok "Meridian CLI: $("${node_bin_dir}/meridian" --version 2>/dev/null)"
-		else
-			warn "Meridian CLI missing under default fnm Node."
-		fi
-	else
-		warn "Default fnm Node unavailable."
-	fi
-
-	if PATH="/opt/homebrew/bin:/usr/local/bin:$PATH" command -v claude &>/dev/null; then
-		if PATH="/opt/homebrew/bin:/usr/local/bin:$PATH" claude auth status &>/dev/null; then
-			ok "Claude Code: authenticated"
-		else
-			warn "Claude Code: not authenticated. Run: claude login"
-		fi
-	else
-		warn "Claude Code: not installed. Run: dotfiles brew"
-	fi
-}
-
-cmd_pi_meridian_restart() {
-	local label="com.bertie.pi-meridian-stack"
-	local domain target
-	local plist="${HOME}/Library/LaunchAgents/${label}.plist"
-	domain="gui/$(id -u)"
-	target="${domain}/${label}"
-
-	heading "Pi → Meridian restart"
-
-	if [[ ! -f "$plist" ]]; then
-		err "Launch agent missing: ${plist}"
-		err "Run: dotfiles pi-meridian setup"
-		return 1
-	fi
-
-	plutil -lint "$plist" >/dev/null
-	launchctl enable "$target"
-
-	if launchctl print "$target" &>/dev/null; then
-		launchctl kickstart -k "$target"
-	else
-		launchctl bootstrap "$domain" "$plist"
-		launchctl kickstart -k "$target"
-	fi
-
-	ok "Restarted: ${label}"
-}
-
-cmd_pi_meridian_stop() {
-	local label="com.bertie.pi-meridian-stack"
-	local target
-	target="gui/$(id -u)/${label}"
-
-	heading "Pi → Meridian stop"
-
-	launchctl disable "$target"
-	if launchctl print "$target" &>/dev/null; then
-		launchctl bootout "$target"
-		ok "Stopped and unloaded: ${label}"
-	else
-		ok "Already stopped: ${label}"
-	fi
-}
-
-cmd_pi_meridian_logs() {
-	local log_dir="${HOME}/Library/Logs/pi-meridian"
-	local log_file
-
-	heading "Pi → Meridian logs"
-
-	for log_file in stack.log meridian.log proxy.log; do
-		echo ""
-		echo -e "${BOLD}${log_file}${RESET}"
-		if [[ -f "${log_dir}/${log_file}" ]]; then
-			tail -n 100 "${log_dir}/${log_file}"
-		else
-			dim "  No log file at ${log_dir}/${log_file}"
-		fi
-	done
-}
-
-cmd_pi_meridian() {
-	local action="${1:-status}"
-	local yes_flag="${2:-}"
-
-	case "$action" in
-	setup) cmd_pi_meridian_setup "$yes_flag" ;;
-	status) cmd_pi_meridian_status ;;
-	restart) cmd_pi_meridian_restart ;;
-	stop) cmd_pi_meridian_stop ;;
-	logs) cmd_pi_meridian_logs ;;
-	*)
-		err "Unknown pi-meridian action: ${action}"
-		echo "Usage: dotfiles pi-meridian {setup|status|restart|stop|logs} [--yes]"
-		return 1
-		;;
-	esac
 }
 
 cmd_defaults() {
@@ -1150,38 +820,6 @@ cmd_check() {
 			failed=true
 		fi
 	done
-
-	local node_bin_dir=""
-	local node_command=""
-	if node_bin_dir="$(pi_meridian_node_bin_dir 2>/dev/null)"; then
-		node_command="${node_bin_dir}/node"
-	elif command -v node &>/dev/null; then
-		node_command="$(command -v node)"
-	fi
-
-	if [[ -z "$node_command" ]]; then
-		warn "Node unavailable: cannot validate Pi → Meridian proxy"
-		failed=true
-	else
-		while IFS= read -r -d '' f; do
-			if ! "$node_command" --check "$f" &>/dev/null; then
-				warn "node --check: ${f}"
-				failed=true
-			fi
-		done < <(find "${DOTFILES_DIR}/services/pi-meridian" -name '*.mjs' -print0)
-
-		if ! "$node_command" --test "${DOTFILES_DIR}/services/pi-meridian/pi-meridian-proxy.test.mjs"; then
-			warn "node --test: Pi → Meridian proxy"
-			failed=true
-		fi
-	fi
-
-	while IFS= read -r -d '' f; do
-		if ! plutil -lint "$f" &>/dev/null; then
-			warn "plutil: ${f}"
-			failed=true
-		fi
-	done < <(find "${DOTFILES_DIR}/services/pi-meridian" -name '*.plist' -print0)
 
 	if ! bash "${DOTFILES_DIR}/tests/zsh-local-sync.test.sh"; then
 		warn "tests: zsh-local sync"
@@ -1252,9 +890,8 @@ ${BOLD}COMMANDS${RESET}
   brew-cleanup        Uninstall Homebrew packages not listed in brew files
   npm                 Check and install managed npm globals
   zsh-local <action>  Back up and restore ~/.zshrc.local with 1Password
-  pi-meridian <action> Manage Pi → Meridian launchd service
   defaults            Preview and apply macOS system defaults
-  check               Validate shell, proxy, tests, and launchd plist
+  check               Validate shell config and tests
   install             Create ~/.local/bin/dotfiles symlink
   installers          Install zgen if missing
 
@@ -1276,8 +913,6 @@ ${BOLD}EXAMPLES${RESET}
   dotfiles npm
   dotfiles zsh-local setup
   dotfiles zsh-local edit
-  dotfiles pi-meridian setup
-  dotfiles pi-meridian status
   dotfiles defaults --yes
   dotfiles deploy
   dotfiles backfill
@@ -1321,7 +956,6 @@ main() {
 	brew-cleanup) cmd_brew_cleanup "$yes_flag" ;;
 	npm) cmd_npm "$yes_flag" ;;
 	zsh-local) cmd_zsh_local "$yes_flag" "${positional[@]}" ;;
-	pi-meridian) cmd_pi_meridian "${positional[0]:-status}" "$yes_flag" ;;
 	defaults) cmd_defaults "$yes_flag" ;;
 	check) cmd_check ;;
 	install) cmd_install ;;

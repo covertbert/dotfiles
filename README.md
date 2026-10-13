@@ -15,8 +15,7 @@ My personal macOS dotfiles. One command to go from a blank Mac to a fully config
 | 🍎 **macOS defaults** | Keyboard, Finder, Dock, screenshots, Trash, software updates, Chrome, Transmission                       |
 | 🍺 **Homebrew**       | CLI tools (`Brewfile`) and GUI apps/fonts (`Caskfile`)                                                   |
 | 🖥️ **Terminal**       | Hyper config, Ghostty config, Starship theme                                                             |
-| 🤖 **Pi agent**       | Settings, models, AGENTS.md, skills, prompts, extensions                                                 |
-| 🔀 **Pi + Meridian**  | Rewrite proxy, launchd service, lifecycle commands, and managed dependencies                             |
+| 🤖 **Pi agent**       | Settings, models, AGENTS.md, skills, prompts, extensions; Anthropic API key from private `.zshrc.local`  |
 | 🔌 **MCP**            | Shared MCP server config (Chrome DevTools, GitLab, Notion, LinearB, Datadog, Spacelift)                  |
 
 ---
@@ -38,19 +37,12 @@ Bootstrap runs in this order:
 5. `dotfiles npm` — installs managed npm global packages
 6. `dotfiles sync --to system` — deploys all managed config files, including Pi's Herdr extension
 7. `dotfiles defaults` — applies macOS system defaults (requires `sudo`)
-8. `dotfiles pi-meridian setup` — deploys and starts the local Pi → Meridian stack
 
 ```
 Bootstrap complete. Run 'dotfiles status' to verify.
 ```
 
-Claude authentication remains manual on a new machine:
-
-```sh
-claude login
-dotfiles pi-meridian restart
-dotfiles pi-meridian status
-```
+Anthropic access on a new machine is manual: store the API key in private `~/.zshrc.local` (see [Anthropic API access](#-anthropic-api-access)), then run `dotfiles zsh-local setup` to restore it from 1Password.
 
 ---
 
@@ -95,9 +87,8 @@ dotfiles brew                Preview and run Homebrew bundle
 dotfiles brew-cleanup        Uninstall Homebrew packages not listed in brew files
 dotfiles npm                 Check and install managed npm globals
 dotfiles zsh-local <action>  Back up and restore ~/.zshrc.local with 1Password
-dotfiles pi-meridian <action> Set up and manage the Pi → Meridian service
 dotfiles defaults            Preview and apply macOS system defaults
-dotfiles check               Validate shell, proxy, tests, and launchd plist
+dotfiles check               Validate shell config and tests
 dotfiles install             (Re)create ~/.local/bin/dotfiles symlink
 dotfiles installers          Install zgen if missing
 ```
@@ -153,29 +144,26 @@ git pull && ./bootstrap.sh
 
 Defined in `lib/manifest.sh`. Everything in this table is tracked by `dotfiles sync`.
 
-| Group   | Repo path                                                 | System path                                                          |
-| ------- | --------------------------------------------------------- | -------------------------------------------------------------------- |
-| config  | `config/git/.gitconfig`                                   | `~/.gitconfig`                                                       |
-| config  | `config/git/themes.gitconfig`                             | `~/themes.gitconfig`                                                 |
-| config  | `config/terminal/starship.toml`                           | `~/.config/starship.toml`                                            |
-| config  | `config/terminal/.hyper.js`                               | `~/.hyper.js`                                                        |
-| config  | `config/terminal/config.ghostty`                          | `~/Library/Application Support/com.mitchellh.ghostty/config.ghostty` |
-| config  | `config/ponytail/config.json`                             | `~/.config/ponytail/config.json`                                     |
-| config  | `config/zsh/.zshrc`                                       | `~/.zshrc`                                                           |
-| config  | `config/zsh/` (dir)                                       | `~/.config/zsh/`                                                     |
-| pi      | `config/pi/AGENTS.md`                                     | `~/.pi/agent/AGENTS.md`                                              |
-| pi      | `config/pi/settings.json`                                 | `~/.pi/agent/settings.json`                                          |
-| pi      | `config/pi/models.json`                                   | `~/.pi/agent/models.json`                                            |
-| pi      | `config/pi/zsh-shell`                                     | `~/.pi/agent/zsh-shell`                                              |
-| pi      | `config/pi/agents/` (dir)                                 | `~/.pi/agent/agents/`                                                |
-| pi      | `config/pi/skills/` (dir)                                 | `~/.pi/agent/skills/`                                                |
-| pi      | `config/pi/extensions/` (dir)                             | `~/.pi/agent/extensions/`                                            |
-| pi      | `config/pi/themes/` (dir)                                 | `~/.pi/agent/themes/`                                                |
-| pi      | `config/pi/prompts/` (dir)                                | `~/.pi/agent/prompts/`                                               |
-| service | `services/pi-meridian/pi-meridian-proxy.mjs`              | `~/.local/bin/pi-meridian-proxy.mjs`                                 |
-| service | `services/pi-meridian/pi-meridian-stack.sh`               | `~/.local/bin/pi-meridian-stack.sh`                                  |
-| service | `services/pi-meridian/com.bertie.pi-meridian-stack.plist` | `~/Library/LaunchAgents/com.bertie.pi-meridian-stack.plist`          |
-| mcp     | `config/mcp/mcp.json`                                     | `~/.config/mcp/mcp.json`                                             |
+| Group  | Repo path                        | System path                                                          |
+| ------ | -------------------------------- | -------------------------------------------------------------------- |
+| config | `config/git/.gitconfig`          | `~/.gitconfig`                                                       |
+| config | `config/git/themes.gitconfig`    | `~/themes.gitconfig`                                                 |
+| config | `config/terminal/starship.toml`  | `~/.config/starship.toml`                                            |
+| config | `config/terminal/.hyper.js`      | `~/.hyper.js`                                                        |
+| config | `config/terminal/config.ghostty` | `~/Library/Application Support/com.mitchellh.ghostty/config.ghostty` |
+| config | `config/ponytail/config.json`    | `~/.config/ponytail/config.json`                                     |
+| config | `config/zsh/.zshrc`              | `~/.zshrc`                                                           |
+| config | `config/zsh/` (dir)              | `~/.config/zsh/`                                                     |
+| pi     | `config/pi/AGENTS.md`            | `~/.pi/agent/AGENTS.md`                                              |
+| pi     | `config/pi/settings.json`        | `~/.pi/agent/settings.json`                                          |
+| pi     | `config/pi/models.json`          | `~/.pi/agent/models.json`                                            |
+| pi     | `config/pi/zsh-shell`            | `~/.pi/agent/zsh-shell`                                              |
+| pi     | `config/pi/agents/` (dir)        | `~/.pi/agent/agents/`                                                |
+| pi     | `config/pi/skills/` (dir)        | `~/.pi/agent/skills/`                                                |
+| pi     | `config/pi/extensions/` (dir)    | `~/.pi/agent/extensions/`                                            |
+| pi     | `config/pi/themes/` (dir)        | `~/.pi/agent/themes/`                                                |
+| pi     | `config/pi/prompts/` (dir)       | `~/.pi/agent/prompts/`                                               |
+| mcp    | `config/mcp/mcp.json`            | `~/.config/mcp/mcp.json`                                             |
 
 **Optional** (synced only if present):
 
@@ -202,7 +190,6 @@ Examples: `ghostty`, `docker-desktop`, `1password-cli`, `claude-code`, `codex`, 
 **`npm/globals.txt`** — managed npm global packages
 
 - `@earendil-works/pi-coding-agent`
-- `@rynfar/meridian`
 - `corepack`
 - `openclaw`
 
@@ -337,17 +324,17 @@ Sync state contains only item/vault identifiers and a content hash under `~/.loc
 
 `config/pi/` holds portable Pi coding agent config:
 
-| File/Dir        | Purpose                                                                                    |
-| --------------- | ------------------------------------------------------------------------------------------ |
-| `settings.json` | Agent settings: default model (`gpt-5.5`), enabled models, packages, UI options            |
-| `models.json`   | Provider config: Anthropic (via proxy), OpenRouter (DeepSeek V4 Pro)                       |
-| `AGENTS.md`     | Global agent instructions: caveman mode, commit rules, context protection                  |
-| `agents/`       | Reserved local agent directory                                                             |
-| `skills/`       | Skill definitions, including `coderabbit-review`, `git-workflow` and repository toolchains |
-| `prompts/`      | Custom prompt templates, including `/coderabbit` and `/ui-rebuild`                         |
-| `extensions/`   | Local Pi extensions, including Herdr lifecycle and session reporting                       |
-| `themes/`       | UI themes                                                                                  |
-| `zsh-shell`     | Shell config for Pi's embedded shell                                                       |
+| File/Dir        | Purpose                                                                                        |
+| --------------- | ---------------------------------------------------------------------------------------------- |
+| `settings.json` | Agent settings: default model (`gpt-5.5`), enabled models, packages, UI options                |
+| `models.json`   | Custom provider config: RunAI, OpenRouter, OpenCode Zen. Anthropic uses Pi's built-in provider |
+| `AGENTS.md`     | Global agent instructions: caveman mode, commit rules, context protection                      |
+| `agents/`       | Reserved local agent directory                                                                 |
+| `skills/`       | Skill definitions, including `coderabbit-review`, `git-workflow` and repository toolchains     |
+| `prompts/`      | Custom prompt templates, including `/coderabbit` and `/ui-rebuild`                             |
+| `extensions/`   | Local Pi extensions, including Herdr lifecycle and session reporting                           |
+| `themes/`       | UI themes                                                                                      |
+| `zsh-shell`     | Shell config for Pi's embedded shell                                                           |
 
 **Installed packages** (from `settings.json`):
 
@@ -467,43 +454,22 @@ Do not commit API keys or database passwords. Repo stores only environment varia
 
 ---
 
-## 🔀 Pi + Meridian service
+## 🔑 Anthropic API access
 
-Pi sends Anthropic requests through a local prompt-rewrite proxy before Meridian forwards them through Claude Code:
+Pi's built-in `anthropic` provider talks directly to `https://api.anthropic.com` using an API key from the environment. No local proxy, rewrite service, or Claude Code dependency is involved.
 
 ```text
-Pi → rewrite proxy :3457 → Meridian :3456 → Claude Code → Claude subscription
+Pi → api.anthropic.com
 ```
 
-Dependencies are managed by existing installers:
-
-- Node 24 through fnm (`.nvmrc` records the repo runtime)
-- Claude Code through `brew/Caskfile`
-- Pi and Meridian through `npm/globals.txt`
-- `curl`, `launchctl`, and `plutil` from macOS
-- D2 through `brew/Brewfile` for `@mcuste/pi-diagram`
-
-The rewrite proxy uses only Node built-ins. No local `node_modules` or API key is required.
-
-### Lifecycle
+The key lives in private `~/.zshrc.local`, which the managed `.zshrc` sources and `dotfiles zsh-local` backs up to 1Password. The repo never stores it.
 
 ```sh
-dotfiles pi-meridian setup    # deploy files, reload launchd, check health/auth
-dotfiles pi-meridian status   # show service, endpoint, CLI, and auth status
-dotfiles pi-meridian restart  # restart or reload the launch agent
-dotfiles pi-meridian stop     # disable and unload the launch agent
-dotfiles pi-meridian logs     # show the last 100 lines from each service log
+dotfiles zsh-local edit   # add: export ANTHROPIC_API_KEY="..."
+# open a fresh shell so Pi inherits it
 ```
 
-Logs live under `~/Library/Logs/pi-meridian/`:
-
-- `stack.log`
-- `meridian.log`
-- `proxy.log`
-
-Both services bind only to `127.0.0.1`. Do not expose ports `3456` or `3457` externally. Claude credentials remain local and are never synced by this repo.
-
-The proxy warns in `proxy.log` if a Pi update changes the two exact system-prompt sections it expects to rewrite. Update the rewrite strings and tests together when that happens.
+Pi credential precedence is runtime `--api-key`, stored `auth.json`, `models.json`, then the provider environment variable. `config/pi/models.json` no longer overrides the `anthropic` provider, so the environment key is used unless a stored credential exists. Remove a stale credential with `/logout anthropic` if Anthropic appears in `/login`.
 
 ---
 
@@ -516,9 +482,9 @@ brew install lefthook
 lefthook install
 ```
 
-**Pre-commit** (parallel): Prettier and shfmt formatting, shellcheck, bash/Node syntax, proxy tests, plist lint.
+**Pre-commit** (parallel): Prettier and shfmt formatting, shellcheck, bash syntax, Zsh-local tests.
 
-**Pre-push** (parallel): Prettier and shfmt checks, shellcheck, bash/Node syntax, proxy tests, plist lint.
+**Pre-push** (parallel): Prettier and shfmt checks, shellcheck, bash syntax, Zsh-local tests.
 
 Validate repo files manually:
 
@@ -532,10 +498,7 @@ Or directly:
 find . -name '*.sh' -not -path './.git/*' -print0 | xargs -0 shellcheck
 find . -name '*.sh' -not -path './.git/*' -print0 | xargs -0 shfmt -d
 find . -name '*.sh' -not -path './.git/*' -print0 | xargs -0 -I {} bash -n {}
-node --check services/pi-meridian/pi-meridian-proxy.mjs
-node --test services/pi-meridian/pi-meridian-proxy.test.mjs
 bash tests/zsh-local-sync.test.sh
-plutil -lint services/pi-meridian/com.bertie.pi-meridian-stack.plist
 ```
 
 ---
@@ -551,21 +514,19 @@ plutil -lint services/pi-meridian/com.bertie.pi-meridian-stack.plist
 │   └── zsh-local-sync.sh     # Interactive 1Password backup/restore engine
 ├── tests/
 │   └── zsh-local-sync.test.sh # Mocked secret-sync safety tests
-├── bootstrap.sh              # Full install through Pi → Meridian service setup
+├── bootstrap.sh              # Full install through macOS defaults application
 ├── brew/
 │   ├── Brewfile              # Homebrew formulae
 │   └── Caskfile              # Homebrew casks
 ├── npm/
 │   └── globals.txt           # Managed npm global packages
-├── services/
-│   └── pi-meridian/          # Rewrite proxy, tests, stack wrapper, launch agent
 ├── config/
 │   ├── git/                  # .gitconfig, themes.gitconfig, user.gitconfig template
 │   ├── mcp/                  # Shared MCP server config
 │   ├── terminal/             # starship.toml, .hyper.js, config.ghostty
 │   ├── zsh/                  # .zshrc, aliases.zsh, functions.zsh
 │   └── pi/                   # Pi agent: settings, models, AGENTS.md, skills, prompts…
-├── .nvmrc                    # Node runtime used by repo tooling and proxy tests
+├── .nvmrc                    # Node runtime used by repo tooling
 └── defaults/
     ├── system.sh             # macOS defaults: keyboard, Finder, Dock, screenshots
     ├── chrome.sh             # Chrome-specific defaults

@@ -52,9 +52,6 @@ echo "==> Deploying config files..."
 echo "==> Applying macOS defaults..."
 "${SCRIPT_DIR}/bin/dotfiles" defaults --yes
 
-echo "==> Setting up Pi → Meridian service..."
-"${SCRIPT_DIR}/bin/dotfiles" pi-meridian setup --yes
-
 echo ""
 echo "Bootstrap complete. Run 'dotfiles status' to verify."
 echo "Optional private ZSH restore: dotfiles zsh-local setup"

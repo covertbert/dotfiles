@@ -1,12 +1,5 @@
 {
   "providers": {
-    "anthropic": {
-      "apiKey": "x",
-      "baseUrl": "http://127.0.0.1:3457",
-      "headers": {
-        "x-meridian-agent": "pi"
-      }
-    },
     "runai": {
       "baseUrl": "https://api.runinfra.ai/v1",
       "apiKey": "$RUNINFRA_KEY",
