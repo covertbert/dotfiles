@@ -64,7 +64,7 @@
       "approveTools": ["mutate", "intent"]
     },
     "aws": {
-      "url": "https://aws-mcp.eu-central-1.api.aws/mcp",
+      "url": "https://aws-mcp.eu-central-1.api.aws/mcp?oauth=initialize",
       "auth": "oauth",
       "lifecycle": "lazy"
     },
