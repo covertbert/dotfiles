@@ -73,7 +73,8 @@ export function statusLevel(
 ): StatusLevel {
   const values = [
     usage?.fiveHour?.remainingPct,
-    usage?.weekly?.remainingPct
+    usage?.weekly?.remainingPct,
+    usage?.monthly?.remainingPct
   ].filter(
     (value): value is number =>
       typeof value === "number" && Number.isFinite(value)

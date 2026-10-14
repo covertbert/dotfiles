@@ -5,9 +5,23 @@ export interface NormalizedQuotaWindow {
   resetAt: string | null;
 }
 
+export interface NormalizedMonthlyBudget {
+  /** Remaining budget in currency units (USD), floored at zero. */
+  remaining: number;
+  /** Remaining budget as percentage: 0 = empty, 100 = full. */
+  remainingPct: number;
+  /** ISO timestamp for the next monthly reset. */
+  resetAt: string;
+}
+
 export interface NormalizedQuotaUsage {
   fiveHour: NormalizedQuotaWindow | null;
   weekly: NormalizedQuotaWindow | null;
+  /**
+   * Monetary monthly budget. Set by adapters that meter spend instead of
+   * rolling rate-limit windows; omitted by window-based adapters.
+   */
+  monthly?: NormalizedMonthlyBudget | null;
 }
 
 export type QuotaResult =

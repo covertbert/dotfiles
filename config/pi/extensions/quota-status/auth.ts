@@ -39,12 +39,19 @@ export function readOpenAICodexAuth(): OpenAICodexAuth | undefined {
   return { access, accountId };
 }
 
+export function readAnthropicAdminKey(): string | undefined {
+  const key = process.env.ANTHROPIC_ADMIN_API_KEY;
+  return typeof key === "string" && key.trim().length > 0 ? key : undefined;
+}
+
 export function authDebug(): Record<string, unknown> {
   return {
     authPath: authPath(),
     hasOpenAICodex: Boolean(readOpenAICodexAuth()),
+    hasAnthropicAdminKey: Boolean(readAnthropicAdminKey()),
     env: {
-      PI_QUOTA_AUTH_PATH: Boolean(process.env.PI_QUOTA_AUTH_PATH)
+      PI_QUOTA_AUTH_PATH: Boolean(process.env.PI_QUOTA_AUTH_PATH),
+      ANTHROPIC_ADMIN_API_KEY: Boolean(process.env.ANTHROPIC_ADMIN_API_KEY)
     }
   };
 }

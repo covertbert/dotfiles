@@ -1,8 +1,10 @@
 import type { QuotaAdapter } from "./adapters/types.ts";
+import { AnthropicAdminAdapter } from "./adapters/anthropic.ts";
 import { OpenAICodexAdapter } from "./adapters/openai-codex.ts";
 
 export const PROVIDER_ADAPTERS: Record<string, QuotaAdapter> = {
-  "openai-codex": new OpenAICodexAdapter()
+  "openai-codex": new OpenAICodexAdapter(),
+  anthropic: new AnthropicAdminAdapter()
 };
 
 export function getQuotaAdapter(
