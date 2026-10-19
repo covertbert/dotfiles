@@ -826,6 +826,11 @@ cmd_check() {
 		failed=true
 	fi
 
+	if ! bash "${DOTFILES_DIR}/tests/gitlab-main-push.test.sh"; then
+		warn "tests: gitlab-main-push"
+		failed=true
+	fi
+
 	if $failed; then
 		err "Validation failed."
 		return 1

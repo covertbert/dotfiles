@@ -260,7 +260,21 @@ Config split across three files in `config/zsh/`:
 - `rimraf` — nuke all `node_modules` dirs recursively
 - `setSecret` — pull a 1Password secret into env
 - `_fnm_auto_use` — auto-install and switch Node from the nearest `.nvmrc`
+- `gitlab-main-push` — add or remove your account from the explicit push allowlist on `main` for the current repository (`gitlab-main-push status` reports membership without changing anything)
 - `pi()` — runs Pi through fnm's exact default Node and auto-updates Pi plus unpinned packages at most once per day before interactive runs
+
+### `gitlab-main-push`
+
+Adds or removes the authenticated `glab` account in the current repository's GitLab protected-branch rule for `main`. It only touches your own explicit `user_id` push access entry; role, group, deploy-key, merge, unprotect, and force-push settings are left alone.
+
+```sh
+gitlab-main-push           # toggle your explicit entry
+gitlab-main-push status    # report membership, no writes
+```
+
+Requires `glab` authenticated against the repository's GitLab host, `jq`, and an account allowed to edit the protection rule. Individual allowlist entries need GitLab Premium or Ultimate.
+
+Limits: it reports allowlist membership, not effective permission — removing the entry does not block pushes when a matching role, group, or other rule still grants access. Only the exact `main` rule is edited; wildcard and inherited protection is refused. A failed PATCH can leave the outcome uncertain, so check `status` before retrying.
 
 ### Private `.zshrc.local` backup
 
