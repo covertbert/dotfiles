@@ -148,6 +148,7 @@ Defined in `lib/manifest.sh`. Everything in this table is tracked by `dotfiles s
 | ------ | -------------------------------- | -------------------------------------------------------------------- |
 | config | `config/git/.gitconfig`          | `~/.gitconfig`                                                       |
 | config | `config/git/themes.gitconfig`    | `~/themes.gitconfig`                                                 |
+| config | `config/git/ignore`              | `~/.config/git/ignore`                                               |
 | config | `config/terminal/starship.toml`  | `~/.config/starship.toml`                                            |
 | config | `config/terminal/.hyper.js`      | `~/.hyper.js`                                                        |
 | config | `config/terminal/config.ghostty` | `~/Library/Application Support/com.mitchellh.ghostty/config.ghostty` |
