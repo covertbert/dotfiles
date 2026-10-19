@@ -7,6 +7,17 @@ description: Use when committing code, creating a branch, creating or updating a
 
 Follow this workflow directly for branch creation, commits, pushes, and merge requests. Optimise for fast common paths. Escalate only when tripwires appear.
 
+## Delegation
+
+When a `subagent` tool is available, delegate the whole workflow once to the `git-workflow` agent instead of running the steps below in this session:
+
+- Enable subagents first if the session exposes only `subagents_enable`.
+- Pass the user's exact request and any files they named.
+- Do not run Git or `glab` mutations while the child owns the workflow. Inspect its result instead.
+- If the delegation cannot start, follow this skill directly.
+
+The sections below are the contract the child executes. An agent without a `subagent` tool runs them directly.
+
 ## Core rules
 
 - If user clearly asks to commit, push, or open an MR, treat that as intent.

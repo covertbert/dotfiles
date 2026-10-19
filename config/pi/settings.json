@@ -20,8 +20,12 @@
     "npm:pi-web-access",
     "npm:@plannotator/pi-extension@0.27.7",
     "npm:@dietrichgebert/ponytail@4.8.4",
-    "npm:@mcuste/pi-diagram@0.6.2"
+    "npm:@mcuste/pi-diagram@0.6.2",
+    "npm:pi-subagents@0.79.1"
   ],
+  "subagents": {
+    "disableBuiltins": true
+  },
   "hideThinkingBlock": false,
   "powerline": {
     "preset": "default",
