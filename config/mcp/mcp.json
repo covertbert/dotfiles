@@ -13,6 +13,11 @@
       },
       "lifecycle": "lazy"
     },
+    "slack": {
+      "command": "npx",
+      "args": ["-y", "@aaronsb/slack-mcp"],
+      "lifecycle": "lazy"
+    },
     "notion": {
       "url": "https://mcp.notion.com/mcp",
       "auth": "oauth",
