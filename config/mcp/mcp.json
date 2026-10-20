@@ -80,6 +80,14 @@
       "lifecycle": "lazy",
       "approveTools": false
     },
+    "growthbook": {
+      "command": "npx",
+      "args": ["-y", "@growthbook/mcp@latest"],
+      "env": {
+        "GB_API_KEY": "${GB_API_KEY}"
+      },
+      "lifecycle": "lazy"
+    },
     "dbhub": {
       "command": "npx",
       "args": [

@@ -439,6 +439,7 @@ Then attach from another machine with `herdr --remote workbox`.
 | `linearb`         | Remote MCP at `https://mcp.linearb.io/mcp`, reads `LINEARB_API_KEY`                     |
 | `datadog`         | Remote EU MCP at `https://mcp.datadoghq.eu/v1/mcp`, reads `DD_API_KEY` and `DD_APP_KEY` |
 | `spacelift`       | Remote MCP at `https://airtimerewards.app.spacelift.io/mcp`, OAuth                      |
+| `growthbook`      | Local `npx @growthbook/mcp`, reads `GB_API_KEY`                                         |
 | `dbhub`           | Local `npx @bytebase/dbhub`, reads Zsh environment secrets                              |
 
 **LinearB setup:**
