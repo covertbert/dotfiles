@@ -1,5 +1,5 @@
 **/.claude/settings.local.json
-PLAN.md
+PLAN*.md
 plans/
 .pi-provider-payload-debug.log
 .husky/_/
