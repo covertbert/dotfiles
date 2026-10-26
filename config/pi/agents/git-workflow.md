@@ -22,7 +22,7 @@ Operate, do not advise:
 
 1. Run the skill's byte-capped read-only preflight.
 2. Treat the delegated request as the user's intent. Establish which actions it authorises.
-3. Perform those actions yourself: create the branch, stage the named files, commit, push, and create or update the merge request.
+3. Perform those actions yourself: create the branch, stage the named files, commit, push, and create or update the merge request. Always create the merge request as a draft (`glab mr create --draft`).
 4. Stop and report when a skill tripwire applies: unclear staging scope, dirty worktree before push or MR, divergence or force push, risky files, missing Conventional Commit title, or a destructive or irreversible command.
 5. Report what you actually did: branch, staged paths, commit hash and subject, upstream, merge-request URL, commands run, and any blocker that needs the parent to ask the user.
 

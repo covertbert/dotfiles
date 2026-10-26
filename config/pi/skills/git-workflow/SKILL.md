@@ -99,6 +99,8 @@ git log --oneline -10 2>&1 | head -c 1000
 
 ## Merge request fast path
 
+MRs are always created as drafts. Pass `--draft` to `glab mr create`; never create a ready MR.
+
 MRs must always include an explicit plain-Markdown description with exactly these two sections:
 
 ```md
@@ -144,11 +146,12 @@ cat > "$tmpfile" <<'EOF'
 
 ...
 EOF
-glab mr create --source-branch <branch> --target-branch main --title "feat(scope): summary" --description "$(cat "$tmpfile")" --yes
+glab mr create --draft --source-branch <branch> --target-branch main --title "feat(scope): summary" --description "$(cat "$tmpfile")" --yes
 rm -f "$tmpfile"
 ```
 
 Do not use raw branch names as MR titles.
+Do not omit `--draft`.
 Do not use `glab mr create --fill --yes` by itself because it does not guarantee the required intent/scope description.
 Do not use git push options for multiline MR descriptions.
 Do not assume `glab` supports `--description-file`; check `glab mr create --help` if uncertain.
