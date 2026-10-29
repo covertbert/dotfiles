@@ -28,6 +28,19 @@ defaults write com.apple.CrashReporter DialogType -string "none"
 # Automatically quit printer app once print jobs complete
 defaults write com.apple.print.PrintingPrefs "Quit When Finished" -bool true
 
+# Dark appearance
+defaults write NSGlobalDomain AppleInterfaceStyle -string "Dark"
+
+# Always show scrollbars
+defaults write NSGlobalDomain AppleShowScrollBars -string "Always"
+
+# Font smoothing (0-3)
+defaults write NSGlobalDomain AppleFontSmoothing -int 2
+
+# No window open/close animations
+defaults write NSGlobalDomain NSAutomaticWindowAnimationsEnabled -bool false
+defaults write NSGlobalDomain NSWindowResizeTime -float 0.001
+
 ###############################################################################
 # Keyboard & Input                                                            #
 ###############################################################################
@@ -100,6 +113,9 @@ defaults write com.apple.finder FXPreferredViewStyle -string "Nlsv"
 # No warning before emptying Trash
 defaults write com.apple.finder WarnOnEmptyTrash -bool false
 
+# Remove items from Trash after 30 days
+defaults write com.apple.finder FXRemoveOldTrashItems -bool true
+
 # Default new window to home directory
 defaults write com.apple.finder NewWindowTarget -string "PfLo"
 defaults write com.apple.finder NewWindowTargetPath -string "file://${HOME}/"
@@ -121,13 +137,40 @@ defaults write com.apple.dock no-bouncing -bool true
 defaults write com.apple.dock mru-spaces -bool false
 
 # Don't show recently used apps
-defaults write com.Apple.Dock show-recents -bool false
+defaults write com.apple.dock show-recents -bool false
 
 # Tile size
-defaults write com.apple.Dock tilesize -integer 55
+defaults write com.apple.dock tilesize -integer 59
 
 # Show indicator lights for open apps
 defaults write com.apple.dock show-process-indicators -bool true
+
+# Pin these apps. dockutil comes from the Brewfile; skipped if unavailable.
+DOCK_APPS=(
+	"/Applications/Slack.app"
+)
+
+if command -v dockutil >/dev/null 2>&1; then
+	dockutil --remove all --no-restart >/dev/null
+	for app in "${DOCK_APPS[@]}"; do
+		if [[ -d "$app" ]]; then
+			dockutil --add "$app" --no-restart >/dev/null
+		else
+			echo "Dock: skipping missing ${app}" >&2
+		fi
+	done
+else
+	echo "Dock: dockutil not found, leaving dock items unchanged" >&2
+fi
+
+###############################################################################
+# Menu bar                                                                    #
+###############################################################################
+
+# Clock: weekday shown, date hidden, 12-hour with AM/PM
+defaults write com.apple.menuextra.clock ShowDayOfWeek -bool true
+defaults write com.apple.menuextra.clock ShowDate -bool false
+defaults write com.apple.menuextra.clock ShowAMPM -bool true
 
 ###############################################################################
 # Software Updates                                                            #
@@ -146,6 +189,6 @@ defaults write com.apple.SoftwareUpdate CriticalUpdateInstall -bool true
 # Restart affected apps                                                       #
 ###############################################################################
 
-for app in "Dock" "Finder" "SystemUIServer"; do
+for app in "Dock" "Finder" "SystemUIServer" "ControlCenter"; do
 	killall "${app}" &>/dev/null || true
 done

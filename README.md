@@ -215,14 +215,15 @@ fnm uninstall <version>
 
 **`defaults/system.sh`** applies:
 
-| Category         | What changes                                                                               |
-| ---------------- | ------------------------------------------------------------------------------------------ |
-| Keyboard         | Fast repeat rate, no smart quotes/dashes/autocorrect, full keyboard access (Tab in modals) |
-| Finder           | Show hidden files, show extensions, path bar, list view, home dir as default window        |
-| Dock             | Auto-hide, translucent hidden apps, no bounce, no recent apps, indicator lights            |
-| Screenshots      | PNG format, no shadow, saves to Desktop                                                    |
-| Software updates | Auto check + background download enabled                                                   |
-| General          | iCloud doesn't own new documents, no crash reporter dialog, no LSQuarantine dialog         |
+| Category         | What changes                                                                                                                                                  |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Keyboard         | Fast repeat rate, no smart quotes/dashes/autocorrect, full keyboard access (Tab in modals)                                                                    |
+| Finder           | Show hidden files, show extensions, path bar, list view, home dir as default window, 30-day Trash cleanup                                                     |
+| Dock             | Auto-hide, translucent hidden apps, no bounce, no recent apps, indicator lights, 59px tiles, pinned app list via `dockutil`                                   |
+| Menu bar         | Clock shows weekday and AM/PM, hides date                                                                                                                     |
+| Screenshots      | PNG format, no shadow, saves to Desktop                                                                                                                       |
+| Software updates | Auto check + background download enabled                                                                                                                      |
+| General          | Dark appearance, always-visible scrollbars, font smoothing, no window animations, iCloud doesn't own new documents, no crash reporter or LSQuarantine dialogs |
 
 **`defaults/chrome.sh`** — disables swipe navigation in Chrome.
 
