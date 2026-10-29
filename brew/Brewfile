@@ -1,7 +1,3 @@
-# External taps
-
-tap "styrainc/packages"
-
 # Shell and terminal
 brew "starship"
 brew "bottom"
@@ -46,7 +42,7 @@ brew "caddy"
 brew "hadolint"
 brew "nmap"
 brew "open-mpi"
-brew "styrainc/packages/regal"
+brew "regal"
 brew "tfenv"
 brew "tflint"
 
