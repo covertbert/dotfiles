@@ -10,3 +10,9 @@ Host raspi
 Host nas
   HostName synologynas.mole-anaconda.ts.net
   User covertbert
+
+Host github.com
+  HostName github.com
+  User git
+  IdentityFile ~/.ssh/id_ed25519_github
+  IdentitiesOnly yes
