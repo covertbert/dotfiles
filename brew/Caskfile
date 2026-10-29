@@ -2,6 +2,7 @@
 cask "1password-cli"
 cask "claude-code"
 cask "codex"
+cask "tflint"
 
 # Desktop apps
 cask "appcleaner"

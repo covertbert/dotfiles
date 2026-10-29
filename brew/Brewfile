@@ -1,3 +1,7 @@
+# External taps
+
+tap "terraform-linters/tap"
+
 # Shell and terminal
 brew "starship"
 brew "bottom"
@@ -44,7 +48,6 @@ brew "nmap"
 brew "open-mpi"
 brew "regal"
 brew "tfenv"
-brew "tflint"
 
 # Language, package, and runtime support
 brew "automake"
