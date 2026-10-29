@@ -145,20 +145,9 @@ defaults write com.apple.dock tilesize -integer 59
 # Show indicator lights for open apps
 defaults write com.apple.dock show-process-indicators -bool true
 
-# Pin these apps. dockutil comes from the Brewfile; skipped if unavailable.
-DOCK_APPS=(
-	"/Applications/Slack.app"
-)
-
+# Empty Dock; no persistent items.
 if command -v dockutil >/dev/null 2>&1; then
 	dockutil --remove all --no-restart >/dev/null
-	for app in "${DOCK_APPS[@]}"; do
-		if [[ -d "$app" ]]; then
-			dockutil --add "$app" --no-restart >/dev/null
-		else
-			echo "Dock: skipping missing ${app}" >&2
-		fi
-	done
 else
 	echo "Dock: dockutil not found, leaving dock items unchanged" >&2
 fi

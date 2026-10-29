@@ -10,6 +10,7 @@ cask "docker-desktop"
 cask "ghostty"
 cask "ngrok"
 cask "tailscale-app"
+cask "visual-studio-code"
 
 # Fonts and runtimes
 cask "font-jetbrains-mono-nerd-font"

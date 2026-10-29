@@ -500,6 +500,11 @@ cmd_brew() {
 	local brewfile="${DOTFILES_DIR}/brew/Brewfile"
 	local caskfile="${DOTFILES_DIR}/brew/Caskfile"
 
+	# Third-party taps must be trusted before brew bundle can load their formulae.
+	if brew trust --help >/dev/null 2>&1; then
+		brew trust styrainc/packages >/dev/null 2>&1 || warn "Could not trust styrainc/packages; brew may refuse to install regal."
+	fi
+
 	info "Checking Brewfile (${brewfile})..."
 	if brew bundle check --file="$brewfile" &>/dev/null; then
 		ok "Brewfile satisfied."
