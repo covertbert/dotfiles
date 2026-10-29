@@ -16,6 +16,7 @@ dotfiles_manifest() {
 	cat <<EOF
 config|file|config/git/.gitconfig|${home}/.gitconfig|
 config|file|config/git/themes.gitconfig|${home}/themes.gitconfig|
+config|file|config/git/user.gitconfig|${home}/user.gitconfig|
 config|file|config/git/ignore|${home}/.config/git/ignore|
 config|file|config/terminal/starship.toml|${home}/.config/starship.toml|
 config|file|config/terminal/.hyper.js|${home}/.hyper.js|
