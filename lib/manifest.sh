@@ -24,6 +24,9 @@ config|file|config/ponytail/config.json|${home}/.config/ponytail/config.json|
 config|file|config/zsh/.zshrc|${home}/.zshrc|
 config|dir|config/zsh|${home}/.config/zsh|
 config|file|config/ssh/config|${home}/.ssh/config|
+config|file|config/gnupg/gpg.conf|${home}/.gnupg/gpg.conf|
+config|file|config/gnupg/gpg-agent.conf|${home}/.gnupg/gpg-agent.conf|
+config|file|config/gnupg/dirmngr.conf|${home}/.gnupg/dirmngr.conf|
 pi|file|config/pi/AGENTS.md|${pi_dir}/AGENTS.md|
 pi|json-merge|config/pi/settings.json|${pi_dir}/settings.json|lastChangelogVersion,defaultProvider,defaultModel,defaultThinkingLevel
 pi|file|config/pi/models.json|${pi_dir}/models.json|

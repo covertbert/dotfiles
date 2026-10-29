@@ -23,7 +23,7 @@ conflictstyle = diff3
 colorMoved = default
 
 [gpg]
-program = /usr/local/bin/gpg
+program = gpg
 
 [commit]
 gpgSign = true

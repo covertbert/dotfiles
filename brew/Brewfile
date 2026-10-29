@@ -36,6 +36,11 @@ brew "python@3.12"
 brew "ruby-install"
 brew "virtualenv"
 
+# GPG and hardware keys
+brew "gnupg"
+brew "pinentry-mac"
+brew "ykman"
+
 # Infra and platform tooling
 brew "caddy"
 brew "hadolint"

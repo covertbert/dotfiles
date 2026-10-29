@@ -328,11 +328,13 @@ Sync state contains only item/vault identifiers and a content hash under `~/.loc
 - **Pager**: `git-delta` with `calochortus-lyallii` theme
 - **Interactive**: delta for `add -p`
 - **Merge**: `diff3` conflict style
-- **GPG**: commit and tag signing enabled
+- **GPG**: commit and tag signing enabled; `gpg.program = gpg` resolves from `PATH`
 - **Push**: `autoSetupRemote = true`, `default = current`
 - **Includes**: `~/user.gitconfig` (personal name/email) and `~/themes.gitconfig`
 
 `~/user.gitconfig` is created on first install **only if it doesn't exist** — edit it to set your name and email.
+
+GPG configs (`gpg.conf`, `gpg-agent.conf`, `dirmngr.conf`) are deployed to `~/.gnupg/`. Key material is not managed: restore the public keyring and secret keys separately on a new machine. `gnupg`, `pinentry-mac`, and `ykman` come from the Brewfile.
 
 ---
 
