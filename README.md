@@ -191,6 +191,7 @@ Examples: `ghostty`, `docker-desktop`, `1password-cli`, `claude-code`, `codex`, 
 **`npm/globals.txt`** — managed npm global packages
 
 - `@earendil-works/pi-coding-agent`
+- `agent-device@0.21.35`
 - `corepack`
 - `openclaw`
 
@@ -342,17 +343,17 @@ GPG configs (`gpg.conf`, `gpg-agent.conf`, `dirmngr.conf`) are deployed to `~/.g
 
 `config/pi/` holds portable Pi coding agent config:
 
-| File/Dir        | Purpose                                                                                        |
-| --------------- | ---------------------------------------------------------------------------------------------- |
-| `settings.json` | Agent settings: default model (`gpt-5.5`), enabled models, packages, UI options                |
-| `models.json`   | Custom provider config: RunAI, OpenRouter, OpenCode Zen. Anthropic uses Pi's built-in provider |
-| `AGENTS.md`     | Global agent instructions: caveman mode, commit rules, context protection                      |
-| `agents/`       | Custom subagents: `git-workflow` executor and read-only `investigator`                         |
-| `skills/`       | Skill definitions, including `coderabbit-review`, `git-workflow` and repository toolchains     |
-| `prompts/`      | Custom prompt templates, including `/coderabbit` and `/ui-rebuild`                             |
-| `extensions/`   | Local Pi extensions, including Herdr lifecycle and session reporting                           |
-| `themes/`       | UI themes                                                                                      |
-| `zsh-shell`     | Shell config for Pi's embedded shell                                                           |
+| File/Dir        | Purpose                                                                                                          |
+| --------------- | ---------------------------------------------------------------------------------------------------------------- |
+| `settings.json` | Agent settings: default model (`gpt-5.5`), enabled models, packages, UI options                                  |
+| `models.json`   | Custom provider config: RunAI, OpenRouter, OpenCode Zen. Anthropic uses Pi's built-in provider                   |
+| `AGENTS.md`     | Global agent instructions: caveman mode, commit rules, context protection                                        |
+| `agents/`       | Custom subagents: `git-workflow` executor and read-only `investigator`                                           |
+| `skills/`       | Skill definitions, including `coderabbit-review`, `git-workflow`, `mobile-change-test` and repository toolchains |
+| `prompts/`      | Custom prompt templates, including `/coderabbit` and `/ui-rebuild`                                               |
+| `extensions/`   | Local Pi extensions, including Herdr lifecycle and session reporting                                             |
+| `themes/`       | UI themes                                                                                                        |
+| `zsh-shell`     | Shell config for Pi's embedded shell                                                                             |
 
 **Installed packages** (from `settings.json`):
 
@@ -388,6 +389,29 @@ Ponytail runs alongside Caveman: Caveman keeps responses terse while Ponytail pr
 ```
 
 Update deliberately: change package version in `config/pi/settings.json`, deploy, then run `pi update --extensions`. `normal mode` disables Ponytail for current session.
+
+### Mobile app verification
+
+The `mobile-change-test` skill verifies a change in the running mobile app on an iOS Simulator. It coordinates the official `agent-device` skills (`agent-device`, `ios-simulator`, `android-emulator`, `dogfood`), which are vendored unchanged from agent-device `v0.21.35` under `config/pi/skills/`. The CLI itself is a user-global npm package from `npm/globals.txt`, so it is available in every repository rather than installed per app.
+
+```sh
+dotfiles npm             # ensure the global agent-device binary
+agent-device doctor      # verify Xcode, devices, and Metro
+```
+
+In a mobile app repository, ask Pi to test the current change:
+
+```text
+test the changes
+```
+
+The skill reads the repository's own instructions, run scripts, app identifier, end-to-end fixtures, and cleanup helpers. It never hardcodes an app path, bundle identifier, or credential. It derives checks from the working-tree diff, runs a login smoke check when the repository provides test credentials, and runs mutating flows such as adding a card only when the diff can affect them or full smoke coverage was requested.
+
+Evidence defaults to a screenshot per check in an ignored artifact directory. Video, recordings, and logs are collected only on request or when a failure needs them. Simulator app data may be cleared to establish a clean login; physical devices are never reset without approval. Airtime staging login needs no manual SIM or SMS step because the app prepopulates the verification code returned by staging.
+
+Failures are reported rather than worked around. Missing Xcode, no booted simulator, no Metro server, an unavailable test account, or ambiguous expected behaviour all stop the run. Replay scripts, CI wiring, and the MCP server are deliberately deferred until the same exploratory flow proves worth repeating.
+
+Update flow for a new agent-device release: bump the pin in `npm/globals.txt`, download the four skill directories and `LICENSE` from the matching upstream tag, diff them against the committed copies, then run `dotfiles npm` and `dotfiles deploy`.
 
 **Private/local state** (not committed, excluded by `.gitignore`):
 

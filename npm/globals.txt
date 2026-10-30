@@ -1,3 +1,4 @@
 @earendil-works/pi-coding-agent
+agent-device@0.21.35
 corepack
 openclaw

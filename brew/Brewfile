@@ -48,6 +48,7 @@ brew "nmap"
 brew "open-mpi"
 brew "regal"
 brew "tfenv"
+brew "xcodes"
 
 # Language, package, and runtime support
 brew "automake"
