@@ -17,6 +17,16 @@ Applies to READMEs, code comments, docstrings and reference documentation in any
 
 Considered-writing is for long-form narrative artifacts only. READMEs, comments, docstrings and reference docs always follow these rules.
 
+## Herdr Tab Labels
+
+When running inside a Herdr pane (`HERDR_ENV=1`), rename the tab to a short slug naming the task before starting work, then again when the task scope becomes clear:
+
+```bash
+herdr tab rename "$HERDR_TAB_ID" "<2-4-word-slug>"
+```
+
+Lowercase, hyphenated, no articles. Skip when the label already describes the task.
+
 ## Command Output
 
 Protect context usage. **Any command with unknown or potentially large output must be byte-capped.**
