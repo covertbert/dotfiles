@@ -49,6 +49,7 @@ brew "open-mpi"
 brew "regal"
 brew "tfenv"
 brew "xcodes"
+brew "aria2"
 
 # Language, package, and runtime support
 brew "automake"
