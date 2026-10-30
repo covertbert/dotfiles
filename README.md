@@ -399,11 +399,13 @@ dotfiles npm             # ensure the global agent-device binary
 agent-device doctor      # verify Xcode, devices, and Metro
 ```
 
-In a mobile app repository, ask Pi to test the current change:
+In a mobile app repository, ask Pi to test the current change. Name the device and platform so the request is unambiguous:
 
 ```text
-test the changes
+test these changes on the iOS simulator
 ```
+
+Other accepted phrasings: `run this on the simulator`, `verify this UI change on Android`, `smoke test this flow on the emulator`. A request that names no device or platform is not enough to choose a target; Pi will ask or default to the only supported platform.
 
 The skill reads the repository's own instructions, run scripts, app identifier, end-to-end fixtures, and cleanup helpers. It never hardcodes an app path, bundle identifier, or credential. It derives checks from the working-tree diff, runs a login smoke check when the repository provides test credentials, and runs mutating flows such as adding a card only when the diff can affect them or full smoke coverage was requested.
 

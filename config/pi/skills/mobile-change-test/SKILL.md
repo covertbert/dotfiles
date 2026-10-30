@@ -1,12 +1,14 @@
 ---
 name: mobile-change-test
-description: Verify uncommitted or recently changed user-visible behavior in a mobile app repository by running it on a simulator or emulator with agent-device. Use when asked to "test the changes", "check this on the simulator", "verify this UI change", or to smoke-test a flow in the current app. Requires the `agent-device` CLI and repository-local launch, selector, and test-data knowledge.
+description: Run the current mobile app on an iOS Simulator or Android Emulator and verify uncommitted or recently changed user-visible behavior with agent-device. Use when asked to "test these changes on the iOS simulator", "run this on the simulator", "verify this UI change on iOS/Android", "check the app on the emulator", or to smoke-test a flow on a device. Requires the `agent-device` CLI plus repository-local launch, selector, and test-data knowledge.
 compatibility: Requires the user-global `agent-device` CLI (installed by this dotfiles repo's `dotfiles npm`), Xcode for iOS, and a mobile app repository with its own documented run commands.
 ---
 
 # Mobile change test
 
-Run the current app and check the behavior this change is supposed to produce. This skill coordinates existing repository facts and the official `agent-device`, `ios-simulator`, `android-emulator`, and `dogfood` skills. It does not own device control, launch commands, selectors, or credentials.
+Run the current app on a device and check the behavior this change is supposed to produce. This skill coordinates existing repository facts and the official `agent-device`, `ios-simulator`, `android-emulator`, and `dogfood` skills. It does not own device control, launch commands, selectors, or credentials.
+
+Typical requests name the device and the platform: `test these changes on the iOS simulator`, `run this on the emulator`, `verify this UI change on Android`. A request that does not name a device or platform is not enough to choose a target; ask which one, or default to iOS when the repository only supports one.
 
 ## Non-negotiable rules
 
