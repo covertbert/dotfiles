@@ -43,7 +43,9 @@ session content.
 
 ## Supported providers
 
-`openai-codex` and `anthropic`. Other providers show `n/a`.
+`openai`, `openai-codex`, and `anthropic`. Both OpenAI provider IDs use the
+ChatGPT Codex quota endpoint. This is ChatGPT plan quota, not OpenAI API Platform
+spend. Other providers show `n/a`.
 
 ### anthropic
 
@@ -88,17 +90,15 @@ endpoint requires an Admin API key (`sk-ant-admin01-...`); workspace and model
 API keys are rejected. The key is never read from tracked configuration and is
 never printed.
 
-`openai-codex` reads `~/.pi/agent/auth.json` by default, overridable with
-`PI_QUOTA_AUTH_PATH`:
+OpenAI quota reads `~/.codex/auth.json` by default, or `$CODEX_HOME/auth.json`
+when `CODEX_HOME` is set. It uses `tokens.access_token` and
+`tokens.account_id`. For compatibility, `openai-codex` credentials in
+`~/.pi/agent/auth.json` take precedence; set `PI_QUOTA_AUTH_PATH` to override
+that file.
 
-```json
-{
-  "openai-codex": {
-    "access": "<bearer-token>",
-    "accountId": "<account-id>"
-  }
-}
-```
+The quota request uses an undocumented ChatGPT backend endpoint. OpenAI can
+change or remove it without notice. The extension does not refresh Codex CLI
+tokens; the Codex CLI must keep its auth file current.
 
 ## Paths
 

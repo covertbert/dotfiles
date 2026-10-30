@@ -247,7 +247,8 @@ export default function quotaStatus(pi: ExtensionAPI) {
   };
 
   const onCodexRateLimitCapture = (_entry: CodexRateLimitCacheEntry) => {
-    if (provider() === "openai-codex") void refresh(true);
+    if (provider() === "openai" || provider() === "openai-codex")
+      void refresh(true);
   };
 
   const registerUsageCommand = (name: string, description: string) => {

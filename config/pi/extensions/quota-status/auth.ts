@@ -14,6 +14,10 @@ export function authPath(): string {
   );
 }
 
+export function codexAuthPath(): string {
+  return join(process.env.CODEX_HOME ?? join(homedir(), ".codex"), "auth.json");
+}
+
 function readJson(
   path: string = authPath()
 ): Record<string, unknown> | undefined {
@@ -31,12 +35,24 @@ function asObject(value: unknown): Record<string, unknown> | undefined {
 }
 
 export function readOpenAICodexAuth(): OpenAICodexAuth | undefined {
-  const raw = asObject(readJson()?.["openai-codex"]);
-  const access = typeof raw?.access === "string" ? raw.access : undefined;
-  const accountId =
-    typeof raw?.accountId === "string" ? raw.accountId : undefined;
-  if (!access || !accountId) return undefined;
-  return { access, accountId };
+  const piAuth = asObject(readJson()?.["openai-codex"]);
+  const codexTokens = asObject(readJson(codexAuthPath())?.tokens);
+  const credentials = [
+    { access: piAuth?.access, accountId: piAuth?.accountId },
+    {
+      access: codexTokens?.access_token,
+      accountId: codexTokens?.account_id
+    }
+  ];
+
+  for (const credential of credentials) {
+    if (
+      typeof credential.access === "string" &&
+      typeof credential.accountId === "string"
+    )
+      return { access: credential.access, accountId: credential.accountId };
+  }
+  return undefined;
 }
 
 export function readAnthropicAdminKey(): string | undefined {
@@ -47,6 +63,7 @@ export function readAnthropicAdminKey(): string | undefined {
 export function authDebug(): Record<string, unknown> {
   return {
     authPath: authPath(),
+    codexAuthPath: codexAuthPath(),
     hasOpenAICodex: Boolean(readOpenAICodexAuth()),
     hasAnthropicAdminKey: Boolean(readAnthropicAdminKey()),
     env: {

@@ -2,8 +2,11 @@ import type { QuotaAdapter } from "./adapters/types.ts";
 import { AnthropicAdminAdapter } from "./adapters/anthropic.ts";
 import { OpenAICodexAdapter } from "./adapters/openai-codex.ts";
 
+const openAICodexAdapter = new OpenAICodexAdapter();
+
 export const PROVIDER_ADAPTERS: Record<string, QuotaAdapter> = {
-  "openai-codex": new OpenAICodexAdapter(),
+  openai: openAICodexAdapter,
+  "openai-codex": openAICodexAdapter,
   anthropic: new AnthropicAdminAdapter()
 };
 
