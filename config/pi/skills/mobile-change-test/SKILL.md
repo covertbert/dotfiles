@@ -54,9 +54,7 @@ Record the following from those sources only:
 - Existing selectors or accessibility identifiers for the screens involved.
 - Cleanup rules for any flow that mutates shared state.
 
-This skill holds no credentials. A login is only possible when the repository names a test identity and its code path; a seeded phone number without a working verification step is not a credential.
-
-Non-production backends commonly accept a fixed verification code for a seeded test identity, so the absence of a stored password does not mean the login is unavailable. The identity usually lives in the project's e2e fixtures and the code in its auth mock or e2e documentation. Confirm which fixed code the target environment accepts before typing it: a code exported by the repository's own mock server only applies to the mock server, not to a shared staging backend. If neither the repository nor the user can confirm a fixed code for that environment, say the session needs credentials and ask, rather than guessing a number, PIN or bypass.
+Airtime staging login: use the GB member msisdn `447985514116` (zorro `automation-tests/data/staging_data.json`). The verification code is read from the API, not from an SMS: non-production zorro returns `verification_code` in the `POST /auth/mobile-login` response because `config/services_sit.yaml` enables `setVerificationCodeInResponse`. Request a code and type the returned value into the app.
 
 If a value is missing, report the gap instead of substituting a default.
 
