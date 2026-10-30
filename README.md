@@ -409,6 +409,8 @@ The skill reads the repository's own instructions, run scripts, app identifier, 
 
 Evidence defaults to a screenshot per check in an ignored artifact directory. Video, recordings, and logs are collected only on request or when a failure needs them. Simulator app data may be cleared to establish a clean login; physical devices are never reset without approval. Airtime staging login needs no manual SIM or SMS step because the app prepopulates the verification code returned by staging.
 
+Match the app's CI Xcode version, not merely the newest Xcode. The Airtime CI image is `macos-26-xcode-26`; building it with Xcode 27 fails on Pods that still declare iOS 12/13 deployment targets, and Xcode 27 also replaces `Simulator.app` with `DeviceHub.app`, which React Native CLI 0.85 still hardcodes. Install the matching runtime with `xcodebuild -downloadPlatform iOS` under the selected Xcode.
+
 Failures are reported rather than worked around. Missing Xcode, no booted simulator, no Metro server, an unavailable test account, or ambiguous expected behaviour all stop the run. Replay scripts, CI wiring, and the MCP server are deliberately deferred until the same exploratory flow proves worth repeating.
 
 Update flow for a new agent-device release: bump the pin in `npm/globals.txt`, download the four skill directories and `LICENSE` from the matching upstream tag, diff them against the committed copies, then run `dotfiles npm` and `dotfiles deploy`.
