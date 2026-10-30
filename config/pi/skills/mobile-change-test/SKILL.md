@@ -88,6 +88,8 @@ Choose the smallest step that makes the running app represent the current code:
 2. Native, dependency, or environment-config change: run the repository's documented build and launch command.
 3. Stale or unknown state: rebuild using that same documented command.
 
+Over-the-air update code needs a non-debug build. When the diff touches an OTA or self-update path, a debug build reports updates as disabled and the feature is inert, so a Metro session proves nothing. Build the repository's release configuration or install the build its documentation names for update testing, and say which you used.
+
 Clear simulator app data before login when a clean session matters, and state that you did it. Prefer the repository's own reset script when one exists.
 
 Before acting on the app, check for React Native error or warning overlays, permission prompts, and interrupted previous sessions. Dismiss an unrelated overlay, capture it as a finding when it is related, and note it in the report.
