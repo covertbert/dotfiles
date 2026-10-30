@@ -54,6 +54,8 @@ Record the following from those sources only:
 - Existing selectors or accessibility identifiers for the screens involved.
 - Cleanup rules for any flow that mutates shared state.
 
+This skill holds no credentials. A login is only possible when the repository names a test identity and its code path; a seeded phone number without a working verification step is not a credential. If the login cannot be completed from repository sources, say the session needs credentials and ask for them before driving the app, rather than guessing a number, PIN or bypass.
+
 If a value is missing, report the gap instead of substituting a default.
 
 ## 3. Determine what to verify
