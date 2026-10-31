@@ -1,6 +1,5 @@
 [user]
 	name = Bertie Blackman
 	email = bertie.blackman@airtimerewards.com
-	# Signing subkey lives on the YubiKey OpenPGP card. Use the primary
-	# fingerprint without a trailing "!" so gpg selects the signing subkey.
-	signingkey = 41EE301EEABDD2CB60D09C3A7CF3D776302FC8B1
+	# GitLab-registered SSH key (usage: auth_and_signing).
+	signingkey = ~/.ssh/id_ed25519_gitlab

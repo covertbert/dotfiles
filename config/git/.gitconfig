@@ -23,7 +23,7 @@ conflictstyle = diff3
 colorMoved = default
 
 [gpg]
-program = gpg
+format = ssh
 
 [commit]
 gpgSign = true

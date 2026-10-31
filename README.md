@@ -11,7 +11,7 @@ My personal macOS dotfiles. One command to go from a blank Mac to a fully config
 | Area                  | What it covers                                                                                           |
 | --------------------- | -------------------------------------------------------------------------------------------------------- |
 | 🐚 **ZSH**            | `.zshrc`, aliases, functions, plugins, prompt, fnm, plus private `.zshrc.local` backup through 1Password |
-| 🧬 **Git**            | `.gitconfig` with delta diffs, GPG signing, branch/push defaults, includes                               |
+| 🧬 **Git**            | `.gitconfig` with delta diffs, SSH commit signing, branch/push defaults, includes                         |
 | 🍎 **macOS defaults** | Keyboard, Finder, Dock, screenshots, Trash, software updates, Chrome, Transmission                       |
 | 🍺 **Homebrew**       | CLI tools (`Brewfile`) and GUI apps/fonts (`Caskfile`)                                                   |
 | 🖥️ **Terminal**       | Hyper config, Ghostty config, Starship theme                                                             |
@@ -329,13 +329,15 @@ Sync state contains only item/vault identifiers and a content hash under `~/.loc
 - **Pager**: `git-delta` with `calochortus-lyallii` theme
 - **Interactive**: delta for `add -p`
 - **Merge**: `diff3` conflict style
-- **GPG**: commit and tag signing enabled; `gpg.program = gpg` resolves from `PATH`
+- **Signing**: commits and annotated tags signed with SSH (`gpg.format = ssh`). `~/user.gitconfig` sets `user.signingkey` to `~/.ssh/id_ed25519_gitlab`, the key registered on GitLab with usage `auth_and_signing`. Signing needs no passphrase prompt and no pinentry
 - **Push**: `autoSetupRemote = true`, `default = current`
 - **Includes**: `~/user.gitconfig` (personal name/email) and `~/themes.gitconfig`
 
 `~/user.gitconfig` is created on first install **only if it doesn't exist** — edit it to set your name and email.
 
-GPG configs (`gpg.conf`, `gpg-agent.conf`, `dirmngr.conf`) are deployed to `~/.gnupg/`. Key material is not managed: restore the public keyring and secret keys separately on a new machine. `gnupg`, `pinentry-mac`, and `ykman` come from the Brewfile.
+GPG configs (`gpg.conf`, `gpg-agent.conf`, `dirmngr.conf`) are deployed to `~/.gnupg/`. Key material is not managed: restore the public keyring and secret keys separately on a new machine. `gnupg`, `pinentry-mac`, and `ykman` come from the Brewfile. These remain for OpenPGP use outside git signing.
+
+Local signature verification (`git log --show-signature`, `git verify-commit`) needs `gpg.ssh.allowedSignersFile`; it is not configured. GitLab verifies pushed signatures server-side against the registered signing key.
 
 ---
 
