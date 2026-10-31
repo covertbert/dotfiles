@@ -2,6 +2,13 @@
 path = user.gitconfig
 path = themes.gitconfig
 
+# Repositories on github.com sign with the GitHub key; everything else falls
+# back to the GitLab key set in user.gitconfig.
+[includeIf "hasconfig:remote.*.url:git@github.com:**/**"]
+path = signing-github.gitconfig
+[includeIf "hasconfig:remote.*.url:https://github.com/**"]
+path = signing-github.gitconfig
+
 [init]
 defaultBranch = main
 

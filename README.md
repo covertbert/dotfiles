@@ -330,6 +330,7 @@ Sync state contains only item/vault identifiers and a content hash under `~/.loc
 - **Interactive**: delta for `add -p`
 - **Merge**: `diff3` conflict style
 - **Signing**: commits and annotated tags signed with SSH (`gpg.format = ssh`). `~/user.gitconfig` sets `user.signingkey` to `~/.ssh/id_ed25519_gitlab`, the key registered on GitLab with usage `auth_and_signing`. Signing needs no passphrase prompt and no pinentry
+- **Per-remote key**: repositories with a `github.com` remote (SSH or HTTPS URL) sign with `~/.ssh/id_ed25519_github` instead, selected by `includeIf "hasconfig:remote.*.url:..."` rules that include `~/signing-github.gitconfig`. Every other remote, and repositories without a remote, use the GitLab key
 - **Push**: `autoSetupRemote = true`, `default = current`
 - **Includes**: `~/user.gitconfig` (personal name/email) and `~/themes.gitconfig`
 
@@ -337,7 +338,7 @@ Sync state contains only item/vault identifiers and a content hash under `~/.loc
 
 GPG configs (`gpg.conf`, `gpg-agent.conf`, `dirmngr.conf`) are deployed to `~/.gnupg/`. Key material is not managed: restore the public keyring and secret keys separately on a new machine. `gnupg`, `pinentry-mac`, and `ykman` come from the Brewfile. These remain for OpenPGP use outside git signing.
 
-Local signature verification (`git log --show-signature`, `git verify-commit`) needs `gpg.ssh.allowedSignersFile`; it is not configured. GitLab verifies pushed signatures server-side against the registered signing key.
+Local signature verification (`git log --show-signature`, `git verify-commit`) needs `gpg.ssh.allowedSignersFile`; it is not configured. GitLab and GitHub verify pushed signatures server-side against the registered signing keys, so each platform's key must be uploaded there (GitLab usage type `Authentication & signing`, GitHub key type `Signing Key`).
 
 ---
 

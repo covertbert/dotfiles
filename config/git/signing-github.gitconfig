@@ -1,0 +1,4 @@
+[user]
+	# GitHub-registered signing key. Selected by the includeIf rules in
+	# .gitconfig when the repository has a github.com remote.
+	signingkey = ~/.ssh/id_ed25519_github
