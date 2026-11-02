@@ -351,7 +351,7 @@ Local signature verification (`git log --show-signature`, `git verify-commit`) n
 | `settings.json` | Agent settings: default model (`gpt-5.5`), enabled models, packages, UI options                                  |
 | `models.json`   | Custom provider config: RunAI, OpenRouter, OpenCode Zen. Anthropic uses Pi's built-in provider                   |
 | `AGENTS.md`     | Global agent instructions: caveman mode, commit rules, context protection                                        |
-| `agents/`       | Custom subagents: `git-workflow` executor and read-only `investigator`                                           |
+| `agents/`       | Custom subagents: `worker` writer, `git-workflow` executor and read-only `investigator`                         |
 | `skills/`       | Skill definitions, including `coderabbit-review`, `git-workflow`, `mobile-change-test` and repository toolchains |
 | `prompts/`      | Custom prompt templates, including `/coderabbit` and `/ui-rebuild`                                               |
 | `extensions/`   | Local Pi extensions, including Herdr lifecycle and session reporting                                             |
@@ -374,6 +374,7 @@ Local signature verification (`git log --show-signature`, `git verify-commit`) n
 
 | Agent          | Model                                | Purpose                                                                                           |
 | -------------- | ------------------------------------ | ------------------------------------------------------------------------------------------------- |
+| `worker`       | `openai/gpt-6.1-sol` (medium)        | Implements one bounded batch of changes and verifies it with the repository's own checks          |
 | `git-workflow` | `runai/deepseek-v4-1-flash` (low)    | Executes the `git-workflow` skill: branch, commit, push, and MR actions inside its tripwire rules |
 | `investigator` | `runai/deepseek-v4-1-flash` (medium) | Read-only investigation of code, CI and infrastructure evidence, logs, docs, and MCP systems      |
 
