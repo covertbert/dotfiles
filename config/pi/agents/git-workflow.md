@@ -2,7 +2,7 @@
 name: git-workflow
 description: Executes the full git-workflow skill for branch, commit, push, and merge-request requests, including the Git and glab commands, inside the skill's tripwire rules.
 advertise: true
-model: runai/deepseek-v4-1-flash
+model: runinfra/deepseek-v4-1-flash
 thinking: low
 tools: read, bash
 skills: git-workflow

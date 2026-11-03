@@ -2,7 +2,7 @@
 name: investigator
 description: Read-only investigation across local code, CI and infrastructure evidence, logs, external documentation, and MCP systems. Returns sourced findings and one recommended next action; never edits files or changes external systems.
 advertise: true
-model: runai/deepseek-v4-1-flash
+model: runinfra/deepseek-v4-1-flash
 thinking: medium
 tools: read, grep, find, ls, bash, web_search, fetch_content, get_search_content, mcp
 inheritProjectContext: true

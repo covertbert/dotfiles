@@ -1,13 +1,13 @@
 {
   "providers": {
-    "runai": {
+    "runinfra": {
       "baseUrl": "https://api.runinfra.ai/v1",
       "apiKey": "$RUNINFRA_KEY",
       "api": "openai-completions",
       "models": [
         {
           "id": "qwen3-8-27b",
-          "name": "Qwen3 8-27B (RunAI)",
+          "name": "Qwen3 8-27B (RunInfra)",
           "reasoning": true,
           "input": ["text"],
           "contextWindow": 262144,
@@ -27,7 +27,7 @@
         },
         {
           "id": "deepseek-v4-1-flash",
-          "name": "DeepSeek V4.1 Flash (RunAI)",
+          "name": "DeepSeek V4.1 Flash (RunInfra)",
           "reasoning": true,
           "input": ["text"],
           "contextWindow": 1048576,
@@ -47,7 +47,7 @@
         },
         {
           "id": "ornith-1-5-35b",
-          "name": "Ornith 1.5 35B (RunAI, vision)",
+          "name": "Ornith 1.5 35B (RunInfra, vision)",
           "reasoning": true,
           "input": ["text", "image"],
           "contextWindow": 131072,

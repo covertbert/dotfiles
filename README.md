@@ -349,7 +349,7 @@ Local signature verification (`git log --show-signature`, `git verify-commit`) n
 | File/Dir        | Purpose                                                                                                          |
 | --------------- | ---------------------------------------------------------------------------------------------------------------- |
 | `settings.json` | Agent settings: default model (`gpt-5.5`), enabled models, packages, UI options                                  |
-| `models.json`   | Custom provider config: RunAI, OpenRouter, OpenCode Zen. Anthropic uses Pi's built-in provider                   |
+| `models.json`   | Custom provider config: RunInfra, OpenRouter, OpenCode Zen. Anthropic uses Pi's built-in provider                 |
 | `AGENTS.md`     | Global agent instructions: caveman mode, commit rules, context protection                                        |
 | `agents/`       | Custom subagents: `worker` writer, `git-workflow` executor and read-only `investigator`                         |
 | `skills/`       | Skill definitions, including `coderabbit-review`, `git-workflow`, `mobile-change-test` and repository toolchains |
@@ -372,11 +372,11 @@ Local signature verification (`git log --show-signature`, `git verify-commit`) n
 
 `pi-subagents` is pinned in `config/pi/settings.json` with `subagents.disableBuiltins: true`, so the packaged builtin agents are not discoverable. Only `config/pi/agents/` definitions are offered:
 
-| Agent          | Model                                | Purpose                                                                                           |
-| -------------- | ------------------------------------ | ------------------------------------------------------------------------------------------------- |
-| `worker`       | `openai/gpt-6.1-sol` (medium)        | Implements one bounded batch of changes and verifies it with the repository's own checks          |
-| `git-workflow` | `runai/deepseek-v4-1-flash` (low)    | Executes the `git-workflow` skill: branch, commit, push, and MR actions inside its tripwire rules |
-| `investigator` | `runai/deepseek-v4-1-flash` (medium) | Read-only investigation of code, CI and infrastructure evidence, logs, docs, and MCP systems      |
+| Agent          | Model                                   | Purpose                                                                                           |
+| -------------- | --------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| `worker`       | `openai/gpt-6.1-sol` (medium)           | Implements one bounded batch of changes and verifies it with the repository's own checks          |
+| `git-workflow` | `runinfra/deepseek-v4-1-flash` (low)    | Executes the `git-workflow` skill: branch, commit, push, and MR actions inside its tripwire rules |
+| `investigator` | `runinfra/deepseek-v4-1-flash` (medium) | Read-only investigation of code, CI and infrastructure evidence, logs, docs, and MCP systems      |
 
 The `git-workflow` skill delegates to its agent when a `subagent` tool is available and falls back to running the workflow directly when it is not. The investigator has no mutating authority in its contract, but the generic `mcp` tool still exposes each server's mutating methods.
 
