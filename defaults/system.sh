@@ -175,6 +175,14 @@ defaults write com.apple.SoftwareUpdate AutomaticDownload -bool true
 defaults write com.apple.SoftwareUpdate CriticalUpdateInstall -bool true
 
 ###############################################################################
+# Power                                                                       #
+###############################################################################
+
+# Never idle-sleep on AC power. Keeps the machine reachable over Tailscale
+# (pi-web) when docked with the lid closed. Display and disk sleep stay enabled.
+sudo pmset -c sleep 0
+
+###############################################################################
 # Restart affected apps                                                       #
 ###############################################################################
 
