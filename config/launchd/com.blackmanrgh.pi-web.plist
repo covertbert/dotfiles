@@ -3,8 +3,8 @@
 <!-- Template: `dotfiles web start` substitutes __PI_WEB_BIN__ with the resolved
      pi-web path and installs the result to ~/Library/LaunchAgents/.
      API keys come from ~/.zshrc.local because launchd starts the agent with a
-     bare environment; pi's custom providers read RUNINFRA_KEY, OPENCODE_API_KEY
-     and OPENROUTER_API_KEY from it.
+     bare environment; pi's custom providers read RUNINFRA_KEY and
+     OPENROUTER_API_KEY from it.
      pi-web stays bound to loopback; remote access is `tailscale serve`. -->
 <plist version="1.0">
 <dict>

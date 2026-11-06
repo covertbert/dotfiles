@@ -359,7 +359,7 @@ dotfiles web stop     # unload LaunchAgent, remove tailnet proxy
 
 The proxy is `https://<machine>.<tailnet>.ts.net:8192/`. `web start` warns and skips the proxy when the active Tailscale account is not `blackmanrgh@gmail.com`; switch accounts with `tailscale switch --list` and `tailscale switch <id>`. Do not use `tailscale funnel`, which would expose pi-web to the public internet.
 
-The LaunchAgent starts pi-web through `zsh -lc` and sources `~/.zshrc.local`, because launchd gives the process a bare environment and the custom providers in `config/pi/models.json` read `RUNINFRA_KEY`, `OPENCODE_API_KEY` and `OPENROUTER_API_KEY` from it. Without that source, spawned pi sessions log `No models match pattern` and prompts can stall.
+The LaunchAgent starts pi-web through `zsh -lc` and sources `~/.zshrc.local`, because launchd gives the process a bare environment and the custom providers in `config/pi/models.json` read `RUNINFRA_KEY` and `OPENROUTER_API_KEY` from it. Without that source, spawned pi sessions log `No models match pattern` and prompts can stall.
 
 pi-web lists every model pi's registry knows about, grouped by provider. It does not read `enabledModels` from `settings.json` and has no flag to filter the list; choose the model in the status bar.
 
@@ -376,7 +376,7 @@ The machine must stay awake to serve pi-web. Clamshell mode with an external dis
 | File/Dir        | Purpose                                                                                                          |
 | --------------- | ---------------------------------------------------------------------------------------------------------------- |
 | `settings.json` | Agent settings: default model (`gpt-5.5`), enabled models, packages, UI options                                  |
-| `models.json`   | Custom provider config: RunInfra, OpenRouter, OpenCode Zen. Anthropic uses Pi's built-in provider                 |
+| `models.json`   | Custom provider config: RunInfra, OpenRouter. Anthropic uses Pi's built-in provider                       |
 | `AGENTS.md`     | Global agent instructions: caveman mode, commit rules, context protection                                        |
 | `agents/`       | Custom subagents: `worker` writer, `git-workflow` executor and read-only `investigator`                         |
 | `skills/`       | Skill definitions, including `coderabbit-review`, `git-workflow`, `mobile-change-test` and repository toolchains |
