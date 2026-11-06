@@ -813,7 +813,16 @@ cmd_web() {
 		dim "  bin: ${pi_web_bin}  node: ${node_bin_dir}"
 
 		launchctl bootout "$domain/$label" &>/dev/null || true
-		if ! launchctl bootstrap "$domain" "$plist_dst"; then
+		# launchd can reject an immediate re-bootstrap of a job that is still exiting.
+		local loaded=false
+		for _ in 1 2 3; do
+			if launchctl bootstrap "$domain" "$plist_dst" &>/dev/null; then
+				loaded=true
+				break
+			fi
+			sleep 1
+		done
+		if ! $loaded; then
 			err "Failed to load LaunchAgent ${label}"
 			return 1
 		fi

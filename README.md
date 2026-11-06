@@ -359,6 +359,10 @@ dotfiles web stop     # unload LaunchAgent, remove tailnet proxy
 
 The proxy is `https://<machine>.<tailnet>.ts.net:8192/`. `web start` warns and skips the proxy when the active Tailscale account is not `blackmanrgh@gmail.com`; switch accounts with `tailscale switch --list` and `tailscale switch <id>`. Do not use `tailscale funnel`, which would expose pi-web to the public internet.
 
+The LaunchAgent starts pi-web through `zsh -lc` and sources `~/.zshrc.local`, because launchd gives the process a bare environment and the custom providers in `config/pi/models.json` read `RUNINFRA_KEY`, `OPENCODE_API_KEY` and `OPENROUTER_API_KEY` from it. Without that source, spawned pi sessions log `No models match pattern` and prompts can stall.
+
+pi-web lists every model pi's registry knows about, grouped by provider. It does not read `enabledModels` from `settings.json` and has no flag to filter the list; choose the model in the status bar.
+
 On the phone: install Tailscale, sign in to the same tailnet, open the URL above.
 
 The machine must stay awake to serve pi-web. Clamshell mode with an external display keeps it awake while the display is active, but the stock `sleep 10` on AC then suspends the machine and drops the tailnet connection. `defaults/system.sh` sets `sudo pmset -c sleep 0`, so AC power never idle-sleeps while display and disk sleep stay enabled. On battery the machine still sleeps on the usual timer. `caffeinate -dis` is the ad-hoc alternative when the pmset setting is not applied.

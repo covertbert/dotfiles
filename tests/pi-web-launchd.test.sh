@@ -20,8 +20,8 @@ fi
 
 plutil -lint "$RENDERED" >/dev/null
 
-grep -q '<string>/fake/bin/pi-web</string>' "$RENDERED"
-grep -q '<string>127.0.0.1</string>' "$RENDERED"
+grep -q 'exec /fake/bin/pi-web --host 127.0.0.1 --port 8192' "$RENDERED"
+grep -q 'source "$HOME/.zshrc.local"' "$RENDERED"
 
 echo "ok 1 - template renders to a looping-back plist"
 echo "1..1"
