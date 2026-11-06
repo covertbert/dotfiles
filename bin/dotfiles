@@ -771,6 +771,91 @@ cmd_npm() {
 	ok "npm globals done."
 }
 
+cmd_web() {
+	local action="${1:-start}"
+
+	heading "pi-web"
+	echo ""
+
+	local plist_src="${DOTFILES_DIR}/config/launchd/com.blackmanrgh.pi-web.plist"
+	local plist_dst="${HOME}/Library/LaunchAgents/com.blackmanrgh.pi-web.plist"
+	local label="com.blackmanrgh.pi-web"
+	local port=8192
+	local domain
+	domain="gui/$(id -u)"
+
+	local wanted_tailnet="blackmanrgh@gmail.com"
+	local active_tailnet=""
+	if command -v tailscale &>/dev/null; then
+		active_tailnet="$(tailscale status --json 2>/dev/null | jq -r '.CurrentTailnet.Name // empty' 2>/dev/null)"
+	fi
+
+	case "$action" in
+	start)
+		if [[ ! -f "$plist_src" ]]; then
+			err "Missing LaunchAgent source: ${plist_src}"
+			return 1
+		fi
+
+		if ! command -v pi-web &>/dev/null || ! command -v node &>/dev/null; then
+			err "pi-web or node not found on PATH. Run: dotfiles npm"
+			return 1
+		fi
+
+		local pi_web_bin node_bin_dir
+		pi_web_bin="$(command -v pi-web)"
+		node_bin_dir="$(dirname "$(command -v node)")"
+
+		mkdir -p "${HOME}/Library/LaunchAgents" "${HOME}/Library/Logs"
+		sed -e "s|__PI_WEB_BIN__|${pi_web_bin}|" -e "s|__NODE_BIN_DIR__|${node_bin_dir}|" \
+			"$plist_src" > "$plist_dst"
+		ok "Deployed ${plist_dst}"
+		dim "  bin: ${pi_web_bin}  node: ${node_bin_dir}"
+
+		launchctl bootout "$domain/$label" &>/dev/null || true
+		if ! launchctl bootstrap "$domain" "$plist_dst"; then
+			err "Failed to load LaunchAgent ${label}"
+			return 1
+		fi
+		ok "LaunchAgent loaded: ${label}"
+
+		if [[ "$active_tailnet" != "$wanted_tailnet" ]]; then
+			warn "Active Tailscale account is '${active_tailnet:-none}', expected '${wanted_tailnet}'"
+			dim "  Switch profile first: tailscale switch --list && tailscale switch <id>"
+			return 0
+		fi
+
+		if ! tailscale serve --bg --https="$port" "http://127.0.0.1:${port}" &>/dev/null; then
+			err "tailscale serve failed for port ${port}"
+			return 1
+		fi
+		ok "Tailnet HTTPS proxy active on port ${port}"
+		dim "  $(tailscale serve status 2>/dev/null | head -1)"
+		;;
+	stop)
+		launchctl bootout "$domain/$label" &>/dev/null && ok "LaunchAgent stopped" || ok "LaunchAgent not loaded"
+		tailscale serve --https="$port" off &>/dev/null && ok "Tailnet HTTPS proxy removed" || true
+		;;
+	status)
+		if launchctl print "$domain/$label" &>/dev/null; then
+			ok "LaunchAgent running: ${label}"
+		else
+			warn "LaunchAgent not loaded: ${label}"
+		fi
+		local code
+		code="$(curl -s -o /dev/null -w '%{http_code}' "http://127.0.0.1:${port}/" 2>/dev/null || true)"
+		if [[ "$code" == "200" ]]; then ok "http://127.0.0.1:${port}/ responding"; else warn "http://127.0.0.1:${port}/ not responding (${code:-no response})"; fi
+		local serve_line
+		serve_line="$(tailscale serve status 2>/dev/null | head -1)"
+		if [[ -n "$serve_line" && "$serve_line" != "No serve config" ]]; then ok "${serve_line}"; else warn "No tailscale serve config"; fi
+		;;
+	*)
+		err "Unknown web action: ${action} (use start|stop|status)"
+		return 1
+		;;
+	esac
+}
+
 cmd_defaults() {
 	local yes_flag="${1:-}"
 
@@ -842,6 +927,11 @@ cmd_check() {
 		failed=true
 	fi
 
+	if ! bash "${DOTFILES_DIR}/tests/pi-web-launchd.test.sh"; then
+		warn "tests: pi-web launchd"
+		failed=true
+	fi
+
 	if $failed; then
 		err "Validation failed."
 		return 1
@@ -907,6 +997,8 @@ ${BOLD}COMMANDS${RESET}
   npm                 Check and install managed npm globals
   zsh-local <action>  Back up and restore ~/.zshrc.local with 1Password
   defaults            Preview and apply macOS system defaults
+  web <start|stop|status>
+                      Run the pi-web UI on loopback and expose it over Tailscale
   check               Validate shell config and tests
   install             Create ~/.local/bin/dotfiles symlink
   installers          Install zgen if missing
@@ -930,6 +1022,7 @@ ${BOLD}EXAMPLES${RESET}
   dotfiles zsh-local setup
   dotfiles zsh-local edit
   dotfiles defaults --yes
+  dotfiles web start
   dotfiles deploy
   dotfiles backfill
 EOF
@@ -973,6 +1066,7 @@ main() {
 	npm) cmd_npm "$yes_flag" ;;
 	zsh-local) cmd_zsh_local "$yes_flag" "${positional[@]}" ;;
 	defaults) cmd_defaults "$yes_flag" ;;
+	web) cmd_web "${positional[0]:-start}" ;;
 	check) cmd_check ;;
 	install) cmd_install ;;
 	installers) cmd_installers "$yes_flag" ;;

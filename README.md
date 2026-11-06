@@ -17,6 +17,7 @@ My personal macOS dotfiles. One command to go from a blank Mac to a fully config
 | 🖥️ **Terminal**       | Hyper config, Ghostty config, Starship theme                                                             |
 | 🤖 **Pi agent**       | Settings, models, AGENTS.md, skills, prompts, extensions; Anthropic API key from private `.zshrc.local`  |
 | 🔌 **MCP**            | Shared MCP server config (Chrome DevTools, GitLab, Notion, LinearB, Datadog, Spacelift)                  |
+| 📱 **pi-web**         | Browser/mobile UI for Pi as a LaunchAgent, exposed only over the Tailscale tailnet                        |
 
 ---
 
@@ -88,6 +89,8 @@ dotfiles brew-cleanup        Uninstall Homebrew packages not listed in brew file
 dotfiles npm                 Check and install managed npm globals
 dotfiles zsh-local <action>  Back up and restore ~/.zshrc.local with 1Password
 dotfiles defaults            Preview and apply macOS system defaults
+dotfiles web <start|stop|status>
+                             Run pi-web on loopback and expose it over Tailscale
 dotfiles check               Validate shell config and tests
 dotfiles install             (Re)create ~/.local/bin/dotfiles symlink
 dotfiles installers          Install zgen if missing
@@ -339,6 +342,24 @@ Sync state contains only item/vault identifiers and a content hash under `~/.loc
 GPG configs (`gpg.conf`, `gpg-agent.conf`, `dirmngr.conf`) are deployed to `~/.gnupg/`. Key material is not managed: restore the public keyring and secret keys separately on a new machine. `gnupg`, `pinentry-mac`, and `ykman` come from the Brewfile. These remain for OpenPGP use outside git signing.
 
 Local signature verification (`git log --show-signature`, `git verify-commit`) needs `gpg.ssh.allowedSignersFile`; it is not configured. GitLab and GitHub verify pushed signatures server-side against the registered signing keys, so each platform's key must be uploaded there (GitLab usage type `Authentication & signing`, GitHub key type `Signing Key`).
+
+---
+
+## 📱 pi-web (remote Pi access)
+
+`npm/globals.txt` pins `pi-web`, the web UI for Pi. `config/launchd/com.blackmanrgh.pi-web.plist` is the LaunchAgent template that keeps it running; `dotfiles web start` renders it with the resolved `pi-web` and `node` paths, installs it to `~/Library/LaunchAgents/`, loads it, and configures `tailscale serve` on port 8192.
+
+pi-web has no authentication of its own, so it binds `127.0.0.1` and is reachable only through the tailnet HTTPS proxy:
+
+```sh
+dotfiles web start    # deploy + load LaunchAgent, enable tailnet proxy
+./bin/dotfiles web status
+dotfiles web stop     # unload LaunchAgent, remove tailnet proxy
+```
+
+The proxy is `https://<machine>.<tailnet>.ts.net:8192/`. `web start` warns and skips the proxy when the active Tailscale account is not `blackmanrgh@gmail.com`; switch accounts with `tailscale switch --list` and `tailscale switch <id>`. Do not use `tailscale funnel`, which would expose pi-web to the public internet.
+
+On the phone: install Tailscale, sign in to the same tailnet, open the URL above. Laptop lid closed or asleep means no connection — the LaunchAgent only runs while the machine is awake.
 
 ---
 

@@ -2,3 +2,4 @@
 agent-device@0.21.35
 corepack
 openclaw
+pi-web@0.15.5

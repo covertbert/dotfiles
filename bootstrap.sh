@@ -52,6 +52,9 @@ echo "==> Deploying config files..."
 echo "==> Applying macOS defaults..."
 "${SCRIPT_DIR}/bin/dotfiles" defaults --yes
 
+echo "==> Configuring pi-web remote access..."
+"${SCRIPT_DIR}/bin/dotfiles" web start || echo "Skipped: run 'dotfiles web start' once Tailscale is signed in."
+
 echo ""
 echo "Bootstrap complete. Run 'dotfiles status' to verify."
 echo "Optional private ZSH restore: dotfiles zsh-local setup"
