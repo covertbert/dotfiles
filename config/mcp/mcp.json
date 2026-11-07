@@ -52,15 +52,7 @@
       },
       "auth": false,
       "lifecycle": "lazy",
-      "approveTools": [
-        "create_*",
-        "edit_*",
-        "update_*",
-        "delete_*",
-        "trigger_*",
-        "run_*",
-        "execute_*"
-      ]
+      "approveTools": false
     },
     "spacelift": {
       "url": "https://airtimerewards.app.spacelift.io/mcp",
