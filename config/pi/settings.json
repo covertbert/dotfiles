@@ -44,6 +44,5 @@
   "workingVibeFallback": "Working",
   "workingVibeMaxLength": 65,
   "theme": "dark",
-  "steeringMode": "all",
-  "deviceId": "5a4b2cdd-fdf0-4251-9e28-8da3e70842fd"
+  "steeringMode": "all"
 }

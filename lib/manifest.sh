@@ -30,7 +30,7 @@ config|file|config/gnupg/gpg.conf|${home}/.gnupg/gpg.conf|
 config|file|config/gnupg/gpg-agent.conf|${home}/.gnupg/gpg-agent.conf|
 config|file|config/gnupg/dirmngr.conf|${home}/.gnupg/dirmngr.conf|
 pi|file|config/pi/AGENTS.md|${pi_dir}/AGENTS.md|
-pi|json-merge|config/pi/settings.json|${pi_dir}/settings.json|lastChangelogVersion,defaultProvider,defaultModel,defaultThinkingLevel
+pi|json-merge|config/pi/settings.json|${pi_dir}/settings.json|lastChangelogVersion,defaultProvider,defaultModel,defaultThinkingLevel,extensionChangelogVersions,deviceId
 pi|file|config/pi/models.json|${pi_dir}/models.json|
 pi|file|config/pi/web-search.json|${home}/.pi/web-search.json|
 pi|file|config/pi/plannotator.json|${pi_dir}/plannotator.json|
