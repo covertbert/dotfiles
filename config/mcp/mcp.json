@@ -87,6 +87,12 @@
       "inheritEnv": false,
       "lifecycle": "lazy",
       "requestTimeoutMs": 30000
+    },
+    "loomi-connect-uk": {
+      "url": "https://uk.connect.loomi.ai/mcp",
+      "auth": "oauth",
+      "lifecycle": "lazy",
+      "approveTools": ["create_*", "start_*", "call_tool"]
     }
   }
 }
