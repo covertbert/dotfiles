@@ -26,6 +26,7 @@ The sections below are the contract the child executes. An agent without a `suba
 - Prefer status/stat/log summaries over full diffs.
 - Do not run destructive commands without explicit confirmation.
 - Never use `git add .` unless user explicitly asks.
+- Fix lint and type warnings only in code created or modified in this change. Report unrelated pre-existing warnings in one line; never ask whether to fix them.
 - MR titles must use Conventional Commit format: `type(scope): summary` or `type: summary`.
 - MR title types must be one of: `feat`, `fix`, `docs`, `refactor`, `test`, `chore`, `ci`, `build`, `perf`.
 

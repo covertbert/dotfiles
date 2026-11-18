@@ -13,5 +13,6 @@ description: Use when working in an NPM or Node.js repository, running npm scrip
 
 ## ESLint
 
-- Fix all ESLint warnings, not just errors. Do not stop at exit 0; run with `--max-warnings 0` to surface the full set, then resolve each.
+- Fix ESLint warnings in code you created or modified, not just errors. Use `--max-warnings 0` to surface the full set, then resolve warnings in touched code.
+- Do not ask whether to fix warnings in untouched code. Report them in one line and leave them alone; unrelated cleanup belongs in its own change.
 - Do not silence warnings with inline `eslint-disable` unless the rule is genuinely wrong for the case; state why when suppressing.
