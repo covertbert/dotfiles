@@ -11,13 +11,13 @@ My personal macOS dotfiles. One command to go from a blank Mac to a fully config
 | Area                  | What it covers                                                                                           |
 | --------------------- | -------------------------------------------------------------------------------------------------------- |
 | 🐚 **ZSH**            | `.zshrc`, aliases, functions, plugins, prompt, fnm, plus private `.zshrc.local` backup through 1Password |
-| 🧬 **Git**            | `.gitconfig` with delta diffs, SSH commit signing, branch/push defaults, includes                         |
+| 🧬 **Git**            | `.gitconfig` with delta diffs, SSH commit signing, branch/push defaults, includes                        |
 | 🍎 **macOS defaults** | Keyboard, Finder, Dock, screenshots, Trash, software updates, Chrome, Transmission                       |
 | 🍺 **Homebrew**       | CLI tools (`Brewfile`) and GUI apps/fonts (`Caskfile`)                                                   |
 | 🖥️ **Terminal**       | Hyper config, Ghostty config, Starship theme                                                             |
 | 🤖 **Pi agent**       | Settings, models, AGENTS.md, skills, prompts, extensions; Anthropic API key from private `.zshrc.local`  |
 | 🔌 **MCP**            | Shared MCP server config (Chrome DevTools, GitLab, Notion, LinearB, Datadog, Spacelift)                  |
-| 📱 **pi-web**         | Browser/mobile UI for Pi as a LaunchAgent, exposed only over the Tailscale tailnet                        |
+| 📱 **pi-web**         | Browser/mobile UI for Pi as a LaunchAgent, exposed only over the Tailscale tailnet                       |
 
 ---
 
@@ -373,17 +373,17 @@ The machine must stay awake to serve pi-web. Clamshell mode with an external dis
 
 `config/pi/` holds portable Pi coding agent config:
 
-| File/Dir        | Purpose                                                                                                          |
-| --------------- | ---------------------------------------------------------------------------------------------------------------- |
-| `settings.json` | Agent settings: default model (`gpt-5.5`), enabled models, packages, UI options                                  |
-| `models.json`   | Custom provider config: RunInfra, OpenRouter. Anthropic uses Pi's built-in provider                       |
-| `AGENTS.md`     | Global agent instructions: caveman mode, commit rules, context protection                                        |
-| `agents/`       | Custom subagents: `worker` writer, `git-workflow` executor and read-only `investigator`                         |
-| `skills/`       | Skill definitions, including `coderabbit-review`, `git-workflow`, `mobile-change-test` and repository toolchains |
-| `prompts/`      | Custom prompt templates, including `/coderabbit` and `/ui-rebuild`                                               |
-| `extensions/`   | Local Pi extensions, including Herdr lifecycle and session reporting                                             |
-| `themes/`       | UI themes                                                                                                        |
-| `zsh-shell`     | Shell config for Pi's embedded shell                                                                             |
+| File/Dir        | Purpose                                                                                                      |
+| --------------- | ------------------------------------------------------------------------------------------------------------ |
+| `settings.json` | Agent settings: default model (`gpt-5.5`), enabled models, packages, UI options                              |
+| `models.json`   | Custom provider config: RunInfra, OpenRouter. Anthropic uses Pi's built-in provider                          |
+| `AGENTS.md`     | Global agent instructions: caveman mode, commit rules, context protection                                    |
+| `agents/`       | Custom subagents: `worker` writer, `git-workflow` executor and read-only `investigator`                      |
+| `skills/`       | Skill definitions, including `airtime-mobile`, `coderabbit-review`, `git-workflow` and repository toolchains |
+| `prompts/`      | Custom prompt templates, including `/coderabbit` and `/ui-rebuild`                                           |
+| `extensions/`   | Local Pi extensions, including Herdr lifecycle and session reporting                                         |
+| `themes/`       | UI themes                                                                                                    |
+| `zsh-shell`     | Shell config for Pi's embedded shell                                                                         |
 
 **Installed packages** (from `settings.json`):
 
@@ -423,28 +423,24 @@ Update deliberately: change package version in `config/pi/settings.json`, deploy
 
 ### Mobile app verification
 
-The `mobile-change-test` skill verifies a change in the running mobile app on an iOS Simulator. It coordinates the official `agent-device` skills (`agent-device`, `ios-simulator`, `android-emulator`, `dogfood`), which are vendored unchanged from agent-device `v0.21.35` under `config/pi/skills/`. The CLI itself is a user-global npm package from `npm/globals.txt`, so it is available in every repository rather than installed per app.
+The `airtime-mobile` skill drives the Airtime Rewards app on a simulator or emulator. It holds only Airtime defaults: the login MSISDN `7425676899` and iOS as the platform when the request does not name one. Device mechanics stay with the official `agent-device` skills (`agent-device`, `ios-simulator`, `android-emulator`, `dogfood`), which are vendored unchanged from agent-device `v0.21.35` under `config/pi/skills/`. The CLI itself is a user-global npm package from `npm/globals.txt`, so it is available in every repository rather than installed per app.
 
 ```sh
 dotfiles npm             # ensure the global agent-device binary
 agent-device doctor      # verify Xcode, devices, and Metro
 ```
 
-In a mobile app repository, ask Pi to test the current change. Name the device and platform so the request is unambiguous:
+In `airtime-app`, ask for whatever the task needs: launch the app, reproduce a bug, check a flow, smoke test a change, or dogfood the app. Unqualified requests use an iOS Simulator; name Android to use the emulator.
 
 ```text
 test these changes on the iOS simulator
 ```
 
-Other accepted phrasings: `run this on the simulator`, `verify this UI change on Android`, `smoke test this flow on the emulator`. A request that names no device or platform is not enough to choose a target; Pi will ask or default to the only supported platform.
-
-The skill reads the repository's own instructions, run scripts, app identifier, end-to-end fixtures, and cleanup helpers. It never hardcodes an app path, bundle identifier, or credential. It derives checks from the working-tree diff, runs a login smoke check when the repository provides test credentials, and runs mutating flows such as adding a card only when the diff can affect them or full smoke coverage was requested.
-
-Evidence defaults to a screenshot per check in an ignored artifact directory. Video, recordings, and logs are collected only on request or when a failure needs them. Simulator app data may be cleared to establish a clean login; physical devices are never reset without approval. Airtime staging login needs no manual SIM or SMS step because the app prepopulates the verification code returned by staging.
+The skill reads launch commands, the bundle identifier, schemes, test users, selectors, and cleanup helpers from the repository, because they change. It inspects a bounded diff only when asked to verify changes whose expected behaviour is otherwise unclear; a clean working tree is not a reason to stop. Airtime login needs no manual SIM or SMS step because staging returns the verification code the app expects.
 
 Match the app's CI Xcode version, not merely the newest Xcode. The Airtime CI image is `macos-26-xcode-26`; building it with Xcode 27 fails on Pods that still declare iOS 12/13 deployment targets, and Xcode 27 also replaces `Simulator.app` with `DeviceHub.app`, which React Native CLI 0.85 still hardcodes. Install the matching runtime with `xcodebuild -downloadPlatform iOS` under the selected Xcode.
 
-Failures are reported rather than worked around. Missing Xcode, no booted simulator, no Metro server, an unavailable test account, or ambiguous expected behaviour all stop the run. Replay scripts, CI wiring, and the MCP server are deliberately deferred until the same exploratory flow proves worth repeating.
+Failures are reported rather than worked around. Missing Xcode, no booted simulator, no Metro server, or an unavailable test account stop the run. Replay scripts, CI wiring, and the MCP server are deliberately deferred until the same exploratory flow proves worth repeating.
 
 Update flow for a new agent-device release: bump the pin in `npm/globals.txt`, download the four skill directories and `LICENSE` from the matching upstream tag, diff them against the committed copies, then run `dotfiles npm` and `dotfiles deploy`.
 
