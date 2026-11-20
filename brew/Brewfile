@@ -22,6 +22,7 @@ brew "watchman"
 brew "wget"
 
 # Git and repo workflow
+brew "gh"
 brew "git-delta"
 brew "glab"
 brew "lefthook"
