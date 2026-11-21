@@ -13,16 +13,38 @@ When a `subagent` tool is available, delegate the whole workflow once to the `gi
 
 - Enable subagents first if the session exposes only `subagents_enable`.
 - Pass the user's exact request and any files they named.
+- Include any preflight output you already ran, so the child does not repeat those reads.
 - Do not run Git or `glab` mutations while the child owns the workflow. Inspect its result instead.
 - If the delegation cannot start, follow this skill directly.
 
 The sections below are the contract the child executes. An agent without a `subagent` tool runs them directly.
 
+## Batching and parallelism
+
+Git and `glab` commands take milliseconds; each separate tool message costs a full model round trip of seconds. Reduce round trips, not command time.
+
+- Run every read-only command for a step in one `bash` call, with labelled `echo` separators, byte-capped once at the end.
+- Chain dependent mutations in one call with `&&`, so a failure stops the chain before the next mutation runs.
+- Never spawn subagents to parallelise Git or `glab` work. Spawn cost exceeds the commands, and `commit -> push -> MR` is a dependency chain that cannot overlap.
+- Subagents are worth it only for work measured in tens of seconds or more: full test suites, CI waits, or review of a very large diff. That work is outside this skill; run it alongside the Git chain, not instead of it.
+
+Batch shape for reads:
+
+```bash
+{
+  echo "== status ==";  git status -sb
+  echo "== branch ==";  git branch --show-current
+  echo "== unpushed =="; git log --oneline @{u}..HEAD 2>/dev/null
+  echo "== files ==";   git diff --stat 2>/dev/null
+  echo "== open mr =="; glab mr view --json title,description 2>&1
+} 2>&1 | head -c 8000
+```
+
 ## Core rules
 
 - If user clearly asks to commit, push, or open an MR, treat that as intent.
 - Do not add extra confirmation unless a tripwire appears.
-- Use byte-capped read-only git commands.
+- Use byte-capped read-only git commands, batched one step per call.
 - Prefer status/stat/log summaries over full diffs.
 - Do not run destructive commands without explicit confirmation.
 - Never use `git add .` unless user explicitly asks.
@@ -45,7 +67,14 @@ Pause and ask, or run deeper checks, when any apply:
 When asked to create or name a branch:
 
 1. Run:
-   - `git status --short 2>&1 | head -c 4000`
+
+```bash
+{
+  echo "== status =="; git status --short
+  echo "== branch =="; git branch --show-current
+} 2>&1 | head -c 4000
+```
+
 2. Create a kebab-case branch name using `type/short-description`.
 3. Output proposed branch name and checkout command.
 4. Run checkout command if no tripwire appears.
@@ -60,9 +89,15 @@ git checkout -b feat/add-login
 
 When asked to commit or draft a commit:
 
-1. Run:
-   - `git status --short 2>&1 | head -c 4000`
-   - `git diff --staged --stat 2>&1 | head -c 4000`
+1. Run one batched call:
+
+```bash
+{
+  echo "== status =="; git status --short
+  echo "== staged =="; git diff --staged --stat
+} 2>&1 | head -c 4000
+```
+
 2. If staged changes exist, infer commit message from staged paths/stat and user request.
 3. If no staged changes exist:
    - stage only files the user named, if any
@@ -72,19 +107,28 @@ When asked to commit or draft a commit:
 6. Summary must be concise and imperative.
 7. Commit immediately if user asked to commit and no tripwire appears.
 
-Run deeper checks only if a tripwire appears:
+Run deeper checks only if a tripwire appears, in one call:
 
 ```bash
-git diff --staged 2>&1 | head -c 12000
-git diff 2>&1 | head -c 12000
+{
+  echo "== staged diff =="; git diff --staged
+  echo "== worktree diff =="; git diff
+} 2>&1 | head -c 12000
 ```
 
 ## Push fast path
 
 When asked to push:
 
-1. Run:
-   - `git status -sb 2>&1 | head -c 4000`
+1. Run one batched call, including the open MR when one exists:
+
+```bash
+{
+  echo "== status =="; git status -sb
+  echo "== open mr =="; glab mr view --json title,description 2>&1
+} 2>&1 | head -c 6000
+```
+
 2. If branch is clean and tracking upstream, push:
    - `git push`
 3. If no upstream but current branch/remote are clear, push:
@@ -92,11 +136,13 @@ When asked to push:
 4. If dirty, force-push needed, or upstream unclear, pause and explain risk.
 5. If the branch has an open MR, update its title and description per "Keeping the MR current" below before reporting the push as done.
 
-Run deeper checks only if a tripwire appears:
+Run deeper checks only if a tripwire appears, in one call:
 
 ```bash
-git log --oneline @{u}..HEAD 2>/dev/null | head -c 1000
-git log --oneline -10 2>&1 | head -c 1000
+{
+  echo "== unpushed =="; git log --oneline @{u}..HEAD 2>/dev/null
+  echo "== recent =="; git log --oneline -10
+} 2>&1 | head -c 2000
 ```
 
 ## Merge request fast path
@@ -171,11 +217,18 @@ GitLab renders Mermaid in descriptions. Keep diagrams to the one idea a reviewer
 
 When asked to open or update an MR:
 
-1. Run:
-   - `git status -sb 2>&1 | head -c 4000`
-   - `git branch --show-current 2>&1 | head -c 1000`
-   - `git log --oneline origin/HEAD..HEAD 2>/dev/null | head -c 2000`
-   - `git diff origin/HEAD...HEAD --stat 2>/dev/null | head -c 2000`
+1. Run one batched call:
+
+```bash
+{
+  echo "== status =="; git status -sb
+  echo "== branch =="; git branch --show-current
+  echo "== unpushed =="; git log --oneline origin/HEAD..HEAD 2>/dev/null
+  echo "== files =="; git diff origin/HEAD...HEAD --stat 2>/dev/null
+  echo "== open mr =="; glab mr view --json title,description 2>&1
+} 2>&1 | head -c 8000
+```
+
 2. If branch is not pushed, push before creating MR.
 3. Derive title from branch and commits:
    - Derive from branch, commits, and diff stat.
@@ -186,10 +239,10 @@ When asked to open or update an MR:
 4. Draft the description from user request, commit summaries and diff stat, following the template above.
 5. Create MR using a temp file for the description.
 
-Known-good MR flow:
+Known-good MR flow. Write the description first, then run the push, create and cleanup as one chained call. `&&` stops the chain if any step fails, so a failed push never leaves an MR-less commit reported as created:
 
 ```bash
-git push -u origin <branch>
+branch="$(git branch --show-current)"
 tmpfile="$(mktemp)"
 cat > "$tmpfile" <<'EOF'
 ## What problem does this solve?
@@ -220,8 +273,9 @@ cat > "$tmpfile" <<'EOF'
 
 - ...
 EOF
-glab mr create --draft --source-branch <branch> --target-branch main --title "feat(scope): summary" --description "$(cat "$tmpfile")" --yes
-rm -f "$tmpfile"
+git push -u origin "$branch" && \
+  glab mr create --draft --source-branch "$branch" --target-branch main --title "feat(scope): summary" --description "$(cat "$tmpfile")" --yes && \
+  rm -f "$tmpfile"
 ```
 
 Do not use raw branch names as MR titles.
@@ -230,11 +284,13 @@ Do not use `glab mr create --fill --yes` by itself because it does not guarantee
 Do not use git push options for multiline MR descriptions.
 Do not assume `glab` supports `--description-file`; check `glab mr create --help` if uncertain.
 
-Run deeper checks only if a tripwire appears:
+Run deeper checks only if a tripwire appears, in one call:
 
 ```bash
-git log --oneline @{u}..HEAD 2>/dev/null | head -c 2000
-git diff origin/HEAD...HEAD 2>/dev/null | head -c 12000
+{
+  echo "== unpushed =="; git log --oneline @{u}..HEAD 2>/dev/null
+  echo "== diff =="; git diff origin/HEAD...HEAD 2>/dev/null
+} 2>&1 | head -c 12000
 ```
 
 ## Keeping the MR current
@@ -243,14 +299,25 @@ Every push to an MR branch changes the MR. The description must describe the bra
 
 After every push to a branch with an open MR:
 
-1. Read the current MR:
-   - `glab mr view --json title,description 2>&1 | head -c 4000`
-2. Re-read the branch state:
-   - `git log --oneline origin/HEAD..HEAD 2>/dev/null | head -c 2000`
-   - `git diff origin/HEAD...HEAD --stat 2>/dev/null | head -c 2000`
-3. Update the title when the summary no longer fits the change: `glab mr update --title "type(scope): summary"`.
-4. Update the description with a full rewrite from the temp file: `glab mr update --description "$(cat "$tmpfile")"`. Rewrite the affected sections. Never append "update:" logs, changelog bullets or review-fix notes to the description.
-5. Extend the testing table when a new commit adds behaviour that was verified. Leave a row alone when nothing was tested.
+1. Read the MR and the new branch state in one batched call:
+
+```bash
+{
+  echo "== mr =="; glab mr view --json title,description
+  echo "== unpushed =="; git log --oneline origin/HEAD..HEAD 2>/dev/null
+  echo "== files =="; git diff origin/HEAD...HEAD --stat 2>/dev/null
+} 2>&1 | head -c 8000
+```
+
+2. Update the title when the summary no longer fits the change: `glab mr update --title "type(scope): summary"`.
+3. Update the description with a full rewrite from the temp file: `glab mr update --description "$(cat "$tmpfile")"`. Rewrite the affected sections. Never append "update:" logs, changelog bullets or review-fix notes to the description.
+4. Extend the testing table when a new commit adds behaviour that was verified. Leave a row alone when nothing was tested.
+
+Chain the title and description update in one call with `&&` when both change:
+
+```bash
+glab mr update --title "type(scope): summary" --description "$(cat "$tmpfile")" && rm -f "$tmpfile"
+```
 
 Replace stale content rather than layering on top of it: removed code, abandoned approaches, superseded screenshots and diagrams that no longer match the diff all cost more than a short honest description.
 

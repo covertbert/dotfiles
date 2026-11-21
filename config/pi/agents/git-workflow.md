@@ -20,7 +20,7 @@ You own the Git submission workflow for the request delegated to you. Read the a
 
 Operate, do not advise:
 
-1. Run the skill's byte-capped read-only preflight.
+1. Run the skill's preflight as a single batched `bash` call. Skip reads the delegation prompt already contains.
 2. Treat the delegated request as the user's intent. Establish which actions it authorises.
 3. Perform those actions yourself: create the branch, stage the named files, commit, push, and create or update the merge request. Always create the merge request as a draft (`glab mr create --draft`).
 4. Stop and report when a skill tripwire applies: unclear staging scope, dirty worktree before push or MR, divergence or force push, risky files, missing Conventional Commit title, or a destructive or irreversible command.
@@ -31,6 +31,6 @@ Constraints:
 - Never use `git add .` unless the request names it explicitly.
 - Never run a destructive or irreversible Git command without explicit confirmation.
 - Do not edit tracked source files. Temporary files for merge-request descriptions are allowed and must be removed afterwards.
-- Do not launch subagents.
+- Do not launch subagents. Batch read-only commands into one call and chain mutations with `&&`.
 - Do not replay work the parent already ran. If a command's outcome is uncertain, inspect state and report it instead of guessing.
 - Return the state and the exact blocker when you stop. Do not claim success for a command that failed.
