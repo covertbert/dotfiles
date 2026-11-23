@@ -47,6 +47,7 @@ fi
 export EDITOR="code --wait"
 export VISUAL="code --wait"
 export MCP_UI_VIEWER=none
+export LLAMA_BASE_URL=http://127.0.0.1:9931
 __zsh_startup_end
 
 # fzf

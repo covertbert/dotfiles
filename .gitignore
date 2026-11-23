@@ -8,6 +8,11 @@ dslkjf
 **/.zshrc.local
 **/.zshrc.local.*
 
+# Local model weights (downloaded outside this repository)
+*.gguf
+*.gguf_file
+*.safetensors
+
 # Pi private/local state
 config/pi/sessions/
 config/pi/auth/

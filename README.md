@@ -36,8 +36,11 @@ Bootstrap runs in this order:
 3. `dotfiles installers` — installs zgen if missing
 4. `dotfiles brew` — installs Homebrew packages, including fnm and Herdr, and casks
 5. `dotfiles npm` — installs managed npm global packages
-6. `dotfiles sync --to system` — deploys all managed config files, including Pi's Herdr extension
-7. `dotfiles defaults` — applies macOS system defaults (requires `sudo`)
+6. `dotfiles llama install` — installs the pinned upstream llama.cpp binary
+7. `dotfiles sync --to system` — deploys all managed config files, including Pi's Herdr extension
+8. `dotfiles defaults` — applies macOS system defaults (requires `sudo`)
+9. `dotfiles llama start` — loads the loopback router LaunchAgent without loading a model
+10. `dotfiles web start` — configures pi-web and its Tailscale proxy when signed in
 
 ```
 Bootstrap complete. Run 'dotfiles status' to verify.
@@ -89,6 +92,8 @@ dotfiles brew-cleanup        Uninstall Homebrew packages not listed in brew file
 dotfiles npm                 Check and install managed npm globals
 dotfiles zsh-local <action>  Back up and restore ~/.zshrc.local with 1Password
 dotfiles defaults            Preview and apply macOS system defaults
+dotfiles llama <install|start|stop|status>
+                             Install llama.cpp and run its local router for Pi
 dotfiles web <start|stop|status>
                              Run pi-web on loopback and expose it over Tailscale
 dotfiles check               Validate shell config and tests
@@ -376,7 +381,7 @@ The machine must stay awake to serve pi-web. Clamshell mode with an external dis
 | File/Dir        | Purpose                                                                                                      |
 | --------------- | ------------------------------------------------------------------------------------------------------------ |
 | `settings.json` | Agent settings: default model (`gpt-5.5`), enabled models, packages, UI options                              |
-| `models.json`   | Custom provider config: RunInfra, OpenRouter. Anthropic uses Pi's built-in provider                          |
+| `models.json`   | RunInfra and OpenRouter endpoints; local llama.cpp overrides. Anthropic uses Pi's built-in provider          |
 | `AGENTS.md`     | Global agent instructions: caveman mode, commit rules, context protection                                    |
 | `agents/`       | Custom subagents: `worker` writer, `git-workflow` executor and read-only `investigator`                      |
 | `skills/`       | Skill definitions, including `airtime-mobile`, `coderabbit-review`, `git-workflow` and repository toolchains |
@@ -454,6 +459,39 @@ config/pi/npm/
 config/pi/**/*.local.json
 config/pi/**/.env
 ```
+
+## 🧠 Local models (llama.cpp)
+
+`dotfiles llama install` installs the [upstream llama.cpp b12651 release](https://github.com/ggml-org/llama.cpp/releases/tag/b12651) for Apple silicon macOS under `~/.local/share/llama.cpp/b12651/`, verifies its SHA-256, and links `~/.local/bin/llama`. The version and checksum are pinned in `bin/dotfiles`. Homebrew stable 1.0.0 lacks Inkling Mini support, its HEAD formula fails to build, and the app installer's b12607 produces incorrect output with these mainline weights. No model is downloaded during bootstrap.
+
+```sh
+dotfiles llama install
+dotfiles deploy
+dotfiles llama start     # loopback-only router at http://127.0.0.1:9931
+dotfiles llama status    # health and each model's loaded/sleeping/unloaded state
+dotfiles llama stop      # stop the router and release its model memory
+```
+
+Open a new shell after deployment so Pi inherits `LLAMA_BASE_URL` from `.zshrc`. The pi-web LaunchAgent sets the same variable; restart it with `dotfiles web start` after changing that template. This variable enables Pi's built-in llama.cpp provider without credentials.
+
+Download the **11.66 GB UD-IQ3_XXS** mainline GGUF and approximately **0.64 GB** vision projector once, without loading the GPU:
+
+```sh
+llama download -hf unsloth/Inkling-2-Mini-GGUF \
+  -hff Mainline_Support/Inkling-2-Mini-UD-IQ3_XXS.gguf_file
+```
+
+Pre-downloading keeps the large transfer outside Pi's 15-second control-request timeout. Then:
+
+1. In Pi, run `/llama` and select **inkling-2-mini** to load it. Use the managed preset, not **Download model…**: the repository-root GGUF requires Unsloth's fork and cannot run in upstream llama.cpp.
+2. Run `/model` and select **inkling-2-mini**. It accepts text and image attachments. `enabledModels` includes `llama.cpp/*`; existing model defaults are unchanged.
+3. Use `/llama` to unload the model when finished, or let it sleep after 120 idle seconds. Sleeping models remain selectable and wake on the next request.
+
+`config/llama/models.ini` is synced to `~/.config/llama/models.ini`. It records the exact mainline filename and sampling defaults. Weights stay in `~/.cache/huggingface/hub/`, outside Git; `.gitignore` also excludes GGUF and safetensors files. The smaller quant trades quality for memory headroom on a 24 GiB Mac; it is not lossless or benchmark-equivalent to the original checkpoint.
+
+`config/launchd/com.blackmanrgh.llama-router.plist` is rendered by `dotfiles llama start` into `~/Library/LaunchAgents/`. It starts at login with no model loaded. Defaults are a 32k context, one model, one conversation slot, 64-token microbatches, automatic GPU fitting, and 120-second idle sleep. Pi caps new output at 4,096 tokens. Restricting CORS to same-origin and binding loopback keep the unauthenticated router local; do not expose it through Tailscale Serve or Funnel.
+
+A short text/image smoke test on a 24 GiB M5 Pro used approximately 9.3 GB of GPU buffers and 4.1 GB of host model buffers. This is not a peak-memory guarantee. These settings reduce memory use, not GPU utilization during generation. Image processing, long prompts, and other apps still affect memory pressure. The 1 GiB router memory margin is an eviction target, **not a hard cap**; it can still attempt a model that exceeds the target. Unload the model if memory pressure rises. Edit the template and restart with `dotfiles llama start` to change runtime settings; logs are in `~/Library/Logs/llama-router.log`.
 
 ## 🐑 Herdr + Pi
 

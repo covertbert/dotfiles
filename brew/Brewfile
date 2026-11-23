@@ -29,6 +29,7 @@ brew "lefthook"
 brew "pre-commit"
 
 # Editors and local dev
+# llama.cpp uses a pinned upstream release via `dotfiles llama install`.
 brew "neovim"
 brew "prettier"
 brew "pyenv"

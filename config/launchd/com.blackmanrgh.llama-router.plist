@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!-- Template: `dotfiles llama start` substitutes __LLAMA_BIN__ with the
+     resolved llama.cpp path and __HOME__ with the user's home directory.
+     Models are downloaded and loaded explicitly through Pi's /llama command.
+     Small microbatches limit compute workspace; automatic GPU fitting may keep
+     layers on the CPU. The router memory margin is an eviction target, not a
+     hard memory limit. -->
+<plist version="1.0">
+<dict>
+	<key>Label</key>
+	<string>com.blackmanrgh.llama-router</string>
+	<key>ProgramArguments</key>
+	<array>
+		<string>__LLAMA_BIN__</string>
+		<string>serve</string>
+		<string>--host</string>
+		<string>127.0.0.1</string>
+		<string>--port</string>
+		<string>9931</string>
+		<string>--cors-origins</string>
+		<string>localhost</string>
+		<string>--no-models-autoload</string>
+		<string>-ngl</string>
+		<string>auto</string>
+		<string>-ub</string>
+		<string>64</string>
+		<string>-c</string>
+		<string>32768</string>
+		<string>-np</string>
+		<string>1</string>
+		<string>--models-max</string>
+		<string>1</string>
+		<string>--models-memory-margin</string>
+		<string>1024</string>
+		<string>--models-preset</string>
+		<string>__HOME__/.config/llama/models.ini</string>
+		<string>--sleep-idle-seconds</string>
+		<string>120</string>
+	</array>
+	<key>WorkingDirectory</key>
+	<string>__HOME__</string>
+	<key>RunAtLoad</key>
+	<true/>
+	<key>KeepAlive</key>
+	<true/>
+	<key>StandardOutPath</key>
+	<string>__HOME__/Library/Logs/llama-router.log</string>
+	<key>StandardErrorPath</key>
+	<string>__HOME__/Library/Logs/llama-router.log</string>
+</dict>
+</plist>

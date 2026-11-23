@@ -18,6 +18,8 @@
 	</array>
 	<key>EnvironmentVariables</key>
 	<dict>
+		<key>LLAMA_BASE_URL</key>
+		<string>http://127.0.0.1:9931</string>
 		<key>PATH</key>
 		<string>__NODE_BIN_DIR__:/usr/bin:/bin:/usr/sbin:/sbin</string>
 	</dict>

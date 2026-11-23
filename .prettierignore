@@ -2,6 +2,7 @@
 .gitignore
 .nvmrc
 *.plist
+*.ini
 *.zsh
 *.sh
 *.py

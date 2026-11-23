@@ -865,6 +865,137 @@ cmd_web() {
 	esac
 }
 
+cmd_llama() {
+	local action="${1:-start}"
+
+	heading "llama.cpp router"
+	echo ""
+
+	local plist_src="${DOTFILES_DIR}/config/launchd/com.blackmanrgh.llama-router.plist"
+	local plist_dst="${HOME}/Library/LaunchAgents/com.blackmanrgh.llama-router.plist"
+	local label="com.blackmanrgh.llama-router"
+	local base_url="http://127.0.0.1:9931"
+	local llama_bin="${HOME}/.local/bin/llama"
+	local build=12651
+	local version_dir="${HOME}/.local/share/llama.cpp/b${build}"
+	local domain
+	domain="gui/$(id -u)"
+
+	case "$action" in
+	install)
+		# Stable 1.0.0 and the app installer lag behind mainline GGUF support.
+		if [[ -x "$llama_bin" ]] && [[ "$("$llama_bin" version 2>/dev/null)" == *"build ${build},"* ]]; then
+			ok "llama b${build} already installed."
+			return
+		fi
+		if [[ "$(uname -s)/$(uname -m)" != "Darwin/arm64" ]]; then
+			err "The pinned llama.cpp build requires Apple silicon macOS."
+			return 1
+		fi
+		if [[ ! -d "$version_dir" ]]; then
+			local download archive sha
+			download="$(mktemp -d -t llama-install)"
+			archive="llama-b${build}-bin-macos-arm64.tar.gz"
+			sha="264fd872de61679c45ad57e1e21c2a2a54e29b35734ecf3d50f24166447ab8d2"
+			if ! curl -fsSL --max-time 180 "https://github.com/ggml-org/llama.cpp/releases/download/b${build}/${archive}" -o "${download}/${archive}" ||
+				! printf '%s  %s\n' "$sha" "${download}/${archive}" | shasum -a 256 -c - ||
+				! tar -xzf "${download}/${archive}" --strip-components=1 -C "$download"; then
+				rm -rf "$download"
+				err "llama download or verification failed."
+				return 1
+			fi
+			rm "${download}/${archive}"
+			mkdir -p "$(dirname "$version_dir")"
+			mv "$download" "$version_dir"
+		fi
+		if [[ ! -x "${version_dir}/llama" ]] || [[ "$("${version_dir}/llama" version 2>/dev/null)" != *"build ${build},"* ]]; then
+			err "Invalid llama.cpp installation at ${version_dir}"
+			return 1
+		fi
+		mkdir -p "${HOME}/.local/bin"
+		ln -sf "${version_dir}/llama" "$llama_bin"
+		ok "Installed llama b${build}: ${llama_bin}"
+		;;
+	start)
+		if [[ ! -x "$llama_bin" ]] || [[ "$("$llama_bin" version 2>/dev/null)" != *"build ${build},"* ]]; then
+			err "llama b${build} required. Run: dotfiles llama install"
+			return 1
+		fi
+		if [[ ! -f "${HOME}/.config/llama/models.ini" ]]; then
+			err "Model preset missing. Run: dotfiles deploy"
+			return 1
+		fi
+
+		mkdir -p "${HOME}/Library/LaunchAgents" "${HOME}/Library/Logs"
+		plutil -convert json -o - "$plist_src" |
+			jq --arg bin "$llama_bin" --arg home "$HOME" \
+				'walk(if type == "string" then gsub("__HOME__"; $home) | gsub("__LLAMA_BIN__"; $bin) else . end)' |
+			plutil -convert xml1 -o "$plist_dst" -
+		ok "Deployed ${plist_dst}"
+
+		launchctl bootout "$domain/$label" &>/dev/null || true
+		# launchd can reject an immediate re-bootstrap of a job that is still exiting.
+		local loaded=false
+		for _ in 1 2 3; do
+			if launchctl bootstrap "$domain" "$plist_dst" &>/dev/null; then
+				loaded=true
+				break
+			fi
+			sleep 1
+		done
+		if ! $loaded; then
+			err "Failed to load LaunchAgent ${label}"
+			return 1
+		fi
+		ok "LaunchAgent loaded: ${label}"
+
+		local healthy=false
+		for _ in {1..10}; do
+			if curl -fsS --max-time 1 "${base_url}/health" &>/dev/null; then
+				healthy=true
+				break
+			fi
+			sleep 0.5
+		done
+		if ! $healthy; then
+			err "Router did not become healthy. Logs: ${HOME}/Library/Logs/llama-router.log"
+			return 1
+		fi
+		ok "${base_url}/health responding"
+		dim "  No model loaded. In Pi: /llama → inkling-2-mini, then /model. First load downloads weights and vision projector."
+		;;
+	stop)
+		if launchctl print "$domain/$label" &>/dev/null; then
+			if ! launchctl bootout "$domain/$label"; then
+				err "Failed to stop LaunchAgent ${label}"
+				return 1
+			fi
+			ok "LaunchAgent stopped"
+		else
+			ok "LaunchAgent not loaded"
+		fi
+		;;
+	status)
+		if launchctl print "$domain/$label" &>/dev/null; then
+			ok "LaunchAgent loaded: ${label}"
+		else
+			warn "LaunchAgent not loaded: ${label}"
+		fi
+		if ! curl -fsS --max-time 2 "${base_url}/health" &>/dev/null; then
+			warn "${base_url}/health not responding"
+			return 1
+		fi
+		ok "${base_url}/health responding"
+		curl -fsS --max-time 5 "${base_url}/models" |
+			jq -r '.data[]? | "    \(.id) (\(.status.value))"'
+		;;
+	*)
+		err "Unknown llama action: ${action} (use install|start|stop|status)"
+		return 1
+		;;
+	esac
+}
+
 cmd_defaults() {
 	local yes_flag="${1:-}"
 
@@ -941,6 +1072,11 @@ cmd_check() {
 		failed=true
 	fi
 
+	if ! bash "${DOTFILES_DIR}/tests/llama-router-launchd.test.sh"; then
+		warn "tests: llama.cpp router launchd"
+		failed=true
+	fi
+
 	if $failed; then
 		err "Validation failed."
 		return 1
@@ -1008,6 +1144,8 @@ ${BOLD}COMMANDS${RESET}
   defaults            Preview and apply macOS system defaults
   web <start|stop|status>
                       Run the pi-web UI on loopback and expose it over Tailscale
+  llama <install|start|stop|status>
+                      Install llama.cpp and run its loopback router for Pi
   check               Validate shell config and tests
   install             Create ~/.local/bin/dotfiles symlink
   installers          Install zgen if missing
@@ -1032,6 +1170,8 @@ ${BOLD}EXAMPLES${RESET}
   dotfiles zsh-local edit
   dotfiles defaults --yes
   dotfiles web start
+  dotfiles llama start
+  dotfiles llama status
   dotfiles deploy
   dotfiles backfill
 EOF
@@ -1076,6 +1216,7 @@ main() {
 	zsh-local) cmd_zsh_local "$yes_flag" "${positional[@]}" ;;
 	defaults) cmd_defaults "$yes_flag" ;;
 	web) cmd_web "${positional[0]:-start}" ;;
+	llama) cmd_llama "${positional[0]:-start}" ;;
 	check) cmd_check ;;
 	install) cmd_install ;;
 	installers) cmd_installers "$yes_flag" ;;

@@ -46,11 +46,17 @@ echo "==> Installing Homebrew packages..."
 echo "==> Installing npm global packages..."
 "${SCRIPT_DIR}/bin/dotfiles" npm --yes
 
+echo "==> Installing pinned llama.cpp build..."
+"${SCRIPT_DIR}/bin/dotfiles" llama install
+
 echo "==> Deploying config files..."
 "${SCRIPT_DIR}/bin/dotfiles" sync --to system --yes
 
 echo "==> Applying macOS defaults..."
 "${SCRIPT_DIR}/bin/dotfiles" defaults --yes
+
+echo "==> Configuring llama.cpp router for local models..."
+"${SCRIPT_DIR}/bin/dotfiles" llama start
 
 echo "==> Configuring pi-web remote access..."
 "${SCRIPT_DIR}/bin/dotfiles" web start || echo "Skipped: run 'dotfiles web start' once Tailscale is signed in."

@@ -1,5 +1,13 @@
 {
   "providers": {
+    "llama.cpp": {
+      "baseUrl": "http://127.0.0.1:9931",
+      "modelOverrides": {
+        "inkling-2-mini": {
+          "maxTokens": 4096
+        }
+      }
+    },
     "runinfra": {
       "baseUrl": "https://api.runinfra.ai/v1",
       "apiKey": "$RUNINFRA_KEY",

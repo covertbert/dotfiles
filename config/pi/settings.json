@@ -9,11 +9,10 @@
     "openai/gpt-6-astra",
     "openai/gpt-5.6-terra",
     "runinfra/qwen3-8-27b",
-    "runinfra/deepseek-v4-1-flash"
+    "runinfra/deepseek-v4-1-flash",
+    "llama.cpp/*"
   ],
-  "extensions": [
-    "-builtin:mcp"
-  ],
+  "extensions": ["-builtin:mcp"],
   "packages": [
     "npm:pi-caveman",
     "npm:pi-mcp-adapter",
