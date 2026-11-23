@@ -43,6 +43,28 @@ class CodeRabbitParserTests(unittest.TestCase):
             "In `src/example.ts`, replace duplicated aggregation with `planAllowedPaths(plan)`.",
         )
 
+    def test_extracts_prompt_with_new_heading(self) -> None:
+        body = self.discussions[0]["notes"][0]["body"]
+
+        for heading in (
+            "Prompt to fix issue",
+            "Prompt for AI Agents",
+            "🤖 Prompt for coding agents",
+            "Prompt",
+        ):
+            with self.subTest(heading=heading):
+                self.assertEqual(
+                    coderabbit.extract_prompt(body.replace("Prompt for AI Agents", heading)),
+                    coderabbit.extract_prompt(body),
+                )
+
+    def test_ignores_non_prompt_summaries(self) -> None:
+        body = self.discussions[0]["notes"][0]["body"].replace(
+            "Prompt for AI Agents", "Proposed fix"
+        )
+
+        self.assertIsNone(coderabbit.extract_prompt(body))
+
     def test_scan_returns_only_unresolved_unhandled_diff_finding(self) -> None:
         result = coderabbit.scan_discussions(
             self.discussions,

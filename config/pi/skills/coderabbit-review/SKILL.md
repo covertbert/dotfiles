@@ -36,7 +36,7 @@ Helper responsibilities only:
 - Require clean initial worktree and ensure MR head matches or is an ancestor of local `HEAD` during scan
 - Fetch and normalize GitLab discussions
 - Verify CodeRabbit identity and stable body markers
-- Extract `Prompt for AI Agents` verbatim
+- Extract CodeRabbit prompt block verbatim (any `<summary>` heading starting with "Prompt", e.g. `Prompt to fix issue`, `Prompt for AI Agents`)
 - Post idempotent threaded replies
 - Resolve only discussions carrying matching outcome markers
 

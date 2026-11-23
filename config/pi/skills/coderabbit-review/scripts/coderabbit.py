@@ -18,10 +18,10 @@ SCHEMA_VERSION = 1
 AUTO_GENERATED_MARKER = "<!-- This is an auto-generated comment by CodeRabbit -->"
 CR_COMMENT_RE = re.compile(r"<!--\s*cr-comment:v1:[^>]+-->", re.IGNORECASE)
 BOT_USERNAME_RE = re.compile(r"(?:^|[._-])code[._-]?rabbit|coderabbit", re.IGNORECASE)
-PROMPT_HEADING_RE = re.compile(
-    r"<summary>\s*(?:🤖\s*)?Prompt for AI Agents\s*</summary>",
-    re.IGNORECASE,
-)
+# CodeRabbit has shipped several headings: "Prompt for AI Agents", "Prompt to fix
+# issue". Match any summary that starts with the word "prompt" so wording changes
+# do not break extraction.
+PROMPT_HEADING_RE = re.compile(r"<summary>[^\w<]*Prompt\b", re.IGNORECASE)
 FENCED_BLOCK_RE = re.compile(r"(?:```|~~~)[^\r\n]*\r?\n(.*?)(?:\r?\n)(?:```|~~~)", re.DOTALL)
 PROCESSED_MARKER_RE = re.compile(
     r"<!--\s*pi-coderabbit-review:v1\s+note=(?P<note>\d+)\s+"
