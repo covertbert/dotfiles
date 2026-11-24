@@ -1,7 +1,7 @@
 {
   "phases": {
     "planning": {
-      "model": { "provider": "openai", "id": "gpt-5.6-sol" },
+      "model": { "provider": "openai", "id": "gpt-6.2-sol" },
       "thinking": "max"
     },
     "executing": {

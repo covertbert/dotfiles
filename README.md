@@ -380,7 +380,7 @@ The machine must stay awake to serve pi-web. Clamshell mode with an external dis
 
 | File/Dir        | Purpose                                                                                                      |
 | --------------- | ------------------------------------------------------------------------------------------------------------ |
-| `settings.json` | Agent settings: default model (`gpt-5.5`), enabled models, packages, UI options                              |
+| `settings.json` | Agent settings: default model (`claude-fable-5-1`), enabled models, packages, UI options                     |
 | `models.json`   | RunInfra and OpenRouter endpoints; local llama.cpp overrides. Anthropic uses Pi's built-in provider          |
 | `AGENTS.md`     | Global agent instructions: caveman mode, commit rules, context protection                                    |
 | `agents/`       | Custom subagents: `worker` writer, `git-workflow` executor and read-only `investigator`                      |
@@ -406,7 +406,7 @@ The machine must stay awake to serve pi-web. Clamshell mode with an external dis
 
 | Agent          | Model                                   | Purpose                                                                                           |
 | -------------- | --------------------------------------- | ------------------------------------------------------------------------------------------------- |
-| `worker`       | `openai/gpt-6.1-sol` (medium)           | Implements one bounded batch of changes and verifies it with the repository's own checks          |
+| `worker`       | `openai/gpt-6.2-sol` (medium)           | Implements one bounded batch of changes and verifies it with the repository's own checks          |
 | `git-workflow` | `runinfra/deepseek-v4-1-flash` (low)    | Executes the `git-workflow` skill: branch, commit, push, and MR actions inside its tripwire rules |
 | `investigator` | `runinfra/deepseek-v4-1-flash` (medium) | Read-only investigation of code, CI and infrastructure evidence, logs, docs, and MCP systems      |
 

@@ -2,7 +2,7 @@
 name: worker
 description: Implementation writer for a bounded, well-specified change in one repository. Edits files, runs checks, and reports what changed. Use for one coherent batch of mechanical or planned work.
 advertise: true
-model: openai/gpt-6.1-sol
+model: openai/gpt-6.2-sol
 thinking: medium
 tools: read, grep, find, ls, bash, edit, write
 inheritProjectContext: true
